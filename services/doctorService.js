@@ -3,7 +3,7 @@ import Doctor from '../middlewares/doctorMiddleware';
 
 
 class DoctorService {
-  async getDoctors(page, size) {
+  getDoctors(page, size) {
     return Doctor.find().skip(page * size).limit(size);
   }
 
@@ -15,12 +15,23 @@ class DoctorService {
     return Doctor.findOne({ email });
   }
 
-  async createDoctor(doctor) {
-    return await Doctor.create(doctor);
+  async createDoctor(query) {
+    return await Doctor.create(query);
   }
 
-  async updateADoctor(id, doctor) {
-    return Doctor.findByIdAndUpdate(id, doctor, { new: true });
+  async updateADoctor(doctor, query) {
+    // Make sure the email is unique, by checking if the email in the query
+    // We override the email in the query with the email in the database
+    // If not, the unique property in Doctor's schema will raise an error 'duplicate key'
+    if (query.email) {
+      query.email = doctor.email;
+    }
+
+    Object.assign(doctor, query);
+
+    // Methods such as findByIdAndUpdate will not trigger the pre-save middleware
+    const updatedUser = await doctor.save();
+    return updatedUser;
   }
 
   async deleteADoctor(id) {
