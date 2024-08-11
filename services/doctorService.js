@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import Doctor from '../middlewares/doctorMiddleware';
 
-
 class DoctorService {
   getDoctors(page, size) {
     return Doctor.find().skip(page * size).limit(size);

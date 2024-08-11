@@ -1,5 +1,6 @@
 import DoctorService from '../services/DoctorService';
 import { checkPwd } from '../utils/validations';
+import { prettifyError } from '../utils/errors';
 
 class DoctorController {
   static async getAllDoctors (req, res) {
@@ -15,15 +16,10 @@ class DoctorController {
   }
 
   static async addDoctor (req, res) {
-    const {
-      firstName, lastName, email, password, confirmPassword, gender
-    } = req.body;
-    if (!firstName || !lastName || !email || !password || !confirmPassword || !gender) {
-      return res.status(400).json({ error: 'firstName, lastName, email, password, confirmPassword are required' });
-    }
-    if (password !== confirmPassword) {
-      return res.status(400).json({ error: 'Password does not match' });
-    }
+    const { password, confirmPassword } = req.body;
+
+    // If password is provided, confirmPassword must be provided
+    if (!checkPwd({ password, confirmPassword }, res)) return;
 
     const DoctorInfo = {};
     for (const [key, value] of Object.entries(req.body)) {
@@ -43,10 +39,7 @@ class DoctorController {
       const doctor = await DoctorService.createDoctor(DoctorInfo);
       return res.status(201).json(doctor);
     } catch (error) {
-      const e = error.message;
-      return res.status(500).json({
-        error: e.split(': ')[2] === 'email_1 dup key' ? 'Email already exist' : e
-      });
+      return res.status(500).json({ error: prettifyError(error) });
     }
   }
 
@@ -85,7 +78,6 @@ class DoctorController {
       }
       return res.status(404).json({ error: 'Doctor not found' });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ error: error.message });
     }
   }

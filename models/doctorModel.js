@@ -85,6 +85,9 @@ const doctorSchema = new mongoose.Schema({
       trim: true,
       toLowerCase: true
     }
+  },
+  dob: {
+    type: Date
   }
 });
 export default doctorSchema;
