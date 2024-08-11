@@ -1,4 +1,5 @@
 import DoctorService from '../services/DoctorService';
+import { checkPwd } from '../utils/validations';
 
 class DoctorController {
   static async getAllDoctors (req, res) {
@@ -42,7 +43,10 @@ class DoctorController {
       const doctor = await DoctorService.createDoctor(DoctorInfo);
       return res.status(201).json(doctor);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      const e = error.message;
+      return res.status(500).json({
+        error: e.split(': ')[2] === 'email_1 dup key' ? 'Email already exist' : e
+      });
     }
   }
 
@@ -67,14 +71,21 @@ class DoctorController {
     if (!id) {
       return res.status(400).json({ error: 'id is required' });
     }
+
+    const { password, confirmPassword } = req.body;
+
+    // If password is provided, confirmPassword must be provided
+    if (!checkPwd({ password, confirmPassword }, res)) return;
+
     try {
-      const doctor = await DoctorService.getDoctor(id);
+      const doctor = await DoctorService.getDoctorById(id);
       if (doctor) {
-        const updatedDoctor = await DoctorService.updateADoctor(id, req.body);
-        return res.status(200).json(updatedDoctor);
+        const updateddoctor = await DoctorService.updateADoctor(doctor, req.body);
+        return res.status(200).json(updateddoctor);
       }
       return res.status(404).json({ error: 'Doctor not found' });
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -85,7 +96,7 @@ class DoctorController {
       return res.status(400).json({ error: 'id is required' });
     }
     try {
-      const doctor = await DoctorService.getDoctor(id);
+      const doctor = await DoctorService.getDoctorById(id);
       if (doctor) {
         await DoctorService.deleteADoctor(id);
         return res.status(200).json({ message: 'Doctor deleted' });
