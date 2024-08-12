@@ -39,7 +39,12 @@ class DoctorController {
       const doctor = await DoctorService.createDoctor(DoctorInfo);
       return res.status(201).json(doctor);
     } catch (error) {
-      return res.status(500).json({ error: prettifyError(error) });
+      const prettifiedError = String(prettifyError(error));
+      if (prettifiedError === 'Email already exists' || prettifiedError.includes('is required')) {
+        return res.status(400).json({ error: prettifyError(error) });
+      } else {
+        return res.status(500).json({ error: prettifyError(error) });
+      }
     }
   }
 

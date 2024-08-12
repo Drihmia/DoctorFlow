@@ -20,17 +20,16 @@ class PatientController {
 
     // If password is provided, confirmPassword must be provided
     if (!checkPwd({ password, confirmPassword }, res)) return;
-
     const PatientInfo = {};
     for (const [key, value] of Object.entries(req.body)) {
       if (value) {
-        if (value === 'address' || value === 'city' || value === 'state') {
+        if (['address', 'city', 'state', 'phone'].includes(key)) {
           if (!('contact' in PatientInfo)) {
             PatientInfo.contact = {};
           }
           PatientInfo.contact[key] = value;
         } else if (['firstName', 'lastName', 'email', 'password', 'gender',
-          'phone', 'specialization', 'bio', 'dob'].includes(key)) {
+          'dob', 'age', 'doctorId'].includes(key)) {
           PatientInfo[key] = value;
         }
       }
@@ -39,7 +38,12 @@ class PatientController {
       const patient = await PatientService.createPatient(PatientInfo);
       return res.status(201).json(patient);
     } catch (error) {
-      return res.status(500).json({ error: prettifyError(error) });
+      const prettifiedError = String(prettifyError(error));
+      if (prettifiedError === 'Email already exists' || prettifiedError.includes('is required')) {
+        return res.status(400).json({ error: prettifyError(error) });
+      } else {
+        return res.status(500).json({ error: prettifyError(error) });
+      }
     }
   }
 
