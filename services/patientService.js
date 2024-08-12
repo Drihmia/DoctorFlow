@@ -1,26 +1,41 @@
-import Patient from '../models/patientModel';
+import mongoose from 'mongoose';
+import Patient from '../middlewares/patientMiddleware';
 
-class patientService {
-  async createPatient(data) {
-    const patient = new Patient(data);
-    return patient.save();
-  }
-
-  async getPatients() {
-    return Patient.find();
+class PatientService {
+  getPatients(page, size) {
+    return Patient.find().skip(page * size).limit(size);
   }
 
   async getPatientById(id) {
     return Patient.findById(id);
   }
 
-  async updatePatient(id, data) {
-    return Patient.findByIdAndUpdate(id, data, { new: true });
+  async getPatientByEmail(email) {
+    return Patient.findOne({ email });
   }
 
-  async deletePatient(id) {
+  async createPatient(query) {
+    return await Patient.create(query);
+  }
+
+  async updateAPatient(patient, query) {
+    // Make sure the email is unique, by checking if the email in the query
+    // We override the email in the query with the email in the database
+    // If not, the unique property in Patient's schema will raise an error 'duplicate key'
+    if (query.email) {
+      query.email = patient.email;
+    }
+
+    Object.assign(patient, query);
+
+    // Methods such as findByIdAndUpdate will not trigger the pre-save middleware
+    const updatedUser = await patient.save();
+    return updatedUser;
+  }
+
+  async deleteAPatient(id) {
     return Patient.findByIdAndDelete(id);
   }
 }
 
-export default new patientService();
+export default new PatientService();
