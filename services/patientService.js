@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Patient from '../middlewares/patientMiddleware';
 
 class PatientService {
-  getPatients(page, size) {
+  getPatients(page = 0, size = 10) {
     return Patient.find().skip(page * size).limit(size);
   }
 

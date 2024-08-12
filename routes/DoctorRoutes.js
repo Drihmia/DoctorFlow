@@ -18,18 +18,54 @@ const router = Router();
  *     tags: [Doctors]
  *     responses:
  *       200:
- *         description: A list of doctors
+ *         description: A JSON array of doctors' objects
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/models/doctorModel.js'
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   firstName:
+ *                     type: string
+ *                   lastName:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                   password:
+ *                     type: string
+ *                   gender:
+ *                     type: string
+ *                   specialization:
+ *                     type: string
+ *                   patients:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                   appointments:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                   dob:
+ *                     type: string
+ *                     format: date-time
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   __v:
+ *                     type: integer
  *       404:
  *         description: No doctors found
  *       500:
  *         description: Internal server error
  */
+
 router.get('/doctors', DoctorController.getAllDoctors);
 
 /**
@@ -58,6 +94,66 @@ router.get('/doctors', DoctorController.getAllDoctors);
  */
 router.post('/doctors', DoctorController.addDoctor);
 
+/**
+ * @swagger
+ * /doctors/{id}:
+ *   get:
+ *     summary: Retrieve a specific doctor by ID
+ *     tags: [Doctors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: '66ba5199565d2c3eeda69687'
+ *     responses:
+ *       200:
+ *         description: A single doctor object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 firstName:
+ *                   type: string
+ *                 lastName:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                   format: email
+ *                 password:
+ *                   type: string
+ *                 gender:
+ *                   type: string
+ *                 specialization:
+ *                   type: string
+ *                 patients:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 appointments:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 dob:
+ *                   type: string
+ *                   format: date-time
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                 __v:
+ *                   type: integer
+ *       404:
+ *         description: Doctor not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get('/doctors/:id', DoctorController.getDoctor);
 router.put('/doctors/:id', DoctorController.updateDoctor);
 router.delete('/doctors/:id', DoctorController.deleteDoctor);
