@@ -15,6 +15,10 @@ class PatientService {
   }
 
   async createPatient(query) {
+    if (query.doctorId) {
+      query.doctor = new mongoose.Types.ObjectId(query.doctorId);
+      delete query.doctorId;
+    }
     return await Patient.create(query);
   }
 

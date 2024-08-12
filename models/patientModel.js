@@ -9,7 +9,7 @@ const patientSchema = new mongoose.Schema({
   },
   lastName: {
     type: String,
-    toUpperCase: true,
+    uppercase: true,
     required: true
   },
   gender: {
@@ -31,7 +31,7 @@ const patientSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    toLowerCase: true,
+    // email should be unique and immutable
     unique: true,
     immutable: true,
     validate: {
@@ -55,74 +55,77 @@ const patientSchema = new mongoose.Schema({
       ref: 'Appointment'
     }
   ],
-  constact: {
+  contact: {
     phone: {
       type: String,
       unique: true,
       required: true
     },
     address: {
-      type: String
+      type: String,
+      trim: true,
+      lowercase: true
+    },
+    city: {
+      type: String,
+      trim: true,
+      lowercase: true
+    },
+    state: {
+      type: String,
+      trim: true,
+      lowercase: true
     },
     emergencyContact: {
       name: {
         type: String,
         trim: true,
-        toLowerCase: true,
-        required: true
+        lowercase: true
       },
       relationship: {
         type: String,
         trim: true,
-        toLowerCase: true,
-        required: true
+        lowercase: true
       },
       phone: {
         type: String,
-        trim: true,
-        required: true
+        trim: true
       }
     }
   },
   dob: {
-    type: Date,
+    type: Date
   },
-  medicalHistory: [
-    {
-      type: String,
-      trim: true,
-      toLowerCase: true,
-      default: []
-    }
-  ],
+  medicalHistory: {
+    type: [String],
+    trim: true,
+    lowercase: true,
+    default: []
+  },
   currentMedication: [
     {
       name: {
         type: String,
         trim: true,
-        toLowerCase: true,
-        required: true
+        lowercase: true,
       },
       startDate: {
-        type: Date,
-        required: true
+        type: Date
       },
       duration: {
         type: String,
         trim: true,
-        toLowerCase: true,
-        required: true
+        lowercase: true
       },
       dosage: {
         type: String,
         trim: true,
-        toLowerCase: true,
-        required: true
+        lowercase: true
       },
       description: {
         type: String,
         trim: true,
-        toLowerCase: true
+        lowercase: true
       },
       endDate: {
         type: Date
@@ -134,26 +137,25 @@ const patientSchema = new mongoose.Schema({
       medicalCondition: {
         type: String,
         trim: true,
-        toLowerCase: true,
-        required: true
+        lowercase: true,
+        default: 'None'
       },
       relationship: {
         type: String,
         trim: true,
-        toLowerCase: true,
-        required: true
+        lowercase: true,
+        default: ''
       },
       description: {
         type: String,
         trim: true,
-        toLowerCase: true
+        lowercase: true,
+        default: ''
       }
     }
   ],
   insurance: {
     type: String,
-    trim: true,
-    toLowerCase: true,
     default: 'None'
   },
   createdAt: {

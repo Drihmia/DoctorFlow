@@ -9,19 +9,19 @@ const doctorSchema = new mongoose.Schema({
   },
   lastName: {
     type: String,
-    toUpperCase: true,
+    uppercase: true,
     required: true
   },
   email: {
     type: String,
-    required: true,
     // email should be unique and immutable
     unique: true,
     ummutable: true,
     validate: {
       validator: validator.isEmail,
       message: 'Email is not valid'
-    }
+    },
+    required: true
   },
   password: {
     type: String,
@@ -73,21 +73,22 @@ const doctorSchema = new mongoose.Schema({
     address: {
       type: String,
       trim: true,
-      toLowerCase: true
+      lowercase: true
     },
     city: {
       type: String,
       trim: true,
-      toLowerCase: true
+      lowercase: true
     },
     state: {
       type: String,
       trim: true,
-      toLowerCase: true
+      lowercase: true
     }
   },
   dob: {
     type: Date
   }
 });
+
 export default doctorSchema;
