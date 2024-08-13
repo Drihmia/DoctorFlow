@@ -5,12 +5,12 @@ const doctorSchema = new mongoose.Schema({
   // Required fields
   firstName: {
     type: String,
-    required: true
+    required: [true, 'First name is required']
   },
   lastName: {
     type: String,
     uppercase: true,
-    required: true
+    required: [true, 'Last name is required']
   },
   email: {
     type: String,
@@ -21,12 +21,12 @@ const doctorSchema = new mongoose.Schema({
       validator: validator.isEmail,
       message: 'Email is not valid'
     },
-    required: true
+    required: [true, 'Email is required']
   },
   password: {
     type: String,
     minlength: 8,
-    required: true
+    required: [true, 'Password is required']
   },
   gender: {
     type: String,
@@ -34,7 +34,7 @@ const doctorSchema = new mongoose.Schema({
       values: ['M', 'F'],
       message: '{VALUE} is not a valid, must be M or F'
     },
-    required: true
+    required: [true, 'Gender is required']
   },
   specialization: {
     type: String,
