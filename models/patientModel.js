@@ -42,14 +42,14 @@ const patientSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: [true, 'Password is required']
   },
   doctor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Doctor',
     required: [true, 'Doctor is required']
   },
-  appointment: [
+  sessions: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Appointment'

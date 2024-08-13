@@ -65,9 +65,6 @@ class PatientController {
 
   static async updatePatient (req, res) {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: { id: 'id is required' } });
-    }
 
     const { password, confirmPassword } = req.body;
 
@@ -98,9 +95,7 @@ class PatientController {
 
   static async deletePatient (req, res) {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: 'id is required' });
-    }
+
     try {
       const patient = await PatientService.getPatientById(id);
       if (patient) {

@@ -47,7 +47,7 @@ const doctorSchema = new mongoose.Schema({
       ref: 'Patient'
     }
   ],
-  appointments: [
+  sessions: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Appointment'
