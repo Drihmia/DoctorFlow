@@ -11,16 +11,25 @@ const app = express();
 const PORT = 3000;
 
 DBConnection();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+try {
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+} catch (error) {
+  console.log(error);
+}
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(route);
 
-app.get('/', (req, res) => {
-  res.send('Hello World');
+// Middleware to handle invalid JSON format, in case the user sends an invalid JSON payload
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: { body: 'Invalid JSON format' } });
+  }
+
+  // Pass the error to the next error handler if it's not a SyntaxError
+  next(err);
 });
 
 app.listen(PORT, () => {

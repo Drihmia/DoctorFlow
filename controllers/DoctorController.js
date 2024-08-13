@@ -39,11 +39,12 @@ class DoctorController {
       const doctor = await DoctorService.createDoctor(DoctorInfo);
       return res.status(201).json(doctor);
     } catch (error) {
-      const prettifiedError = String(prettifyError(error));
-      if (prettifiedError === 'Email already exists' || prettifiedError.includes('is required')) {
-        return res.status(400).json({ error: prettifyError(error) });
+      const prettifiedError = prettifyError(error);
+      if (prettifiedError instanceof Error) {
+        return res.status(500).json({ error: prettifiedError });
       } else {
-        return res.status(500).json({ error: prettifyError(error) });
+        // If the error related to mongoose validation, prettifyError will return an object
+        return res.status(400).json({ error: prettifiedError });
       }
     }
   }
