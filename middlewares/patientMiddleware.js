@@ -26,4 +26,8 @@ patientSchema.pre('save', function (next) {
   next();
 });
 
-export default mongoose.model('Patient', patientSchema);
+const Patient = mongoose.model('Patient', patientSchema);
+
+Patient.init().catch(err => console.error('Index creation failed:', err));
+
+export default Patient;

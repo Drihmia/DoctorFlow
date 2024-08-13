@@ -91,4 +91,7 @@ const doctorSchema = new mongoose.Schema({
   }
 });
 
+// enhance uniqueness of email field at schema level
+doctorSchema.index({ email: 1 }, { unique: true });
+
 export default doctorSchema;
