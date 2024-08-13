@@ -60,7 +60,13 @@ class PatientController {
       }
       return res.status(404).json({ error: 'Patient not found' });
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      const prettifiedError = prettifyError(error);
+      if (prettifiedError instanceof Error) {
+        return res.status(500).json({ error: prettifiedError });
+      } else {
+        // If the error related to mongoose validation, prettifyError will return an object
+        return res.status(400).json({ error: prettifiedError });
+      }
     }
   }
 
