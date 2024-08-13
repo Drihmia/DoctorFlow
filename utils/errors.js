@@ -1,13 +1,18 @@
 const prettifyError = (error) => {
   if (error instanceof Error) {
-    let errMsg = error.message;
-    if (errMsg.includes('email_1 dup key')) {
-      errMsg = 'Email already exists';
-    } else if (errMsg.includes('required')) {
-      errMsg = `${errMsg.split('`')[1]} is required`;
+    const errorsObject = {};
+
+    if (error.code === 11000) {
+      errorsObject[Object.keys(error.keyValue)[0]] = 'Email already exists';
+    } else {
+      Object.values(error.errors).forEach(({ properties }) => {
+        const { message, path } = properties;
+        errorsObject[path] = message;
+      });
     }
-    return errMsg;
+    return errorsObject;
   }
+  return error;
 };
 
 export { prettifyError };

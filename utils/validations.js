@@ -4,11 +4,11 @@ const checkPwd = (query, res) => {
   if (query.password) {
     if (query.confirmPassword) {
       if (query.password !== query.confirmPassword) {
-        res.status(400).json({ error: 'Password does not match' });
+        res.status(400).json({ error: { password: 'Password does not match' } });
         return false;
       }
     } else {
-      res.status(400).json({ error: 'confirmPassword is required' });
+      res.status(400).json({ error: { confirmPassword: 'ConfirmPassword is required' } });
       return false;
     }
   }
