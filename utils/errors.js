@@ -3,7 +3,7 @@ const prettifyError = (error) => {
     const errorsObject = {};
 
     if (error.code === 11000) {
-      errorsObject[Object.keys(error.keyValue)[0]] = 'Email already exists';
+      errorsObject[Object.keys(error.keyValue)[0]] = `${Object.keys(error.keyValue)[0]} already exists`;
     } else {
       Object.values(error.errors).forEach(({ properties }) => {
         const { message, path } = properties;
