@@ -4,36 +4,53 @@ const sessionSchema = new mongoose.Schema({
   doctor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Doctor',
-    required: true
+    required: [true, 'Doctor is required']
   },
   patient: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Patient',
-    required: true
+    required: [true, 'Patient is required']
   },
   type: {
     type: String,
     enum: {
-      values: ['Consultation', 'follow up', 'Routine'],
+      values: ['Consultation', 'Follow up', 'Routine'],
       message: '{VALUE} is not supported, please select from Consultation, follow up, Routine'
     },
     default: 'Consultation'
   },
   date: {
     type: Date,
-    required: true
+    default: Date.now
   },
   time: {
     type: String,
-    required: true
+    default: `${new Date().getHours()}:${new Date().getMinutes()}`
   },
+  // If not set, nextAppointment will be set to 1 week after the current date
+  // using pre save middleware.
   nextAppointment: {
-    type: Date,
-    default: 'Consultation'
+    type: Date
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    immutable: true
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  },
+  // Can be share with patient
   notes: {
-    type: String
+    type: String,
+    default: ''
+  },
+  // Only visible to the doctor
+  privateNotes: {
+    type: String,
+    default: ''
   }
 });
 
-export default mongoose.model('Session', sessionSchema);
+export default sessionSchema;
