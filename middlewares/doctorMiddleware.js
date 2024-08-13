@@ -1,8 +1,21 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 import doctorSchema from '../models/doctorModel';
 
 // Middleware to update the 'updatedAt' field before saving the document
-doctorSchema.pre('save', function(next) {
+doctorSchema.pre('save', async function(next) {
+  console.log('Pre save middleware for Doctor model');
+
+  // Hash the password before saving the document
+  if (this.isModified('password')) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   if (this.isModified() || this.isNew) {
     this.updatedAt = Date.now();
   }
@@ -26,4 +39,8 @@ doctorSchema.pre('save', function(next) {
   next();
 });
 
-export default mongoose.model('Doctor', doctorSchema);
+const Doctor = mongoose.model('Doctor', doctorSchema);
+
+Doctor.init().catch(err => console.error('Index creation failed:', err));
+
+export default Doctor;

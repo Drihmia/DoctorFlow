@@ -4,12 +4,10 @@ import { prettifyError } from '../utils/errors';
 
 class PatientController {
   static async getAllPatients (req, res) {
+    const { page, limit } = req.query;
     try {
-      const allPatients = await PatientService.getPatients();
-      if (allPatients.length > 0) {
-        return res.status(200).json(allPatients);
-      }
-      return res.status(404).json({ error: 'No patient found' });
+      const allPatients = await PatientService.getPatients(page, limit);
+      return res.status(200).json(allPatients);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
@@ -50,9 +48,6 @@ class PatientController {
 
   static async getPatient (req, res) {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: 'id is required' });
-    }
     try {
       const patient = await PatientService.getPatientById(id);
       if (patient) {
@@ -60,15 +55,16 @@ class PatientController {
       }
       return res.status(404).json({ error: 'Patient not found' });
     } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
       return res.status(500).json({ error: error.message });
     }
   }
 
   static async updatePatient (req, res) {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: 'id is required' });
-    }
 
     const { password, confirmPassword } = req.body;
 
@@ -83,15 +79,23 @@ class PatientController {
       }
       return res.status(404).json({ error: 'Patient not found' });
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+      const prettifiedError = prettifyError(error);
+      if (prettifiedError instanceof Error) {
+        return res.status(500).json({ error: prettifiedError });
+      } else {
+        // If the error related to mongoose validation, prettifyError will return an object
+        return res.status(400).json({ error: prettifiedError });
+      }
     }
   }
 
   static async deletePatient (req, res) {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: 'id is required' });
-    }
+
     try {
       const patient = await PatientService.getPatientById(id);
       if (patient) {
@@ -100,6 +104,10 @@ class PatientController {
       }
       return res.status(404).json({ error: 'Patient not found' });
     } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
       return res.status(500).json({ error: error.message });
     }
   }

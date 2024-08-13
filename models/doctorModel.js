@@ -47,7 +47,7 @@ const doctorSchema = new mongoose.Schema({
       ref: 'Patient'
     }
   ],
-  appointments: [
+  sessions: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Appointment'
@@ -90,5 +90,8 @@ const doctorSchema = new mongoose.Schema({
     type: Date
   }
 });
+
+// enhance uniqueness of email field at schema level
+doctorSchema.index({ email: 1 }, { unique: true });
 
 export default doctorSchema;
