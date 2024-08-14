@@ -1,8 +1,19 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 import patientSchema from '../models/patientModel';
 
 // Middleware to update the 'updatedAt' field before saving the document
-patientSchema.pre('save', function (next) {
+patientSchema.pre('save', async function (next) {
+  // Hash the password before saving the document
+  if (this.isModified('password')) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
   if (this.isModified() || this.isNew) {
     this.updatedAt = Date.now();
   }
