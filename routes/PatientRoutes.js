@@ -1,5 +1,7 @@
 import router from './DoctorRoutes';
+
 import PatientController from '../controllers/PatientController';
+import AuthenticationController from '../controllers/AuthenticationController';
 
 /**
  * @swagger
@@ -55,6 +57,78 @@ router.get('/patients', PatientController.getAllPatients);
  *         description: Internal server error
  */
 router.post('/patients', PatientController.addPatient);
+
+/**
+ * @swagger
+ * /patients/connect:
+ *   get:
+ *     summary: Authenticate a patient and generate a token
+ *     tags: [Patients]
+ *     security:
+ *       - BasicAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully authenticated patient and generated a token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Authentication token for the patient
+ *       400:
+ *         description: |
+ *           Bad Request: Missing email or password
+ *       401:
+ *         description: |
+ *           Unauthorized: Missing or invalid Authorization header or wrong password
+ *       404:
+ *         description: |
+ *           Not Found: Patient not found
+ *       500:
+ *         description: |
+ *           Internal Server Error: Unexpected error during authentication
+ */
+router.get('/patients/connect', AuthenticationController.connectPatient);
+
+/**
+ * @swagger
+ * /patients/disconnect:
+ *   get:
+ *     summary: Disconnect a patient by invalidating their token
+ *     tags: [Patients]
+ *     parameters:
+ *       - in: header
+ *         name: x-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: |
+ *           The token of the patient to be disconnected
+ *     responses:
+ *       200:
+ *         description: |
+ *           Successfully disconnected the patient
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *       400:
+ *         description: |
+ *           Bad Request: Missing token
+ *       401:
+ *         description: |
+ *           Unauthorized: Invalid or expired token
+ *       500:
+ *         description: |
+ *           Internal Server Error
+ */
+router.get('/patients/disconnect', AuthenticationController.disconnectPatient);
 
 router.get('/patients/:id', PatientController.getPatient);
 router.put('/patients/:id', PatientController.updatePatient);
