@@ -9,8 +9,6 @@ import DoctorService from '../services/DoctorService';
 class AuthenticationController {
   static async connectDoctor(req, res) {
     try {
-      console.log('from connect doctor')
-
       // auth header
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -45,7 +43,7 @@ class AuthenticationController {
 
       // create a token
       const token = uuidv4();
-      const redisKey = `auth_doctor_${token}`;
+      const redisKey = `auth:auth_doctor_${token}`;
       await redisUtils.set(redisKey, doctor._id.toString(), (24 * 60 * 60));
 
       return res.status(200).json({ token });
@@ -66,13 +64,13 @@ class AuthenticationController {
       }
 
       // check token exists in redis
-      const id = await redisUtils.get(`auth_doctor_${token}`);
+      const id = await redisUtils.get(`auth:auth_doctor_${token}`);
       if (!id) {
         return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
       }
 
       // delete token
-      const deleted = await redisUtils.del(`auth_doctor_${token}`);
+      const deleted = await redisUtils.del(`auth:auth_doctor_${token}`);
       if (!deleted) {
         return res.status(500).json({ error: 'Internal Server Error: Failed to delete token' });
       }
