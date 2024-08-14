@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import DoctorController from '../controllers/DoctorController';
 import AuthenticationController from '../controllers/AuthenticationController';
+import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 const router = Router();
 
@@ -68,7 +69,7 @@ const router = Router();
  *         description: Internal server error
  */
 
-router.get('/doctors', DoctorController.getAllDoctors);
+router.get('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.getAllDoctors);
 
 /**
  * @swagger
@@ -94,7 +95,7 @@ router.get('/doctors', DoctorController.getAllDoctors);
  *       500:
  *         description: Internal server error
  */
-router.post('/doctors', DoctorController.addDoctor);
+router.post('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.addDoctor);
 
 /**
  * @swagger
@@ -166,7 +167,7 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *         description: |
  *           Internal Server Error
  */
-router.get('/doctors/disconnect', AuthenticationController.disconnectDoctor);
+router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnectDoctor);
 
 /**
  * @swagger
@@ -228,9 +229,9 @@ router.get('/doctors/disconnect', AuthenticationController.disconnectDoctor);
  *       500:
  *         description: Internal server error
  */
-router.get('/doctors/:id', DoctorController.getDoctor);
-router.put('/doctors/:id', DoctorController.updateDoctor);
-router.delete('/doctors/:id', DoctorController.deleteDoctor);
+router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctor);
+router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctor);
+router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctor);
 
 // Will be imported by PatientRoutes.js
 export default router;
