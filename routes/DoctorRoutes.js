@@ -14,78 +14,6 @@ const router = Router();
 
 /**
  * @swagger
- * /doctors/connect:
- *   get:
- *     summary: Authenticate a doctor and generate a token
- *     tags: [Doctors]
- *     security:
- *       - BasicAuth: []
- *     responses:
- *       200:
- *         description: Successfully authenticated doctor and generated a token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   description: Authentication token for the doctor
- *       400:
- *         description: |
- *           Bad Request: Missing email or password
- *       401:
- *         description: |
- *           Unauthorized: Missing or invalid Authorization header or wrong password
- *       404:
- *         description: |
- *           Not Found: Doctor not found
- *       500:
- *         description: |
- *           Internal Server Error: Unexpected error during authentication
- */
-router.get('/doctors/connect', AuthenticationController.connectDoctor);
-
-/**
- * @swagger
- * /doctors/disconnect:
- *   get:
- *     summary: Disconnect a doctor by invalidating their token
- *     tags: [Doctors]
- *     parameters:
- *       - in: header
- *         name: x-token
- *         required: true
- *         schema:
- *           type: string
- *         description: |
- *           The token of the doctor to be disconnected
- *     responses:
- *       200:
- *         description: |
- *           Successfully disconnected the doctor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Success message
- *       400:
- *         description: |
- *           Bad Request: Missing token
- *       401:
- *         description: |
- *           Unauthorized: Invalid or expired token
- *       500:
- *         description: |
- *           Internal Server Error
- */
-router.get('/doctors/disconnect', AuthenticationController.disconnectDoctor);
-
-/**
- * @swagger
  * /doctors:
  *   get:
  *     summary: Retrieve a list of all doctors
@@ -167,6 +95,78 @@ router.get('/doctors', DoctorController.getAllDoctors);
  *         description: Internal server error
  */
 router.post('/doctors', DoctorController.addDoctor);
+
+/**
+ * @swagger
+ * /doctors/connect:
+ *   get:
+ *     summary: Authenticate a doctor and generate a token
+ *     tags: [Doctors]
+ *     security:
+ *       - BasicAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully authenticated doctor and generated a token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Authentication token for the doctor
+ *       400:
+ *         description: |
+ *           Bad Request: Missing email or password
+ *       401:
+ *         description: |
+ *           Unauthorized: Missing or invalid Authorization header or wrong password
+ *       404:
+ *         description: |
+ *           Not Found: Doctor not found
+ *       500:
+ *         description: |
+ *           Internal Server Error: Unexpected error during authentication
+ */
+router.get('/doctors/connect', AuthenticationController.connectDoctor);
+
+/**
+ * @swagger
+ * /doctors/disconnect:
+ *   get:
+ *     summary: Disconnect a doctor by invalidating their token
+ *     tags: [Doctors]
+ *     parameters:
+ *       - in: header
+ *         name: x-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: |
+ *           The token of the doctor to be disconnected
+ *     responses:
+ *       200:
+ *         description: |
+ *           Successfully disconnected the doctor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *       400:
+ *         description: |
+ *           Bad Request: Missing token
+ *       401:
+ *         description: |
+ *           Unauthorized: Invalid or expired token
+ *       500:
+ *         description: |
+ *           Internal Server Error
+ */
+router.get('/doctors/disconnect', AuthenticationController.disconnectDoctor);
 
 /**
  * @swagger
