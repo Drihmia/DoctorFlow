@@ -34,6 +34,9 @@ class PatientController {
     }
     try {
       const patient = await PatientService.createPatient(PatientInfo);
+      if (typeof patient === 'number' && patient === 1) {
+        return res.status(400).json({ error: 'Doctor not found' });
+      }
       return res.status(201).json(patient);
     } catch (error) {
       const prettifiedError = prettifyError(error);

@@ -23,7 +23,7 @@ class PatientService {
 
     const doctor = await DoctorService.getDoctorById(query.doctor);
     if (!doctor) {
-      throw new Error('Doctor not found');
+      return 1;
     }
 
     // Create a new patient
