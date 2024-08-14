@@ -32,13 +32,17 @@ const router = Router();
  *                   type: string
  *                   description: Authentication token for the doctor
  *       400:
- *         description: Bad Request: Missing email or password
+ *         description: |
+ *           Bad Request: Missing email or password
  *       401:
- *         description: Unauthorized: Missing or invalid Authorization header or wrong password
+ *         description: |
+ *           Unauthorized: Missing or invalid Authorization header or wrong password
  *       404:
- *         description: Not Found: Doctor not found
+ *         description: |
+ *           Not Found: Doctor not found
  *       500:
- *         description: Internal Server Error: Unexpected error during authentication
+ *         description: |
+ *           Internal Server Error: Unexpected error during authentication
  */
 router.get('/doctors/connect', AuthenticationController.connectDoctor);
 
@@ -54,10 +58,12 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *         required: true
  *         schema:
  *           type: string
- *         description: The token of the doctor to be disconnected
+ *         description: |
+ *           The token of the doctor to be disconnected
  *     responses:
  *       200:
- *         description: Successfully disconnected the doctor
+ *         description: |
+ *           Successfully disconnected the doctor
  *         content:
  *           application/json:
  *             schema:
@@ -67,11 +73,14 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *                   type: string
  *                   description: Success message
  *       400:
- *         description: Bad Request: Missing token
+ *         description: |
+ *           Bad Request: Missing token
  *       401:
- *         description: Unauthorized: Invalid or expired token
+ *         description: |
+ *           Unauthorized: Invalid or expired token
  *       500:
- *         description: Internal Server Error
+ *         description: |
+ *           Internal Server Error
  */
 router.get('/doctors/disconnect', AuthenticationController.disconnectDoctor);
 
