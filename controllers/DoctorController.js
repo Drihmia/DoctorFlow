@@ -200,6 +200,27 @@ class DoctorController {
       return res.status(500).json({ error: error.message });
     }
   }
+
+  static async getDoctorPatient (req, res) {
+    const { id, patientId } = req.params;
+    try {
+      const doctor = await DoctorService.getDoctorById(id);
+      if (doctor) {
+        const patient = await DoctorService.getDoctorPatientById(doctor, patientId, res);
+        if (patient) {
+          return res.status(200).json(patient);
+        }
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+      return res.status(404).json({ error: 'Doctor not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 export default DoctorController;

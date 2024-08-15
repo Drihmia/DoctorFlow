@@ -65,6 +65,24 @@ class DoctorService {
     console.log(Doctor);
     return Doctor.patients;
   }
+
+  async getDoctorPatientById (doctor, patientId) {
+    try {
+      const populatedDoctorWithPatients = await doctor.populate('patients');
+
+      const populatedPatients = populatedDoctorWithPatients.patients;
+
+      const filtredPatient = populatedPatients
+        .filter(patient => patient._id.toString() === patientId);
+
+      if (filtredPatient.length !== 0) {
+        return filtredPatient[0];
+      }
+    } catch (error) {
+      res.status(404).send({ message: 'Patient not found' });
+      return 1;
+    }
+  }
 }
 
 export default new DoctorService();
