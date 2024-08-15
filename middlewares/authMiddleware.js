@@ -7,7 +7,6 @@ const AuthMiddleware = ({ role }) => {
     if (!token) {
       return res.status(400).json({ error: 'Bad Request: Missing token' });
     }
-    console.log('token', token);
 
     // check token exists in redis
     const redisToken = await redisUtils.get(`auth_${token}`);
@@ -21,7 +20,10 @@ const AuthMiddleware = ({ role }) => {
       return res.status(403).json({ error: `Forbidden: Only ${role} can access this route. Please login as ${role} or contact your ${oppositeRole} for help.` });
     }
 
+    // Doctor or Patient ID
     req.id = redisId;
+
+    // For Disconnect methods
     req.token = token;
     next();
   };
