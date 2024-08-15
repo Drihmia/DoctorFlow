@@ -8,7 +8,7 @@ import DoctorService from '../services/DoctorService';
 import PatientService from '../services/PatientService';
 
 class AuthenticationController {
-  static async connectDoctor(req, res) {
+  static async connectDoctor (req, res) {
     try {
       // auth header
       const authHeader = req.headers.authorization;
@@ -44,11 +44,11 @@ class AuthenticationController {
 
       // create a token
       const token = uuidv4();
-      const redisKey = `auth:auth_doctor_${token}`;
-      await redisUtils.set(redisKey, doctor._id.toString(), (24 * 60 * 60));
+      const redisKey = `auth_${token}`;
+      const redisvalue = `doctor_${doctor._id.toString()}`;
+      await redisUtils.set(redisKey, redisvalue, (24 * 60 * 60));
 
       return res.status(200).json({ token });
-
     } catch (error) {
       // Handle unexpected errors
       console.error('Error during connectDoctor:', error);
@@ -56,19 +56,10 @@ class AuthenticationController {
     }
   }
 
-  static async disconnectDoctor(req, res) {
+  static async disconnectDoctor (req, res) {
     try {
-      // check token passed in header
-      const token = req.headers['x-token'];
-      if (!token) {
-        return res.status(400).json({ error: 'Bad Request: Missing token' });
-      }
-
-      // check token exists in redis
-      const id = await redisUtils.get(`auth:auth_doctor_${token}`);
-      if (!id) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
-      }
+      // check token passed req by AuthMiddleware
+      const token = req.token;
 
       // delete token
       const deleted = await redisUtils.del(`auth:auth_doctor_${token}`);
@@ -76,7 +67,6 @@ class AuthenticationController {
         return res.status(500).json({ error: 'Internal Server Error: Failed to delete token' });
       }
       return res.status(200).json({ message: 'Successfully disconnected' });
-
     } catch (error) {
       // Handle unexpected errors
       console.error('Error during disconnectDoctor:', error);
@@ -84,9 +74,8 @@ class AuthenticationController {
     }
   }
 
-  static async connectPatient(req, res) {
+  static async connectPatient (req, res) {
     try {
-      console.log('from connect patient')
       // auth header
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -121,11 +110,12 @@ class AuthenticationController {
 
       // create a token
       const token = uuidv4();
-      const redisKey = `auth:auth_patient_${token}`;
-      await redisUtils.set(redisKey, patient._id.toString(), (24 * 60 * 60));
+
+      const redisKey = `auth_${token}`;
+      const redisvalue = `patient_${patient._id.toString()}`;
+      await redisUtils.set(redisKey, redisvalue, (24 * 60 * 60));
 
       return res.status(200).json({ token });
-
     } catch (error) {
       // Handle unexpected errors
       console.error('Error during connectPatient:', error);
@@ -133,27 +123,17 @@ class AuthenticationController {
     }
   }
 
-  static async disconnectPatient(req, res) {
+  static async disconnectPatient (req, res) {
     try {
-      // check token passed in header
-      const token = req.headers['x-token'];
-      if (!token) {
-        return res.status(400).json({ error: 'Bad Request: Missing token' });
-      }
-
-      // check token exists in redis
-      const id = await redisUtils.get(`auth:auth_patient_${token}`);
-      if (!id) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
-      }
+      // check token passed in req by AuthMiddleware
+      const token = req.token;
 
       // delete token
-      const deleted = await redisUtils.del(`auth:auth_patient_${token}`);
+      const deleted = await redisUtils.del(`auth_${token}`);
       if (!deleted) {
         return res.status(500).json({ error: 'Internal Server Error: Failed to delete token' });
       }
       return res.status(200).json({ message: 'Successfully disconnected' });
-
     } catch (error) {
       // Handle unexpected errors
       console.error('Error during disconnectPatient:', error);

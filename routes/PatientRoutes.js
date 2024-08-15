@@ -2,6 +2,7 @@ import router from './DoctorRoutes';
 
 import PatientController from '../controllers/PatientController';
 import AuthenticationController from '../controllers/AuthenticationController';
+import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 /**
  * @swagger
@@ -30,7 +31,7 @@ import AuthenticationController from '../controllers/AuthenticationController';
  *       500:
  *         description: Internal server error
  */
-router.get('/patients', PatientController.getAllPatients);
+router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.getAllPatients);
 
 /**
  * @swagger
@@ -56,7 +57,7 @@ router.get('/patients', PatientController.getAllPatients);
  *       500:
  *         description: Internal server error
  */
-router.post('/patients', PatientController.addPatient);
+router.post('/patients', AuthMiddleware({ role: 'patient' }), PatientController.addPatient);
 
 /**
  * @swagger
@@ -128,11 +129,11 @@ router.get('/patients/connect', AuthenticationController.connectPatient);
  *         description: |
  *           Internal Server Error
  */
-router.get('/patients/disconnect', AuthenticationController.disconnectPatient);
+router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnectPatient);
 
-router.get('/patients/:id', PatientController.getPatient);
-router.put('/patients/:id', PatientController.updatePatient);
-router.delete('/patients/:id', PatientController.deletePatient);
+router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
+router.put('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.updatePatient);
+router.delete('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.deletePatient);
 
 // Will be imported by SessionRoutes.js
 export default router;
