@@ -53,12 +53,11 @@ class PatientService {
   }
 
   async deleteAPatient(id, doctorId) {
-
     try {
-      const query = {};
       if (id) {
         const doctor = await DoctorService.getDoctorById(doctorId);
         if (doctor) {
+          const query = {};
           query.patients = doctor.patients.filter(patientId => !patientId.equals(id));
           await DoctorService.updateADoctor(doctor, query);
         }
