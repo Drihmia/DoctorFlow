@@ -1,9 +1,9 @@
-import PatientService from '../services/PatientService';
+import PatientService from '../services/patientService';
 import { checkPwd } from '../utils/validations';
 import { prettifyError } from '../utils/errors';
 
 class PatientController {
-  static async getAllPatients (req, res) {
+  static async getAllPatients(req, res) {
     const { page, limit } = req.query;
     try {
       const allPatients = await PatientService.getPatients(page, limit);
@@ -13,7 +13,7 @@ class PatientController {
     }
   }
 
-  static async addPatient (req, res) {
+  static async addPatient(req, res) {
     const { password, confirmPassword } = req.body;
 
     // If password is provided, confirmPassword must be provided
@@ -49,7 +49,7 @@ class PatientController {
     }
   }
 
-  static async getPatient (req, res) {
+  static async getPatient(req, res) {
     const { id } = req.params;
     try {
       const patient = await PatientService.getPatientById(id);
@@ -66,7 +66,7 @@ class PatientController {
     }
   }
 
-  static async updatePatient (req, res) {
+  static async updatePatient(req, res) {
     const { id } = req.params;
 
     const { password, confirmPassword } = req.body;
@@ -96,13 +96,13 @@ class PatientController {
     }
   }
 
-  static async deletePatient (req, res) {
+  static async deletePatient(req, res) {
     const { id } = req.params;
 
     try {
       const patient = await PatientService.getPatientById(id);
       if (patient) {
-        await PatientService.deleteAPatient(id);
+        await PatientService.deleteAPatient(id, patient.doctor);
         return res.status(200).json({ message: 'Patient deleted' });
       }
       return res.status(404).json({ error: 'Patient not found' });
