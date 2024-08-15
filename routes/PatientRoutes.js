@@ -57,7 +57,7 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *       500:
  *         description: Internal server error
  */
-router.post('/patients', AuthMiddleware({ role: 'patient' }), PatientController.addPatient);
+router.post('/patients', PatientController.addPatient);
 
 /**
  * @swagger

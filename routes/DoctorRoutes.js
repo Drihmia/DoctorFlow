@@ -69,7 +69,7 @@ const router = Router();
  *         description: Internal server error
  */
 
-router.get('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.getAllDoctors);
+router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllDoctors);
 
 /**
  * @swagger
@@ -95,7 +95,7 @@ router.get('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.getA
  *       500:
  *         description: Internal server error
  */
-router.post('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.addDoctor);
+router.post('/doctors', DoctorController.addDoctor);
 
 /**
  * @swagger
@@ -232,6 +232,9 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
 router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctor);
 router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctor);
 router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctor);
-
+router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
+router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSessions);
+router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSession);
+router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorPatients);
 // Will be imported by PatientRoutes.js
 export default router;
