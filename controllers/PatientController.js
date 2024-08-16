@@ -114,6 +114,64 @@ class PatientController {
       return res.status(500).json({ error: error.message });
     }
   }
+
+  static async getPatientSession (req, res) {
+    const { id, sessionId } = req.params;
+    try {
+      const patient = await PatientService.getPatientById(id);
+      if (patient) {
+        const session = await PatientService.getPatientSessionById(patient, sessionId, res);
+        if (session) {
+          if (session === 1) return;
+          return res.status(200).json(session);
+        }
+        return res.status(404).json({ error: 'Session not found' });
+      }
+      return res.status(404).json({ error: 'Patient not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async getPatientSessions (req, res) {
+    const { id } = req.params;
+    try {
+      const patient = await PatientService.getPatientById(id);
+      if (patient) {
+        const sessions = await PatientService.getPatientSessions(patient);
+        return res.status(200).json(sessions);
+      }
+      return res.status(404).json({ error: 'Patient not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async getPatientDcotor (req, res) {
+    const { id } = req.params;
+    try {
+      const patient = await PatientService.getPatientById(id);
+      if (patient) {
+        const doctor = await PatientService.getPatientDoctor(patient);
+        return res.status(200).json(doctor);
+      }
+      return res.status(404).json({ error: 'Patient not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 export default PatientController;

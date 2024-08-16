@@ -26,6 +26,8 @@ class PatientService {
     if (!doctor) {
       return 1;
     }
+    delete query.doctorId;
+    query.doctor = doctor._id;
 
     // Create a new patient
     const patient = await Patient.create(query);
@@ -67,6 +69,41 @@ class PatientService {
       console.error('Error deleting patient:', error);
       throw new Error('Failed to delete the patient.');
     }
+  }
+
+  async getPatientSessionById (patient, sessionId, res) {
+    try {
+      const populatedPatientWithSessions = await patient.populate('sessions');
+
+      const populatedSessions = populatedPatientWithSessions.sessions;
+
+      const filtredSession = populatedSessions
+        .filter(session => session._id.toString() === sessionId);
+
+      if (filtredSession.length !== 0) {
+        return filtredSession[0];
+      }
+    } catch (error) {
+      res.status(404).send({ message: 'Session not found' });
+      return 1;
+    }
+  }
+
+  async getPatientSessions (patient) {
+    const sessions = await patient.populate('sessions');
+    return sessions.sessions;
+  }
+
+  async getPatientDoctor (patient) {
+    const patients = await patient.populate('doctor');
+    const doctor = patients.doctor;
+
+    // Remove unnecessary fields for the patient
+    doctor.patients = undefined;
+    doctor.sessions = undefined;
+    doctor.password = undefined;
+
+    return doctor;
   }
 }
 

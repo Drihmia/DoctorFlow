@@ -117,6 +117,110 @@ class DoctorController {
       return res.status(500).json({ error });
     }
   }
+
+  static async getDoctorSession (req, res) {
+    const { id, sessionId } = req.params;
+    try {
+      const doctor = await DoctorService.getDoctorById(id);
+      if (doctor) {
+        const session = await DoctorService.getDoctorSessionById(doctor, sessionId, res);
+        if (session) {
+          if (session === 1) return;
+          return res.status(200).json(session);
+        }
+        return res.status(404).json({ error: 'Session not found' });
+      }
+      return res.status(404).json({ error: 'Doctor not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async getDoctorSessions (req, res) {
+    const { id } = req.params;
+    try {
+      const doctor = await DoctorService.getDoctorById(id);
+      if (doctor) {
+        const sessions = await DoctorService.getDoctorSessions(doctor);
+        return res.status(200).json(sessions);
+      }
+      return res.status(404).json({ error: 'Doctor not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async deleteDoctorSession (req, res) {
+    const { id, sessionId } = req.params;
+    try {
+      const doctor = await DoctorService.getDoctorById(id);
+      if (doctor) {
+        const session = await DoctorService.getDoctorSessionById(doctor, sessionId, res);
+        if (session) {
+          if (session.doctor.toString() === doctor._id.toString()) {
+            return res.redirect(307, `/sessions/${sessionId}`);
+          }
+          await DoctorService.deleteDoctorSession(doctor, sessionId);
+          return res.status(200).json({ message: 'Session deleted' });
+        }
+        return res.status(404).json({ error: 'Session not found' });
+      }
+      return res.status(404).json({ error: 'Doctor not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async getDoctorPatients (req, res) {
+    const { id } = req.params;
+    try {
+      const doctor = await DoctorService.getDoctorById(id);
+      if (doctor) {
+        const patients = await DoctorService.getDoctorPatients(doctor);
+        return res.status(200).json(patients);
+      }
+      return res.status(404).json({ error: 'Doctor not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async getDoctorPatient (req, res) {
+    const { id, patientId } = req.params;
+    try {
+      const doctor = await DoctorService.getDoctorById(id);
+      if (doctor) {
+        const patient = await DoctorService.getDoctorPatientById(doctor, patientId, res);
+        if (patient) {
+          return res.status(200).json(patient);
+        }
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+      return res.status(404).json({ error: 'Doctor not found' });
+    } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 export default DoctorController;
