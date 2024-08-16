@@ -132,11 +132,12 @@ router.get('/patients/connect', AuthenticationController.connectPatient);
 router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnectPatient);
 
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
-router.put('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.updatePatient);
+// router.put('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.updatePatient); // selective data
 router.delete('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.deletePatient);
+
 router.get('/patients/:id/sessions', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSessions);
 router.get('/patients/:id/sessions/:sessionId', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSession);
-router.get('/patients/:id/doctor', AuthMiddleware({ role: 'patient' }), PatientController.getPatientDcotor);
+router.get('/patients/:id/doctor', AuthMiddleware({ role: 'patient' }), PatientController.getPatientDoctor);
 
 // Will be imported by SessionRoutes.js
 export default router;
