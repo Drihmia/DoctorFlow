@@ -1,22 +1,28 @@
 import mongoose from 'mongoose';
 import Patient from '../middlewares/patientMiddleware';
+// import Doctor from '../middlewares/doctorMiddleware';
 import DoctorService from './doctorService';
 
 class PatientService {
-  getPatients (page = 0, size = 10) {
+  getPatients(page = 0, size = 10) {
     return Patient.find().skip(page * size).limit(size);
   }
 
-  async getPatientById (id) {
+  async getPatientById(id) {
     return Patient.findById(id);
   }
 
-  async getPatientByEmail (email) {
+  async getPatientByEmail(email) {
     return Patient.findOne({ email });
   }
 
-  async createPatient (query) {
-    const doctor = await DoctorService.getDoctorById(query.doctorId);
+  async createPatient(query) {
+    if (query.doctorId) {
+      query.doctor = new mongoose.Types.ObjectId(query.doctorId);
+      delete query.doctorId;
+    }
+
+    const doctor = await DoctorService.getDoctorById(query.doctor);
     if (!doctor) {
       return 1;
     }
@@ -33,7 +39,7 @@ class PatientService {
     return patient;
   }
 
-  async updateAPatient (patient, query) {
+  async updateAPatient(patient, query) {
     // Make sure the email is unique, by checking if the email in the query
     // We override the email in the query with the email in the database
     // If not, the unique property in Patient's schema will raise an error 'duplicate key'
@@ -48,8 +54,21 @@ class PatientService {
     return updatedUser;
   }
 
-  async deleteAPatient (id) {
-    return Patient.findByIdAndDelete(id);
+  async deleteAPatient(id, doctorId) {
+    try {
+      if (id) {
+        const doctor = await DoctorService.getDoctorById(doctorId);
+        if (doctor) {
+          const query = {};
+          query.patients = doctor.patients.filter(patientId => !patientId.equals(id));
+          await DoctorService.updateADoctor(doctor, query);
+        }
+        return Patient.findByIdAndDelete(id);
+      }
+    } catch (error) {
+      console.error('Error deleting patient:', error);
+      throw new Error('Failed to delete the patient.');
+    }
   }
 
   async getPatientSessionById (patient, sessionId, res) {
