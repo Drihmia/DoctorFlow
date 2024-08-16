@@ -50,7 +50,7 @@ const doctorSchema = new mongoose.Schema({
   sessions: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Appointment'
+      ref: 'Session'
     }
   ],
   bio: {
