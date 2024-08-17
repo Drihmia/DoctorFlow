@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import DoctorController from '../controllers/DoctorController';
+import PatientController from '../controllers/PatientController';
 import AuthenticationController from '../controllers/AuthenticationController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
@@ -232,10 +233,15 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
 router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctor);
 router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctor);
 router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctor);
+
 router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSessions);
 router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSession);
+// router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorSession);
+
 router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorPatients);
 router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorPatient);
+router.put('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorPatient);
+
 // Will be imported by PatientRoutes.js
 export default router;

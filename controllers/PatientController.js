@@ -155,7 +155,7 @@ class PatientController {
     }
   }
 
-  static async getPatientDcotor (req, res) {
+  static async getPatientDoctor (req, res) {
     const { id } = req.params;
     try {
       const patient = await PatientService.getPatientById(id);
