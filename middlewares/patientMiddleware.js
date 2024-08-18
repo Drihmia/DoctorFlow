@@ -14,9 +14,12 @@ patientSchema.pre('save', async function (next) {
     }
   }
 
+  // Update the 'updatedAt' field before saving the document
   if (this.isModified() || this.isNew) {
     this.updatedAt = Date.now();
   }
+
+  // Trim and convert all string fields to lowercase before saving
   for (const key in this.toObject()) {
     const value = this[key];
     if (typeof value === 'string' && key !== 'password' && key !== 'gender') {
@@ -29,6 +32,20 @@ patientSchema.pre('save', async function (next) {
       }
     }
   }
+
+  // Remove confirmPassword field before saving the document
+  this.confirmPassword = undefined;
+  next();
+});
+
+// Middleware to auto calculate the age of the patient based on the date of birth
+patientSchema.pre('validate', function (next) {
+  if (this.isModified('dob') || this.isNew) {
+    const { dob } = this;
+    const age = (new Date() - new Date(dob)) / (3600 * 24 * 365 * 1000);
+    this.age = Math.floor(age);
+  }
+
   // Gender accept 2 values: M or F, If user input lowercase,
   // it will be converted to uppercase
   if (this.gender) {
