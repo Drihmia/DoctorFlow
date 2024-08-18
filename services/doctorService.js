@@ -67,7 +67,6 @@ class DoctorService {
 
   async getDoctorPatients (doctor) {
     const Doctor = await doctor.populate('patients');
-    console.log(Doctor);
     return Doctor.patients;
   }
 
@@ -84,7 +83,6 @@ class DoctorService {
         return filtredPatient[0];
       }
     } catch (error) {
-      console.log('-----:', error);
       res.status(404).send({ message: 'Patient not found' });
       return 1;
     }

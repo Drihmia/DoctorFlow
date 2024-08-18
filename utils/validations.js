@@ -29,4 +29,16 @@ const checkArrayObjects = function (v) {
   return true;
 };
 
-export { checkPwd, checkArrayObjects };
+const strongPassword = function (validator) {
+  return function (value) {
+    return validator.isStrongPassword(value, {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1
+    });
+  };
+};
+
+export { checkPwd, checkArrayObjects, strongPassword };

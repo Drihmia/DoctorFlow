@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
+import { strongPassword } from '../utils/validations';
 
 const doctorSchema = new mongoose.Schema({
   // Required fields
@@ -25,8 +26,20 @@ const doctorSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    minlength: 8,
+    validate: {
+      validator: strongPassword(validator),
+      message: 'Password is weak'
+    },
     required: [true, 'Password is required']
+  },
+  confirmPassword: {
+    type: String,
+    validate: {
+      validator: function (value) {
+        return this.password === value;
+      },
+      message: 'Passwords do not match'
+    }
   },
   gender: {
     type: String,
@@ -91,7 +104,12 @@ const doctorSchema = new mongoose.Schema({
     }
   },
   dob: {
-    type: Date
+    type: String,
+    validate: {
+      validator: validator.isDate,
+      message: 'Date of birth is not valid'
+    },
+    required: [true, 'Date of birth is required']
   }
 });
 

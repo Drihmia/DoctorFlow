@@ -20,7 +20,9 @@ patientSchema.pre('save', async function (next) {
   }
 
   // Remove confirmPassword field before saving the document
-  this.confirmPassword = undefined;
+  if (this.confirmPassword) {
+    this.confirmPassword = undefined;
+  }
   next();
 });
 
@@ -44,6 +46,7 @@ patientSchema.pre('validate', function (next) {
     if (typeof value === 'string' && !['password', 'confirmPassword', 'gender'].includes(key)) {
       this[key] = value.trim().toLowerCase();
     }
+
     if (value instanceof Date) {
       // Checking if the Date object is valid
       if (isNaN(value.getTime())) {
