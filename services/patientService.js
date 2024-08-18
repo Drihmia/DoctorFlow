@@ -12,14 +12,19 @@ class PatientService {
     return Patient.findById(id);
   }
 
-  async getPatientByEmail(email) {
+  async getPatientByEmail(Email) {
+    const email = Email.toLowerCase();
     return Patient.findOne({ email });
   }
 
   async createPatient(query) {
     if (query.doctorId) {
-      query.doctor = new mongoose.Types.ObjectId(query.doctorId);
-      delete query.doctorId;
+      try {
+        query.doctor = new mongoose.Types.ObjectId(query.doctorId);
+        delete query.doctorId;
+      } catch (error) {
+        return 1;
+      }
     }
 
     const doctor = await DoctorService.getDoctorById(query.doctor);

@@ -10,7 +10,8 @@ class DoctorService {
     return Doctor.findById(id);
   }
 
-  async getDoctorByEmail (email) {
+  async getDoctorByEmail (Email) {
+    const email = Email.toLowerCase();
     return Doctor.findOne({ email });
   }
 
