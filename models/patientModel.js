@@ -22,12 +22,46 @@ const patientSchema = new mongoose.Schema({
   },
   age: {
     type: Number,
-    validate (value) {
-      if (value < 0) {
-        throw new Error('Age must be a positive number');
+    validate: {
+      validator: (value) => value >= 0,
+      message: 'Age must be a positive number'
+    }
+  },
+  bloodGroup: {
+    type: String,
+    uppercase: true,
+    enum: {
+      values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+      message: '{VALUE} is not a valid blood group, must be A+, A-, B+, B-, AB+, AB-, O+, O-'
+    }
+  },
+  height: {
+    type: String,
+    max: [230, 'Height must be less than 300 cm'],
+    validate: [
+      {
+        validator: validator.isNumeric,
+        message: 'Height must be a number'
+      },
+      {
+        validator: (value) => value > 30,
+        message: 'Height must be greater than 30 cm'
       }
-    },
-    required: [true, 'Age is required']
+    ]
+  },
+  weight: {
+    type: String,
+    max: [300, 'Weight must be less than 300 kg'],
+    validate: [
+      {
+        validator: validator.isNumeric,
+        message: 'Weight must be a number'
+      },
+      {
+        validator: (value) => value >= 2,
+        message: 'Weight must be greater than 2 kg'
+      }
+    ]
   },
   email: {
     type: String,
@@ -43,6 +77,16 @@ const patientSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Password is required']
+  },
+  confirmPassword: {
+    type: String,
+    required: [true, 'Confirm password is required'],
+    validate: {
+      validator: function (value) {
+        return this.password === value;
+      },
+      message: 'Passwords do not match'
+    }
   },
   doctor: {
     type: mongoose.Schema.Types.ObjectId,
@@ -94,7 +138,8 @@ const patientSchema = new mongoose.Schema({
     }
   },
   dob: {
-    type: Date
+    type: Date,
+    required: [true, 'Date of birth is required']
   },
   medicalHistory: {
     type: [String],
@@ -107,7 +152,7 @@ const patientSchema = new mongoose.Schema({
       name: {
         type: String,
         trim: true,
-        lowercase: true,
+        lowercase: true
       },
       startDate: {
         type: Date
@@ -129,7 +174,8 @@ const patientSchema = new mongoose.Schema({
       },
       endDate: {
         type: Date
-      }
+      },
+      default: [{}]
     }
   ],
   familyHistory: [
@@ -151,8 +197,9 @@ const patientSchema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         default: ''
-      }
-    }
+      },
+      default: [{}]
+    },
   ],
   insurance: {
     type: String,

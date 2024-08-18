@@ -14,29 +14,21 @@ class PatientController {
   }
 
   static async addPatient(req, res) {
-    const { password, confirmPassword } = req.body;
-
-    // If password is provided, confirmPassword must be provided
-    if (!checkPwd({ password, confirmPassword }, res)) return;
     const PatientInfo = {};
     for (const [key, value] of Object.entries(req.body)) {
       if (value) {
-        if (['address', 'city', 'state', 'phone'].includes(key)) {
+        if (['address', 'city', 'state', 'phone', 'emergencyContact'].includes(key)) {
           if (!('contact' in PatientInfo)) {
             PatientInfo.contact = {};
           }
           PatientInfo.contact[key] = value;
-        } else if (['firstName', 'lastName', 'email', 'password', 'gender',
-          'dob', 'age', 'doctorId'].includes(key)) {
+        } else {
           PatientInfo[key] = value;
         }
       }
     }
     try {
       const patient = await PatientService.createPatient(PatientInfo);
-      if (typeof patient === 'number' && patient === 1) {
-        return res.status(400).json({ error: 'Doctor not found' });
-      }
       return res.status(201).json(patient);
     } catch (error) {
       const prettifiedError = prettifyError(error);
@@ -155,7 +147,7 @@ class PatientController {
     }
   }
 
-  static async getPatientDcotor (req, res) {
+  static async getPatientDoctor (req, res) {
     const { id } = req.params;
     try {
       const patient = await PatientService.getPatientById(id);

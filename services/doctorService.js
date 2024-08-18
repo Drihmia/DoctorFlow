@@ -83,6 +83,19 @@ class DoctorService {
       return 1;
     }
   }
+
+  async doctorUpdatePatientById(doctor, patientId, res) {
+    try {
+      const patient = await this.getDoctorPatientById(doctor, patientId);
+      patient.firstName = 'TestNameUpdate';
+      patient.save();
+      return res.status(200).json(patient);
+    } catch (error) {
+      console.log(error);
+      res.status(404).send({ message: 'Patient not found' });
+      return 1;
+    }
+  }
 }
 
 export default new DoctorService();

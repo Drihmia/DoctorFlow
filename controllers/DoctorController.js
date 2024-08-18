@@ -3,7 +3,7 @@ import { checkPwd } from '../utils/validations';
 import { prettifyError } from '../utils/errors';
 
 class DoctorController {
-  static async getAllDoctors (req, res) {
+  static async getAllDoctors(req, res) {
     const { page, limit } = req.query;
     try {
       const allDoctors = await DoctorService.getDoctors(page, limit);
@@ -13,7 +13,7 @@ class DoctorController {
     }
   }
 
-  static async addDoctor (req, res) {
+  static async addDoctor(req, res) {
     const { password, confirmPassword } = req.body;
 
     // If password is provided, confirmPassword must be provided
@@ -47,7 +47,7 @@ class DoctorController {
     }
   }
 
-  static async getDoctor (req, res) {
+  static async getDoctor(req, res) {
     const { id } = req.params;
     try {
       const doctor = await DoctorService.getDoctorById(id);
@@ -64,7 +64,7 @@ class DoctorController {
     }
   }
 
-  static async updateDoctor (req, res) {
+  static async updateDoctor(req, res) {
     const { id } = req.params;
     if (!id) {
       return res.status(400).json({ error: { id: 'id is required' } });
@@ -97,7 +97,7 @@ class DoctorController {
     }
   }
 
-  static async deleteDoctor (req, res) {
+  static async deleteDoctor(req, res) {
     const { id } = req.params;
     if (!id) {
       return res.status(400).json({ error: 'id is required' });
@@ -118,7 +118,7 @@ class DoctorController {
     }
   }
 
-  static async getDoctorSession (req, res) {
+  static async getDoctorSession(req, res) {
     const { id, sessionId } = req.params;
     try {
       const doctor = await DoctorService.getDoctorById(id);
@@ -140,7 +140,7 @@ class DoctorController {
     }
   }
 
-  static async getDoctorSessions (req, res) {
+  static async getDoctorSessions(req, res) {
     const { id } = req.params;
     try {
       const doctor = await DoctorService.getDoctorById(id);
@@ -158,7 +158,7 @@ class DoctorController {
     }
   }
 
-  static async deleteDoctorSession (req, res) {
+  static async deleteDoctorSession(req, res) {
     const { id, sessionId } = req.params;
     try {
       const doctor = await DoctorService.getDoctorById(id);
@@ -183,7 +183,7 @@ class DoctorController {
     }
   }
 
-  static async getDoctorPatients (req, res) {
+  static async getDoctorPatients(req, res) {
     const { id } = req.params;
     try {
       const doctor = await DoctorService.getDoctorById(id);
@@ -201,7 +201,7 @@ class DoctorController {
     }
   }
 
-  static async getDoctorPatient (req, res) {
+  static async getDoctorPatient(req, res) {
     const { id, patientId } = req.params;
     try {
       const doctor = await DoctorService.getDoctorById(id);
@@ -214,6 +214,25 @@ class DoctorController {
       }
       return res.status(404).json({ error: 'Doctor not found' });
     } catch (error) {
+      // If user provides an invalid id, ObjectId will throw an error
+      if (error.kind === 'ObjectId') {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async updateDoctorPatient(req, res) {
+    const { id, patientId } = req.params;
+    try {
+      const doctor = await DoctorService.getDoctorById(id);
+      if (doctor) {
+        await DoctorService.doctorUpdatePatientById(doctor, patientId, res);
+        return;
+      }
+      return res.status(404).json({ error: 'Doctor not found' });
+    } catch (error) {
+      console.log(error);
       // If user provides an invalid id, ObjectId will throw an error
       if (error.kind === 'ObjectId') {
         return res.status(404).json({ error: 'Doctor not found' });
