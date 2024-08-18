@@ -23,11 +23,10 @@ class PatientService {
     }
 
     const doctor = await DoctorService.getDoctorById(query.doctor);
-    if (!doctor) {
-      return 1;
+    if (doctor) {
+      delete query.doctorId;
+      query.doctor = doctor._id;
     }
-    delete query.doctorId;
-    query.doctor = doctor._id;
 
     // Create a new patient
     const patient = await Patient.create(query);
