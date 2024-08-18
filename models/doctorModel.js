@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
-import { strongPassword } from '../utils/validations';
+import { strongPassword, confirmPasswordShouldBeRequired } from '../utils/validations';
 
 const doctorSchema = new mongoose.Schema({
   // Required fields
@@ -39,7 +39,8 @@ const doctorSchema = new mongoose.Schema({
         return this.password === value;
       },
       message: 'Passwords do not match'
-    }
+    },
+    required: [confirmPasswordShouldBeRequired, 'Confirm password is required']
   },
   gender: {
     type: String,

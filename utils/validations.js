@@ -41,4 +41,10 @@ const strongPassword = function (validator) {
   };
 };
 
-export { checkPwd, checkArrayObjects, strongPassword };
+// This function insures that require validator will trigger only
+// when password is modified or new user is created
+const confirmPasswordShouldBeRequired = function (validator) {
+  return this.isModified('password') || this.isNew;
+};
+
+export { checkPwd, checkArrayObjects, strongPassword, confirmPasswordShouldBeRequired };
