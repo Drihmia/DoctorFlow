@@ -16,8 +16,8 @@ const AuthMiddleware = ({ role }) => {
     const [redisRole, redisId] = redisToken.split('_');
 
     if (redisRole !== role) {
-      const oppositeRole = role === 'doctor' ? 'patient' : 'doctor';
-      return res.status(403).json({ error: `Forbidden: Only ${role} can access this route. Please login as ${role} or contact your ${oppositeRole} for help.` });
+      // const oppositeRole = role === 'doctor' ? 'patient' : 'doctor';
+      return res.status(403).json({ error: `Forbidden: Only ${role} can access this route. Please login as ${role}.` });
     }
 
     // Doctor or Patient ID
