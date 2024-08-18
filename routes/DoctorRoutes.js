@@ -10,7 +10,7 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   name: doctors
+ *   name: Doctors
  *   description: User management and authentication
  */
 

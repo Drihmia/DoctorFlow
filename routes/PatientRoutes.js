@@ -7,7 +7,7 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
 /**
  * @swagger
  * tags:
- *   name: patients
+ *   name: Patients
  *   description: User management and authentication
  */
 
