@@ -26,6 +26,11 @@ class DoctorService {
       query.email = doctor.email;
     }
 
+    // make sure the age is automatically calculated from the date of birth
+    if (query.age) {
+      delete query.age;
+    }
+
     Object.assign(doctor, query);
 
     // Methods such as findByIdAndUpdate will not trigger the pre-save middleware
@@ -66,7 +71,7 @@ class DoctorService {
     return Doctor.patients;
   }
 
-  async getDoctorPatientById (doctor, patientId) {
+  async getDoctorPatientById (doctor, patientId, res) {
     try {
       const populatedDoctorWithPatients = await doctor.populate('patients');
 
@@ -79,22 +84,21 @@ class DoctorService {
         return filtredPatient[0];
       }
     } catch (error) {
+      console.log('-----:', error);
       res.status(404).send({ message: 'Patient not found' });
       return 1;
     }
   }
 
-  async doctorUpdatePatientById(doctor, patientId, res) {
-    try {
-      const patient = await this.getDoctorPatientById(doctor, patientId);
-      patient.firstName = 'TestNameUpdate';
-      patient.save();
-      return res.status(200).json(patient);
-    } catch (error) {
-      console.log(error);
-      res.status(404).send({ message: 'Patient not found' });
-      return 1;
-    }
+  async doctorUpdatePatientById(doctor, patientId, query) {
+    const patient = await this.getDoctorPatientById(doctor, patientId);
+    if (!patient) return 1;
+
+    const updatedUser = await this.updateADoctor(patient, query);
+
+    // remove confirmPassword from the response
+    updatedUser.confirmPassword = undefined;
+    return updatedUser;
   }
 }
 

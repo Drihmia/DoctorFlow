@@ -27,6 +27,9 @@ class PatientService {
       delete query.doctorId;
       query.doctor = doctor._id;
     }
+    if (query.age) {
+      delete query.age;
+    }
 
     // Create a new patient
     const patient = await Patient.create(query);
@@ -44,6 +47,9 @@ class PatientService {
     // If not, the unique property in Patient's schema will raise an error 'duplicate key'
     if (query.email) {
       query.email = patient.email;
+    }
+    if (query.age) {
+      delete query.age;
     }
 
     Object.assign(patient, query);
