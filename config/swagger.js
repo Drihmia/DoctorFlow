@@ -12,7 +12,11 @@ const swaggerDefinition = {
       url: 'http://localhost:3000',
       description: 'Development server'
     }
-  ]
+  ],
+  externalDocs: {                // <<< this will add the link to your swagger page
+    description: "swagger.json", // <<< link title
+    url: "/swagger.json"         // <<< and the file added below in app.get(...)
+  }
 };
 
 const options = {
@@ -23,3 +27,4 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 
 module.exports = swaggerSpec;
+
