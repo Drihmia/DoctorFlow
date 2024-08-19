@@ -227,12 +227,22 @@ class DoctorController {
     try {
       const doctor = await DoctorService.getDoctorById(id);
       if (doctor) {
-        await DoctorService.doctorUpdatePatientById(doctor, patientId, res);
-        return;
+        try {
+          const reslt = await DoctorService.doctorUpdatePatientById(doctor, patientId, req.body);
+          if (reslt === 1) return res.status(404).json({ error: 'Patient not found' });
+          return res.status(200).json(reslt);
+        } catch (error) {
+          const prettifiedError = prettifyError(error);
+          if (prettifiedError instanceof Error) {
+            return res.status(500).json({ error: prettifiedError });
+          } else {
+            // If the error related to mongoose validation, prettifyError will return an object
+            return res.status(400).json({ error: prettifiedError });
+          }
+        }
       }
       return res.status(404).json({ error: 'Doctor not found' });
     } catch (error) {
-      console.log(error);
       // If user provides an invalid id, ObjectId will throw an error
       if (error.kind === 'ObjectId') {
         return res.status(404).json({ error: 'Doctor not found' });
