@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
+import { checkArrayObjects } from '../utils/validations';
 
 const patientSchema = new mongoose.Schema({
   // Required fields
@@ -103,6 +104,10 @@ const patientSchema = new mongoose.Schema({
     phone: {
       type: String,
       unique: true,
+      validate: {
+        validator: validator.isMobilePhone,
+        message: 'Contact phone is not valid'
+      },
       required: [true, 'Contact phone is required']
     },
     address: {
@@ -133,12 +138,20 @@ const patientSchema = new mongoose.Schema({
       },
       phone: {
         type: String,
-        trim: true
+        trim: true,
+        validate: {
+          validator: validator.isMobilePhone,
+          message: 'Contact phone is not valid'
+        }
       }
     }
   },
   dob: {
-    type: Date,
+    type: String,
+    validate: {
+      validator: validator.isDate,
+      message: 'Date of birth is not valid'
+    },
     required: [true, 'Date of birth is required']
   },
   medicalHistory: {
@@ -147,60 +160,86 @@ const patientSchema = new mongoose.Schema({
     lowercase: true,
     default: []
   },
-  currentMedication: [
-    {
-      name: {
-        type: String,
-        trim: true,
-        lowercase: true
-      },
-      startDate: {
-        type: Date
-      },
-      duration: {
-        type: String,
-        trim: true,
-        lowercase: true
-      },
-      dosage: {
-        type: String,
-        trim: true,
-        lowercase: true
-      },
-      description: {
-        type: String,
-        trim: true,
-        lowercase: true
-      },
-      endDate: {
-        type: Date
-      },
-      default: [{}]
+  currentMedication: {
+    type: [
+      {
+        name: {
+          type: String,
+          trim: true,
+          lowercase: true
+        },
+        startDate: {
+          type: String,
+          trim: true,
+          validate: {
+            validator: validator.isDate,
+            message: 'Start date is not valid'
+          }
+        },
+        duration: {
+          type: String,
+          trim: true,
+          lowercase: true,
+          validate: {
+            validator: validator.isNumeric,
+            message: 'Duration must be a number'
+          }
+        },
+        dosage: {
+          type: String,
+          trim: true,
+          lowercase: true
+        },
+        description: {
+          type: String,
+          trim: true,
+          lowercase: true
+        },
+        endDate: {
+          type: Date,
+          trim: true,
+          validate: {
+            validator: validator.isDate,
+            message: 'End date is not valid'
+          }
+        }
+      }
+    ],
+    default: [{}],
+    validate: {
+      validator: checkArrayObjects,
+      message: 'Current medication must be an array of objects.'
     }
-  ],
-  familyHistory: [
-    {
-      medicalCondition: {
-        type: String,
-        trim: true,
-        lowercase: true,
-        default: 'None'
-      },
-      relationship: {
-        type: String,
-        trim: true,
-        lowercase: true,
-        default: ''
-      },
-      description: {
-        type: String,
-        trim: true,
-        lowercase: true,
-        default: ''
-      },
-      default: [{}]
-    },
-  ],
+  },
+  familyHistory: {
+    type: [
+      {
+        medicalCondition: {
+          type: String,
+          trim: true,
+          lowercase: true,
+          default: 'None'
+        },
+        relationship: {
+          type: String,
+          trim: true,
+          lowercase: true,
+          default: ''
+        },
+        description: {
+          type: String,
+          trim: true,
+          lowercase: true,
+          default: ''
+        }
+      }
+    ],
+    default: [{}],
+    validate: {
+      validator: checkArrayObjects,
+      message: 'Family history must be an array of objects.'
+    }
+  },
   insurance: {
     type: String,
     default: 'None'
