@@ -28,6 +28,13 @@ class PatientController {
     }
     try {
       const patient = await PatientService.createPatient(PatientInfo);
+      if (patient === 1) {
+        return res.status(400).json({ error: 'Doctor not found' });
+      }
+      if (patient === 2) {
+        // This normally means the docotrId is not a valid ObjectId
+        return res.status(400).json({ error: 'docotrId is not a valid ObjectId' });
+      }
       return res.status(201).json(patient);
     } catch (error) {
       const prettifiedError = prettifyError(error);

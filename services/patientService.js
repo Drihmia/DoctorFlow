@@ -20,18 +20,20 @@ class PatientService {
   async createPatient(query) {
     if (query.doctorId) {
       try {
+        console.log('query.doctorId:', query.doctorId);
         query.doctor = new mongoose.Types.ObjectId(query.doctorId);
         delete query.doctorId;
       } catch (error) {
-        return 1;
+        return 2;
       }
     }
 
     const doctor = await DoctorService.getDoctorById(query.doctor);
-    if (doctor) {
-      delete query.doctorId;
-      query.doctor = doctor._id;
+    if (!doctor) {
+      return 1;
     }
+    delete query.doctorId;
+    query.doctor = doctor._id;
     if (query.age) {
       delete query.age;
     }
