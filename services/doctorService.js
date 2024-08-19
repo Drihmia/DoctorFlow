@@ -10,7 +10,8 @@ class DoctorService {
     return Doctor.findById(id);
   }
 
-  async getDoctorByEmail (email) {
+  async getDoctorByEmail (Email) {
+    const email = Email.toLowerCase();
     return Doctor.findOne({ email });
   }
 
@@ -67,7 +68,6 @@ class DoctorService {
 
   async getDoctorPatients (doctor) {
     const Doctor = await doctor.populate('patients');
-    console.log(Doctor);
     return Doctor.patients;
   }
 
@@ -84,7 +84,6 @@ class DoctorService {
         return filtredPatient[0];
       }
     } catch (error) {
-      console.log('-----:', error);
       res.status(404).send({ message: 'Patient not found' });
       return 1;
     }

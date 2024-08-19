@@ -29,4 +29,22 @@ const checkArrayObjects = function (v) {
   return true;
 };
 
-export { checkPwd, checkArrayObjects };
+const strongPassword = function (validator) {
+  return function (value) {
+    return validator.isStrongPassword(value, {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1
+    });
+  };
+};
+
+// This function insures that require validator will trigger only
+// when password is modified or new user is created
+const confirmPasswordShouldBeRequired = function (validator) {
+  return this.isModified('password') || this.isNew;
+};
+
+export { checkPwd, checkArrayObjects, strongPassword, confirmPasswordShouldBeRequired };
