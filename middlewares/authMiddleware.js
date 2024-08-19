@@ -22,7 +22,7 @@ const AuthMiddleware = ({ role }) => {
 
     // I used path from req to extract the current user id from params to check
     // if same type of user is accessing the right endpoint
-    const [user, paramsId] = req.path.split('/');
+    const [_, user, paramsId] = req.path.split('/');
     const users = ['patients', 'doctors', 'dev'];
     if (users.includes(user) && paramsId.length === 24) {
       if (paramsId !== redisId) {
