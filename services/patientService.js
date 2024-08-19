@@ -108,12 +108,19 @@ class PatientService {
     const patients = await patient.populate('doctor');
     const doctor = patients.doctor;
 
-    // Remove unnecessary fields for the patient
-    doctor.patients = undefined;
-    doctor.sessions = undefined;
-    doctor.password = undefined;
+    const sharedDoctor = {};
+    const authFieldsToShare = [
+      '_id', 'email', 'firstName', 'lastName', 'phone', 'specialization',
+      'contact', 'createdAt', 'gender', 'bio'
+    ];
 
-    return doctor;
+    for (const key of authFieldsToShare) {
+      if (doctor[key]) {
+        sharedDoctor[key] = doctor[key];
+      }
+    }
+
+    return sharedDoctor;
   }
 }
 
