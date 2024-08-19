@@ -1,5 +1,4 @@
 import DoctorService from '../services/DoctorService';
-import { checkPwd } from '../utils/validations';
 import { prettifyError } from '../utils/errors';
 
 class DoctorController {
@@ -14,11 +13,6 @@ class DoctorController {
   }
 
   static async addDoctor(req, res) {
-    const { password, confirmPassword } = req.body;
-
-    // If password is provided, confirmPassword must be provided
-    if (!checkPwd({ password, confirmPassword }, res)) return;
-
     const DoctorInfo = {};
     for (const [key, value] of Object.entries(req.body)) {
       if (value) {
@@ -28,7 +22,7 @@ class DoctorController {
           }
           DoctorInfo.contact[key] = value;
         } else if (['firstName', 'lastName', 'email', 'password', 'gender',
-          'phone', 'specialization', 'bio', 'dob'].includes(key)) {
+          'phone', 'specialization', 'bio', 'dob', 'confirmPassword'].includes(key)) {
           DoctorInfo[key] = value;
         }
       }
@@ -69,11 +63,6 @@ class DoctorController {
     if (!id) {
       return res.status(400).json({ error: { id: 'id is required' } });
     }
-
-    const { password, confirmPassword } = req.body;
-
-    // If password is provided, confirmPassword must be provided
-    if (!checkPwd({ password, confirmPassword }, res)) return;
 
     try {
       const doctor = await DoctorService.getDoctorById(id);
@@ -227,12 +216,22 @@ class DoctorController {
     try {
       const doctor = await DoctorService.getDoctorById(id);
       if (doctor) {
-        await DoctorService.doctorUpdatePatientById(doctor, patientId, res);
-        return;
+        try {
+          const reslt = await DoctorService.doctorUpdatePatientById(doctor, patientId, req.body);
+          if (reslt === 1) return res.status(404).json({ error: 'Patient not found' });
+          return res.status(200).json(reslt);
+        } catch (error) {
+          const prettifiedError = prettifyError(error);
+          if (prettifiedError instanceof Error) {
+            return res.status(500).json({ error: prettifiedError });
+          } else {
+            // If the error related to mongoose validation, prettifyError will return an object
+            return res.status(400).json({ error: prettifiedError });
+          }
+        }
       }
       return res.status(404).json({ error: 'Doctor not found' });
     } catch (error) {
-      console.log(error);
       // If user provides an invalid id, ObjectId will throw an error
       if (error.kind === 'ObjectId') {
         return res.status(404).json({ error: 'Doctor not found' });

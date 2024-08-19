@@ -12,20 +12,28 @@ class PatientService {
     return Patient.findById(id);
   }
 
-  async getPatientByEmail(email) {
+  async getPatientByEmail(Email) {
+    const email = Email.toLowerCase();
     return Patient.findOne({ email });
   }
 
   async createPatient(query) {
     if (query.doctorId) {
-      query.doctor = new mongoose.Types.ObjectId(query.doctorId);
-      delete query.doctorId;
+      try {
+        query.doctor = new mongoose.Types.ObjectId(query.doctorId);
+        delete query.doctorId;
+      } catch (error) {
+        return 1;
+      }
     }
 
     const doctor = await DoctorService.getDoctorById(query.doctor);
     if (doctor) {
       delete query.doctorId;
       query.doctor = doctor._id;
+    }
+    if (query.age) {
+      delete query.age;
     }
 
     // Create a new patient
@@ -44,6 +52,9 @@ class PatientService {
     // If not, the unique property in Patient's schema will raise an error 'duplicate key'
     if (query.email) {
       query.email = patient.email;
+    }
+    if (query.age) {
+      delete query.age;
     }
 
     Object.assign(patient, query);
@@ -97,12 +108,19 @@ class PatientService {
     const patients = await patient.populate('doctor');
     const doctor = patients.doctor;
 
-    // Remove unnecessary fields for the patient
-    doctor.patients = undefined;
-    doctor.sessions = undefined;
-    doctor.password = undefined;
+    const sharedDoctor = {};
+    const authFieldsToShare = [
+      '_id', 'email', 'firstName', 'lastName', 'phone', 'specialization',
+      'contact', 'createdAt', 'gender', 'bio'
+    ];
 
-    return doctor;
+    for (const key of authFieldsToShare) {
+      if (doctor[key]) {
+        sharedDoctor[key] = doctor[key];
+      }
+    }
+
+    return sharedDoctor;
   }
 }
 

@@ -62,7 +62,7 @@ class AuthenticationController {
       const token = req.token;
 
       // delete token
-      const deleted = await redisUtils.del(`auth:auth_doctor_${token}`);
+      const deleted = await redisUtils.del(`auth_${token}`);
       if (!deleted) {
         return res.status(500).json({ error: 'Internal Server Error: Failed to delete token' });
       }

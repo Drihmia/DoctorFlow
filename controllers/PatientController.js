@@ -1,5 +1,4 @@
 import PatientService from '../services/patientService';
-import { checkPwd } from '../utils/validations';
 import { prettifyError } from '../utils/errors';
 
 class PatientController {
@@ -60,11 +59,6 @@ class PatientController {
 
   static async updatePatient(req, res) {
     const { id } = req.params;
-
-    const { password, confirmPassword } = req.body;
-
-    // If password is provided, confirmPassword must be provided
-    if (!checkPwd({ password, confirmPassword }, res)) return;
 
     try {
       const patient = await PatientService.getPatientById(id);

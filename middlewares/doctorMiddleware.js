@@ -4,8 +4,6 @@ import doctorSchema from '../models/doctorModel';
 
 // Middleware to update the 'updatedAt' field before saving the document
 doctorSchema.pre('save', async function(next) {
-  console.log('Pre save middleware for Doctor model');
-
   // Hash the password before saving the document
   if (this.isModified('password')) {
     try {
@@ -16,14 +14,25 @@ doctorSchema.pre('save', async function(next) {
     }
   }
 
+  // Update the 'updatedAt' field before saving the document
   if (this.isModified() || this.isNew) {
     this.updatedAt = Date.now();
   }
+
+  // Remove the confirm password field before saving the document
+  if (this.confirmPassword) {
+    this.confirmPassword = undefined;
+  }
+  next();
+});
+
+doctorSchema.pre('validate', async function(next) {
   for (const key in this.toObject()) {
     const value = this[key];
-    if (typeof value === 'string' && key !== 'password' && key !== 'gender') {
+    if (typeof value === 'string' && !['password', 'confirmPassword', 'gender'].includes(key)) {
       this[key] = value.trim().toLowerCase();
     }
+
     if (value instanceof Date) {
       // Checking if the Date object is valid
       if (isNaN(value.getTime())) {
@@ -31,6 +40,7 @@ doctorSchema.pre('save', async function(next) {
       }
     }
   }
+
   // Gender accept 2 values: M or F, If user input lowercase,
   // it will be converted to uppercase
   if (this.gender) {

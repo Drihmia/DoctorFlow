@@ -7,13 +7,6 @@ const prettifyError = (error) => {
       return errorsObject;
     }
     if (error.errors) {
-      if (Object.keys(error.errors).includes('currentMedication')) {
-        errorsObject.currentMedication = 'CurrentMedication must be an array of objects';
-      }
-      if (Object.keys(error.errors).includes('familyHistory')) {
-        errorsObject.familyHistory = 'FamilyHistory must be an array of objects';
-      }
-
       Object.values(error.errors).forEach(({ properties }) => {
         if (properties && Object.keys(properties).includes('message') && Object.keys(properties).includes('path')) {
           const { message, path } = properties;

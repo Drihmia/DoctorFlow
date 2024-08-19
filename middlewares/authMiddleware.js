@@ -16,8 +16,18 @@ const AuthMiddleware = ({ role }) => {
     const [redisRole, redisId] = redisToken.split('_');
 
     if (redisRole !== role) {
-      const oppositeRole = role === 'doctor' ? 'patient' : 'doctor';
-      return res.status(403).json({ error: `Forbidden: Only ${role} can access this route. Please login as ${role} or contact your ${oppositeRole} for help.` });
+      // const oppositeRole = role === 'doctor' ? 'patient' : 'doctor';
+      return res.status(403).json({ error: `Forbidden: Only ${role} can access this route. Please login as ${role}.` });
+    }
+
+    // I used path from req to extract the current user id from params to check
+    // if same type of user is accessing the right endpoint
+    const [user, paramsId] = req.path.split('/');
+    const users = ['patients', 'doctors', 'dev'];
+    if (users.includes(user) && paramsId.length === 24) {
+      if (paramsId !== redisId) {
+        return res.status(403).json({ error: 'Forbidden: You are not allowed to access this route.' });
+      }
     }
 
     // Doctor or Patient ID
