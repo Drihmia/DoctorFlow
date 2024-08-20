@@ -24,7 +24,7 @@ const AuthMiddleware = ({ role }) => {
     // if same type of user is accessing the right endpoint
     const [_, user, paramsId] = req.path.split('/');
     const users = ['patients', 'doctors', 'dev'];
-    if (users.includes(user) && paramsId.length === 24) {
+    if (user && users.includes(user) && paramsId && paramsId.length === 24) {
       if (paramsId !== redisId) {
         return res.status(403).json({ error: 'Forbidden: You are not allowed to access this route.' });
       }
