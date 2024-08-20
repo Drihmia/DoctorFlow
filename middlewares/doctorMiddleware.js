@@ -30,7 +30,7 @@ doctorSchema.pre('validate', async function(next) {
   for (const key in this.toObject()) {
     const value = this[key];
     if (typeof value === 'string' && !['password', 'confirmPassword', 'gender'].includes(key)) {
-      this[key] = value.trim().toLowerCase();
+      this[key] = value.trim();
     }
 
     if (value instanceof Date) {
