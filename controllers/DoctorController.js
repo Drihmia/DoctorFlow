@@ -157,8 +157,7 @@ class DoctorController {
           if (session.doctor.toString() === doctor._id.toString()) {
             return res.redirect(307, `/sessions/${sessionId}`);
           }
-          await DoctorService.deleteDoctorSession(doctor, sessionId);
-          return res.status(200).json({ message: 'Session deleted' });
+          return res.status(403).json({ error: 'You are not allowed to delete this session' });
         }
         return res.status(404).json({ error: 'Session not found' });
       }
