@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
-import { checkArrayObjects, strongPassword, confirmPasswordShouldBeRequired } from '../utils/validations';
+import {
+  checkArrayObjects, strongPassword,
+  confirmPasswordShouldBeRequired
+} from '../utils/validations';
 
 const patientSchema = new mongoose.Schema({
   // Required fields
@@ -68,6 +71,7 @@ const patientSchema = new mongoose.Schema({
     type: String,
     // email should be unique and immutable
     unique: true,
+    lowercase: true,
     immutable: true,
     validate: {
       validator: validator.isEmail,
@@ -107,6 +111,7 @@ const patientSchema = new mongoose.Schema({
   contact: {
     phone: {
       type: String,
+      trim: true,
       unique: true,
       validate: {
         validator: validator.isMobilePhone,
@@ -116,29 +121,24 @@ const patientSchema = new mongoose.Schema({
     },
     address: {
       type: String,
-      trim: true,
-      lowercase: true
+      trim: true
     },
     city: {
       type: String,
-      trim: true,
-      lowercase: true
+      trim: true
     },
     state: {
       type: String,
-      trim: true,
-      lowercase: true
+      trim: true
     },
     emergencyContact: {
       name: {
         type: String,
-        trim: true,
-        lowercase: true
+        trim: true
       },
       relationship: {
         type: String,
-        trim: true,
-        lowercase: true
+        trim: true
       },
       phone: {
         type: String,
@@ -161,7 +161,6 @@ const patientSchema = new mongoose.Schema({
   medicalHistory: {
     type: [String],
     trim: true,
-    lowercase: true,
     default: []
   },
   currentMedication: {
@@ -169,8 +168,7 @@ const patientSchema = new mongoose.Schema({
       {
         name: {
           type: String,
-          trim: true,
-          lowercase: true
+          trim: true
         },
         startDate: {
           type: String,
@@ -183,7 +181,6 @@ const patientSchema = new mongoose.Schema({
         duration: {
           type: String,
           trim: true,
-          lowercase: true,
           validate: {
             validator: validator.isNumeric,
             message: 'Duration must be a number'
@@ -191,13 +188,11 @@ const patientSchema = new mongoose.Schema({
         },
         dosage: {
           type: String,
-          trim: true,
-          lowercase: true
+          trim: true
         },
         description: {
           type: String,
-          trim: true,
-          lowercase: true
+          trim: true
         },
         endDate: {
           type: Date,
@@ -221,19 +216,16 @@ const patientSchema = new mongoose.Schema({
         medicalCondition: {
           type: String,
           trim: true,
-          lowercase: true,
           default: 'None'
         },
         relationship: {
           type: String,
           trim: true,
-          lowercase: true,
           default: ''
         },
         description: {
           type: String,
           trim: true,
-          lowercase: true,
           default: ''
         }
       }

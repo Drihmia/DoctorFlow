@@ -28,7 +28,7 @@ patientSchema.pre('save', async function (next) {
 
 patientSchema.pre('validate', function (next) {
   // calculate the age of the patient based on the date of birth
-  if (this.isModified('dob') || this.isNew) {
+  if (this.isModified() || this.isNew) {
     const { dob } = this;
     const age = (new Date() - new Date(dob)) / (3600 * 24 * 365 * 1000);
     this.age = Math.floor(age);
@@ -44,7 +44,7 @@ patientSchema.pre('validate', function (next) {
   for (const key in this.toObject()) {
     const value = this[key];
     if (typeof value === 'string' && !['password', 'confirmPassword', 'gender'].includes(key)) {
-      this[key] = value.trim().toLowerCase();
+      this[key] = value.trim();
     }
 
     if (value instanceof Date) {
