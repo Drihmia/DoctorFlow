@@ -134,7 +134,7 @@ router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), Authenti
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
 // Using updatePAtient for changing password by patient itself.
 router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.updatePatient); // selective data
-router.delete('/patients/:id', AuthMiddleware({ role: 'doctor' }), PatientController.deletePatient);
+router.delete('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.deletePatient);
 
 router.get('/patients/:id/sessions', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSessions);
 router.get('/patients/:id/sessions/:sessionId', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSession);
