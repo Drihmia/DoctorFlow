@@ -226,13 +226,15 @@ router.post('/doctors', DoctorController.addDoctor);
  * @swagger
  * /doctors/connect:
  *   get:
- *     summary: Authenticate a doctor and generate a token
- *     tags: [Doctors]
+ *     summary: Connect a doctor and create a session token
+ *     description: Authenticates a doctor using Basic Auth credentials and creates a session token if the authentication is successful.
+ *     tags:
+ *       - Doctors
  *     security:
- *       - BasicAuth: []
+ *       - basicAuth: []
  *     responses:
- *       200:
- *         description: Successfully authenticated doctor and generated a token
+ *       '200':
+ *         description: Successfully authenticated the doctor and created a session token
  *         content:
  *           application/json:
  *             schema:
@@ -240,19 +242,57 @@ router.post('/doctors', DoctorController.addDoctor);
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Authentication token for the doctor
- *       400:
- *         description: |
- *           Bad Request: Missing email or password
- *       401:
- *         description: |
- *           Unauthorized: Missing or invalid Authorization header or wrong password
- *       404:
- *         description: |
- *           Not Found: Doctor not found
- *       500:
- *         description: |
- *           Internal Server Error: Unexpected error during authentication
+ *                   description: The session token for the authenticated doctor
+ *                   example: "84f86045-a8a6-4ef1-bbbd-b4c9c4796be7"
+ *       '400':
+ *         description: Bad Request - Missing email or password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating missing email or password
+ *                   example: "Bad Request: Missing email or password"
+ *       '401':
+ *         description: Unauthorized - Invalid credentials or wrong password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating missing or invalid Authorization header, or wrong credentials or password
+ *                   example: "Unauthorized: Missing or invalid Authorization header"
+ *       '404':
+ *         description: Not Found - Doctor not registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating the doctor was not found
+ *                   example: "Doctor not found"
+ *       '500':
+ *         description: Internal Server Error - Unexpected error during authentication
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating an internal server error
+ *                   example: "Internal Server Error"
+ *     examples:
+ *       curl:
+ *         summary: Example of a curl command
+ *         value: |
+ *           curl -X 'GET' 'http://localhost:3000/doctors/connect' -H 'accept: application/json' -H 'Authorization: Basic ZHJvbW5pYUBnbWFpbC5jb206UEBzc3dvcmQx'
  */
 router.get('/doctors/connect', AuthenticationController.connectDoctor);
 
@@ -303,6 +343,8 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *     description: Fetches the authenticated doctor's by their ID. This endpoint requires authentication with a role of 'doctor'.
  *     tags:
  *       - Doctors
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -318,8 +360,6 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *         schema:
  *           type: string
  *           example: "your-authentication-token"
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Doctor details retrieved successfully
@@ -435,6 +475,8 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *     tags:
  *       - Doctors
  *     parameters:
+ *     security:
+ *       - bearerAuth: []
  *       - name: id
  *         in: path
  *         description: The unique identifier of the doctor to update.
@@ -498,8 +540,6 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *                   state:
  *                     type: string
  *                     example: "IL"
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Doctor details updated successfully
@@ -614,6 +654,8 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *     description: Deletes the authenticated doctor's profile. A doctor can only delete their own profile. This endpoint requires authentication with a role of 'doctor'.
  *     tags:
  *       - Doctors
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -629,8 +671,6 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *         schema:
  *           type: string
  *           example: "your-authentication-token"
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Doctor deleted successfully
