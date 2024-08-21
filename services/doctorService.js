@@ -93,6 +93,15 @@ class DoctorService {
     const patient = await this.getDoctorPatientById(doctor, patientId);
     if (!patient) return 1;
 
+    // Doctor should not be able to change the password of the patient
+    if (query.password) {
+      delete query.password;
+    }
+
+    if (query.confirmPassword) {
+      delete query.confirmPassword;
+    }
+
     const updatedUser = await this.updateADoctor(patient, query);
 
     // remove confirmPassword from the response

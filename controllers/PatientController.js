@@ -28,6 +28,13 @@ class PatientController {
     }
     try {
       const patient = await PatientService.createPatient(PatientInfo);
+      if (patient === 1) {
+        return res.status(400).json({ error: 'Doctor not found' });
+      }
+      if (patient === 2) {
+        // This normally means the docotrId is not a valid ObjectId
+        return res.status(400).json({ error: 'docotrId is not a valid ObjectId' });
+      }
       return res.status(201).json(patient);
     } catch (error) {
       const prettifiedError = prettifyError(error);
@@ -60,10 +67,13 @@ class PatientController {
   static async updatePatient(req, res) {
     const { id } = req.params;
 
+    const { password, confirmPassword } = req.body;
+    if (!password) return res.status(400).json({ error: 'Password is required' });
+
     try {
       const patient = await PatientService.getPatientById(id);
       if (patient) {
-        const updatedpatient = await PatientService.updateAPatient(patient, req.body);
+        const updatedpatient = await PatientService.updateAPatient(patient, { password, confirmPassword });
         return res.status(200).json(updatedpatient);
       }
       return res.status(404).json({ error: 'Patient not found' });

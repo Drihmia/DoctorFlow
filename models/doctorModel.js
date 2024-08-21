@@ -10,13 +10,13 @@ const doctorSchema = new mongoose.Schema({
   },
   lastName: {
     type: String,
-    uppercase: true,
     required: [true, 'Last name is required']
   },
   email: {
     type: String,
     // email should be unique and immutable
     unique: true,
+    lowercase: true,
     ummutable: true,
     validate: {
       validator: validator.isEmail,
