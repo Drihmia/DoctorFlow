@@ -82,6 +82,7 @@ const doctorSchema = new mongoose.Schema({
   // Optional fields
   phone: {
     type: String,
+    trim: true,
     validate: {
       validator: validator.isMobilePhone,
       message: 'Contact phone is not valid'
