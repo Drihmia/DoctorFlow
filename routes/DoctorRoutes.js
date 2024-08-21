@@ -10,8 +10,8 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   name: Doctors
- *   description: User management and authentication
+ *   - name: Doctors
+ *     description: Endpoints for managing doctor-related data. Includes functionality for retrieving, creating, updating, and deleting doctor records, as well as managing doctor sessions and patients associated with doctors.
  */
 
 /**
@@ -69,7 +69,6 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-
 router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllDoctors);
 
 /**
