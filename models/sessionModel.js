@@ -50,6 +50,22 @@ const sessionSchema = new mongoose.Schema({
   privateNotes: {
     type: String,
     default: ''
+  },
+  prescription: {
+    type: String,
+    default: ''
+  },
+  diagnosis: {
+    type: String,
+    default: ''
+  },
+  labTests: {
+    type: String,
+    default: ''
+  },
+  radOrders: {
+    type: String,
+    default: ''
   }
 });
 
