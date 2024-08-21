@@ -36,6 +36,7 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function (value) {
+        if (!this.password) return true;
         return this.password === value;
       },
       message: 'Passwords do not match'

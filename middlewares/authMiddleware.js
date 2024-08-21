@@ -1,6 +1,6 @@
 import redisUtils from '../utils/redisUtils';
 
-const AuthMiddleware = ({ role }) => {
+const AuthMiddleware = ({ role, extraLayer = true }) => {
   return async (req, res, next) => {
     // check token passed in header
     const token = req.headers['x-token'];
@@ -20,13 +20,15 @@ const AuthMiddleware = ({ role }) => {
       return res.status(403).json({ error: `Forbidden: Only ${role} can access this route. Please login as ${role}.` });
     }
 
-    // I used path from req to extract the current user id from params to check
-    // if same type of user is accessing the right endpoint
-    const [_, user, paramsId] = req.path.split('/');
-    const users = ['patients', 'doctors', 'dev'];
-    if (user && users.includes(user) && paramsId && paramsId.length === 24) {
-      if (paramsId !== redisId) {
-        return res.status(403).json({ error: 'Forbidden: You are not allowed to access this route.' });
+    if (extraLayer) {
+      // I used path from req to extract the current user id from params to check
+      // if same type of user is accessing the right endpoint
+      const [_, user, paramsId] = req.path.split('/'); // eslint-disable-line no-unused-vars
+      const users = ['patients', 'doctors', 'dev'];
+      if (user && users.includes(user) && paramsId && paramsId.length === 24) {
+        if (paramsId !== redisId) {
+          return res.status(403).json({ error: 'Forbidden: You are not allowed to access this route.' });
+        }
       }
     }
 
