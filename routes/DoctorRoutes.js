@@ -18,11 +18,50 @@ const router = Router();
  * @swagger
  * /doctors:
  *   get:
- *     summary: Retrieve a list of all doctors
- *     tags: [Doctors]
+ *     summary: Retrieve a list of all doctors (restricted to 'dev' role)
+ *     description: |
+ *       Retrieves a list of all doctors with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
+ *       
+ *       **Authentication:**
+ *       - Bearer Token via `x-token` header.
+ *       - Requires a role of `dev`.
+ * 
+ *       **Parameters:**
+ *       - `page`: Optional. The page number for pagination.
+ *       - `limit`: Optional. The number of records per page.
+ *       - `x-token`: Required. The authentication token.
+ *
+ *       **Response:**
+ *       - A list of doctor objects, each containing details such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, and more.
+ *     tags:
+ *       - Doctors
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: page
+ *         in: query
+ *         description: The page number to retrieve (for pagination).
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - name: limit
+ *         in: query
+ *         description: The number of records to retrieve per page (for pagination).
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "your-authentication-token"
  *     responses:
  *       200:
- *         description: A JSON array of doctors' objects
+ *         description: A list of doctors retrieved successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -32,51 +71,118 @@ const router = Router();
  *                 properties:
  *                   _id:
  *                     type: string
+ *                     example: "66c5c864a73c8c2f1cbad794"
  *                   firstName:
  *                     type: string
+ *                     example: "John"
  *                   lastName:
  *                     type: string
+ *                     example: "Doe"
  *                   email:
  *                     type: string
- *                     format: email
+ *                     example: "johndoe@example.com"
  *                   password:
  *                     type: string
+ *                     example: "$2b$10$tD12oUKX6xnnIXfVzbFtOu00EN/VTdtWY5wIGOBkqfAYZ3wUkrGYy"
  *                   gender:
  *                     type: string
+ *                     example: "M"
  *                   specialization:
  *                     type: string
+ *                     example: "Cardiology"
  *                   patients:
  *                     type: array
  *                     items:
  *                       type: string
- *                   appointments:
+ *                     example: []
+ *                   sessions:
  *                     type: array
  *                     items:
  *                       type: string
+ *                     example: []
+ *                   bio:
+ *                     type: string
+ *                     example: "Experienced cardiologist with over 10 years of practice."
+ *                   phone:
+ *                     type: string
+ *                     example: "1234567890"
  *                   dob:
  *                     type: string
- *                     format: date-time
+ *                     example: "1980-05-20"
  *                   createdAt:
  *                     type: string
  *                     format: date-time
+ *                     example: "2024-08-21T10:58:44.532+00:00"
  *                   updatedAt:
  *                     type: string
  *                     format: date-time
+ *                     example: "2024-08-21T11:36:03.155+00:00"
  *                   __v:
  *                     type: integer
- *       404:
- *         description: No doctors found
+ *                     example: 0
+ *       400:
+ *         description: Bad Request - Invalid parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid page or limit parameter"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - Access restricted to 'dev' role
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Only users with 'dev' role can access this route."
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An unexpected error occurred."
  */
 router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllDoctors);
+
+
 
 /**
  * @swagger
  * /doctors:
  *   post:
  *     summary: Create a new doctor account
- *     description: This endpoint allows a new doctor to create an account by providing necessary details such as name, contact information, specialization, and more.
+ *     description: |
+ *       Creates a new doctor account with the provided details.
+ *       
+ *       **Authentication:**
+ *       - No authentication required.
+ *       
+ *       **Request Body:**
+ *       - Required fields: `firstName`, `lastName`, `email`, `password` (must be at least 8 characters long, including 1 uppercase letter, 1 lowercase letter, 1 number, and 1 symbol), `confirmPassword` (must match `password`), `gender`, `dob`.
+ *       - Optional fields: `specialization`, `bio`, `phone`, `address`, `city`, `state`.
+ *       
+ *       **Response:**
+ *       - On success: Returns the unique identifier and details of the newly created doctor.
+ *       - On error: Provides details about validation issues or server errors.
  *     tags:
  *       - Doctors
  *     requestBody:
@@ -150,6 +256,7 @@ router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllD
  *               - password
  *               - confirmPassword
  *               - gender
+ *               - dob
  *     responses:
  *       201:
  *         description: Doctor account created successfully
@@ -161,7 +268,7 @@ router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllD
  *                 id:
  *                   type: string
  *                   description: "The unique identifier of the newly created doctor."
- *                   example: "60c72b2f9b1e8a5e4c8b4567"
+ *                   example: "66c5c864a73c8c2f1cbad794"
  *                 firstName:
  *                   type: string
  *                   example: "John"
@@ -185,7 +292,7 @@ router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllD
  *                   example: "1980-05-20"
  *                 phone:
  *                   type: string
- *                   example: "+1234567890"
+ *                   example: "1234567890"
  *                 contact:
  *                   type: object
  *                   properties:
@@ -227,7 +334,15 @@ router.post('/doctors', DoctorController.addDoctor);
  * /doctors/connect:
  *   get:
  *     summary: Connect a doctor and create a session token
- *     description: Authenticates a doctor using Basic Auth credentials and creates a session token if the authentication is successful.
+ *     description: |
+ *       Authenticates a doctor using Basic Auth credentials in the format `email:password`, where the credentials are base64 encoded. On successful authentication, a session token is generated and returned.
+ *       
+ *       **Authentication:**
+ *       - Basic Auth is required with credentials in the format `email:password` encoded in Base64.
+ *       
+ *       **Response:**
+ *       - On success: Returns the session token for the authenticated doctor.
+ *       - On error: Provides details about missing credentials, invalid credentials, or server issues.
  *     tags:
  *       - Doctors
  *     security:
@@ -301,7 +416,13 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  * /doctors/disconnect:
  *   get:
  *     summary: Disconnect a doctor by removing their session token
- *     description: Logs out a doctor by deleting their session token from Redis, effectively ending their session.
+ *     description: |
+ *       Logs out a doctor by deleting their session token from Redis, effectively ending their session. This endpoint requires the doctor to be authenticated with a valid session token.
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is used, where the token should be passed in the `X-Token` header.
+ *       - The `X-Token` value must be a valid session token issued during login.
+ *       - Requires a role of `doctor`.
  *     tags:
  *       - Doctors
  *     security:
@@ -368,12 +489,22 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
 router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnectDoctor);
 
 
+
 /**
  * @swagger
  * /doctors/{id}:
  *   get:
  *     summary: Retrieve a doctor's own details
- *     description: Fetches the authenticated doctor's by their ID. This endpoint requires authentication with a role of 'doctor'.
+ *     description: |
+ *       Fetches the details of the authenticated doctor by their ID. This endpoint requires the doctor to be authenticated with a valid session token and must be performed by the doctor who owns the profile.
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `doctor`.
+ *
+ *       **Response:**
+ *       - On success: Returns the details of the authenticated doctor, including fields such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, `bio`, `dob`, `phone`, and more.
+ *       - On error: Provides details about issues such as invalid token, doctor not found, or server errors.
  *     tags:
  *       - Doctors
  *     security:
@@ -401,46 +532,59 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 _id:
  *                   type: string
  *                   description: The unique identifier of the doctor.
- *                   example: "60c72b2f9b1e8a5e4c8b4567"
+ *                   example: "66c5c864a73c8c2f1cbad794"
  *                 firstName:
  *                   type: string
  *                   example: "John"
  *                 lastName:
  *                   type: string
- *                   example: "DOE"
+ *                   example: "Doe"
  *                 email:
  *                   type: string
  *                   example: "johndoe@example.com"
+ *                 password:
+ *                   type: string
+ *                   description: Hashed password of the doctor (not usually returned in responses for security reasons).
+ *                   example: "$2b$10$tD12oUKX6xnnIXfVzbFtOu00EN/VTdtWY5wIGOBkqfAYZ3wUkrGYy"
  *                 gender:
  *                   type: string
  *                   example: "M"
  *                 specialization:
  *                   type: string
  *                   example: "Cardiology"
+ *                 patients:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                   example: []
+ *                 sessions:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                   example: []
  *                 bio:
  *                   type: string
  *                   example: "Experienced cardiologist with over 10 years of practice."
+ *                 phone:
+ *                   type: string
+ *                   example: "1234567890"
  *                 dob:
  *                   type: string
  *                   example: "1980-05-20"
- *                 phone:
+ *                 createdAt:
  *                   type: string
- *                   example: "+1234567890"
- *                 contact:
- *                   type: object
- *                   properties:
- *                     address:
- *                       type: string
- *                       example: "123 Main St"
- *                     city:
- *                       type: string
- *                       example: "Springfield"
- *                     state:
- *                       type: string
- *                       example: "IL"
+ *                   format: date-time
+ *                   example: "2024-08-21T10:58:44.532Z"
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-21T11:36:03.155Z"
+ *                 __v:
+ *                   type: integer
+ *                   example: 0
  *       400:
  *         description: Bad Request - Missing token or invalid request
  *         content:
@@ -504,19 +648,30 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  * /doctors/{id}:
  *   put:
  *     summary: Update a doctor's own details
- *     description: Updates the authenticated doctor's details. This endpoint requires authentication with a role of 'doctor'. Passwords must be confirmed if provided.
+ *     description: |
+ *       Updates the authenticated doctor's details. This endpoint requires authentication with a valid session token and must be performed by the doctor who owns the profile.
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `doctor`.
+ *       
+ *       **Request Body:**
+ *       - Required fields: `firstName`, `lastName`, `password` (if updating, must be confirmed and meet strength criteria), `confirmPassword` (must match `password`), `gender` (must be 'M' or 'F'), `specialization`, `bio`, `dob`, `phone`, `address`, `city`, `state`.
+ *       - Note: The `email` cannot be updated.
+ *       
+ *       **Response:**
+ *       - On success: Returns the updated details of the doctor, including fields such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, `bio`, `dob`, `phone`, and more.
+ *       - On error: Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
  *       - Doctors
  *     parameters:
- *     security:
- *       - bearerAuth: []
  *       - name: id
  *         in: path
- *         description: The unique identifier of the doctor to update.
+ *         description: The unique identifier of the doctor to retrieve.
  *         required: true
  *         schema:
  *           type: string
- *           example: "60c72b2f9b1e8a5e4c8b4567"
+ *           example: "66c5c864a73c8c2f1cbad794"
  *       - name: x-token
  *         in: header
  *         description: Token used for authentication.
@@ -524,6 +679,8 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *         schema:
  *           type: string
  *           example: "your-authentication-token"
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -533,67 +690,71 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *             properties:
  *               firstName:
  *                 type: string
- *                 example: "John"
+ *                 example: "Jenna"
  *               lastName:
  *                 type: string
- *                 example: "DOE"
+ *                 example: "Dean"
  *               email:
  *                 type: string
- *                 example: "johndoe@example.com"
+ *                 example: "jennadean@example.com"
  *               password:
  *                 type: string
- *                 example: "newPassword123"
+ *                 example: "newP@ssw0rd!"
  *               confirmPassword:
  *                 type: string
- *                 example: "newPassword123"
+ *                 example: "newP@ssw0rd!"
  *               gender:
  *                 type: string
- *                 example: "M"
+ *                 example: "F"
  *               specialization:
  *                 type: string
- *                 example: "Cardiology"
+ *                 example: "Dermatology"
  *               bio:
  *                 type: string
- *                 example: "Experienced cardiologist with over 10 years of practice."
+ *                 example: "Experienced dermatologist with over 15 years of practice."
  *               dob:
  *                 type: string
- *                 example: "1980-05-20"
+ *                 example: "1975-02-10"
  *               phone:
  *                 type: string
- *                 example: "+1234567890"
+ *                 example: "1234567899"
  *               contact:
  *                 type: object
  *                 properties:
  *                   address:
  *                     type: string
- *                     example: "123 Main St"
+ *                     example: "1234 Sunset Blvd"
  *                   city:
  *                     type: string
- *                     example: "Springfield"
+ *                     example: "Los Angeles"
  *                   state:
  *                     type: string
- *                     example: "IL"
+ *                     example: "CA"
  *     responses:
  *       200:
- *         description: Doctor details updated successfully
+ *         description: Doctor details retrieved successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 _id:
  *                   type: string
  *                   description: The unique identifier of the doctor.
- *                   example: "60c72b2f9b1e8a5e4c8b4567"
+ *                   example: "66c5dc5e9b6ae671e3039018"
  *                 firstName:
  *                   type: string
- *                   example: "John"
+ *                   example: "hn"
  *                 lastName:
  *                   type: string
- *                   example: "DOE"
+ *                   example: "Doe"
  *                 email:
  *                   type: string
- *                   example: "johndoe@example.com"
+ *                   example: "hndoe@example.com"
+ *                 password:
+ *                   type: string
+ *                   description: The hashed password of the doctor.
+ *                   example: "$2b$10$77L6Qn25dukWrfYbPJ4Zie/GtmnshaKxqIBhSm5e1lOFLS4332rKW"
  *                 gender:
  *                   type: string
  *                   example: "M"
@@ -608,19 +769,28 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *                   example: "1980-05-20"
  *                 phone:
  *                   type: string
- *                   example: "+1234567890"
- *                 contact:
- *                   type: object
- *                   properties:
- *                     address:
- *                       type: string
- *                       example: "123 Main St"
- *                     city:
- *                       type: string
- *                       example: "Springfield"
- *                     state:
- *                       type: string
- *                       example: "IL"
+ *                   example: "1234567890"
+ *                 patients:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
+ *                 sessions:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-21T12:23:58.122Z"
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-21T12:23:58.277Z"
+ *                 __v:
+ *                   type: integer
+ *                   example: 0
  *       400:
  *         description: Bad Request - Missing ID, invalid request, or validation errors
  *         content:
@@ -684,7 +854,20 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  * /doctors/{id}:
  *   delete:
  *     summary: Delete a doctor's own profile
- *     description: Deletes the authenticated doctor's profile. A doctor can only delete their own profile. This endpoint requires authentication with a role of 'doctor'.
+ *     description: |
+ *       Deletes the authenticated doctor's profile. A doctor can only delete their own profile using this endpoint. 
+ *       This action requires authentication and must be performed by the doctor who owns the profile. 
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `doctor`.
+ *       
+ *       **Request Parameters:**
+ *       - `id`: The unique identifier of the doctor to delete.
+ *       
+ *       **Response:**
+ *       - On success: Returns a confirmation message indicating that the doctor has been deleted.
+ *       - On error: Provides details about missing ID, unauthorized access, or server errors.
  *     tags:
  *       - Doctors
  *     security:
@@ -778,6 +961,7 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
 router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSessions);
 router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSession);
 // router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorSession);
+
 
 
 router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorPatients);
