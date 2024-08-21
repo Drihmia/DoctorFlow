@@ -300,20 +300,23 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  * @swagger
  * /doctors/disconnect:
  *   get:
- *     summary: Disconnect a doctor by invalidating their token
- *     tags: [Doctors]
+ *     summary: Disconnect a doctor by removing their session token
+ *     description: Logs out a doctor by deleting their session token from Redis, effectively ending their session.
+ *     tags:
+ *       - Doctors
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - in: header
- *         name: x-token
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
  *         required: true
  *         schema:
  *           type: string
- *         description: |
- *           The token of the doctor to be disconnected
+ *           example: "your-authentication-token"
  *     responses:
- *       200:
- *         description: |
- *           Successfully disconnected the doctor
+ *       '200':
+ *         description: Successfully disconnected the doctor
  *         content:
  *           application/json:
  *             schema:
@@ -321,16 +324,46 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *               properties:
  *                 message:
  *                   type: string
- *                   description: Success message
- *       400:
- *         description: |
- *           Bad Request: Missing token
- *       401:
- *         description: |
- *           Unauthorized: Invalid or expired token
- *       500:
- *         description: |
- *           Internal Server Error
+ *                   description: Success message indicating that the doctor has been successfully disconnected
+ *                   example: "Successfully disconnected"
+ *       '400':
+ *         description: Bad Request - Missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating a missing or invalid token
+ *                   example: "Bad Request: Missing token"
+ *       '401':
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating an invalid or expired token
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       '500':
+ *         description: Internal Server Error - Unexpected error during disconnection
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating an internal server error
+ *                   example: "Internal Server Error: Unexpected error"
+ *     examples:
+ *       curl:
+ *         summary: Example of a curl command
+ *         value: |
+ *           curl -X 'GET' 'http://localhost:3000/doctors/disconnect' -H 'accept: application/json' -H 'Authorization: Bearer your_token_here'
  */
 router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnectDoctor);
 
