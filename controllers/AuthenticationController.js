@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 
 import redisUtils from '../utils/redisUtils';
 import DoctorService from '../services/DoctorService';
+import DevService from '../services/DevService';
 import PatientService from '../services/PatientService';
 
 class AuthenticationController {
@@ -138,6 +139,53 @@ class AuthenticationController {
       // Handle unexpected errors
       console.error('Error during disconnectPatient:', error);
       return res.status(500).json({ error: 'Internal Server Error: Unexpected error' });
+    }
+  }
+  static async connectDev(req, res) {
+    try {
+      // auth header
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Basic ')) {
+        return res.status(401).json({ error: 'Unauthorized: Missing or invalid Authorization header' });
+      }
+
+      // decoding and extracting email and password
+      const base64Credentials = authHeader.replace('Basic ', '');
+      const decodedCredentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
+      const credentials = decodedCredentials.split(':');
+      const email = credentials[0];
+      const password = credentials[1];
+
+      // missing email or password
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Bad Request: Missing email or password' });
+      }
+
+      // get dev data
+      const dev = await DevService.getDevByEmail(email);
+
+      if (!dev) {
+        // dev email not in db, not registered
+        return res.status(404).json({ error: 'Dev not found' });
+      }
+
+      // check password
+      const match = await bcrypt.compare(password, dev.password);
+      if (!match) {
+        return res.status(401).json({ error: 'Unauthorized: Wrong password' });
+      }
+
+      // create a token
+      const token = uuidv4();
+      const redisKey = `auth_${token}`;
+      const redisvalue = `dev_${dev._id.toString()}`;
+      await redisUtils.set(redisKey, redisvalue, (24 * 60 * 60));
+
+      return res.status(200).json({ token });
+    } catch (error) {
+      // Handle unexpected errors
+      console.error('Error during connectDev:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 }
