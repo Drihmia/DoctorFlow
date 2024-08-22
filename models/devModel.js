@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import validator from 'validator';
 import {
@@ -25,21 +26,28 @@ const devSchema = new mongoose.Schema({
       message: 'Password is weak'
     },
     required: [true, 'Password is required']
-  },
-  confirmPassword: {
-    type: String,
-    validate: {
-      validator: function (value) {
-        if (!this.password) return true;
-        return this.password === value;
-      },
-      message: 'Passwords do not match'
-    },
-    required: [confirmPasswordShouldBeRequired, 'Confirm password is required']
   }
+});
+
+devSchema.pre('save', async function (next) {
+  // Hash the password before saving the document
+  if (this.isModified('password')) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    } catch (err) {
+      return next(err);
+    }
+  }
+  next();
 });
 
 // enhance uniqueness of email field at schema level
 devSchema.index({ email: 1 }, { unique: true });
 
-export default devSchema;
+const Dev = mongoose.model('Dev', devSchema);
+
+
+Dev.init().catch(err => console.error('Index creation failed:', err));
+
+export default Dev;
