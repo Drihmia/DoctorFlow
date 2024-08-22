@@ -25,6 +25,20 @@ const swaggerDefinition = {
       },
     },
   },
+  tags: [
+    {
+      name: 'Doctors',
+      description: 'Endpoints for managing doctor-related data. Includes functionality for retrieving, creating, updating, and deleting doctor records, handling authentication with "connect" for token generation and "disconnect" for token deletion.',
+    },
+    {
+      name: 'Patients',
+      description: 'Endpoints for managing patient-related data. Includes functionality for retrieving, creating, updating, and deleting patient records, handling  authentication with "connect" for token generation and "disconnect" for token deletion.',
+    },
+    {
+      name: 'Sessions',
+      description: 'Endpoints for managing session-related data. Includes functionality for retrieving, creating, updating, and deleting session records',
+    },
+  ],
 };
 
 const options = {
