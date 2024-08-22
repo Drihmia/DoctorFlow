@@ -1,191 +1,39 @@
-import { Buffer } from 'buffer';
-
-import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcrypt';
-
+import { extractUserFromAuthHeader, generateAndSetToken } from '../utils/connectTools';
 import redisUtils from '../utils/redisUtils';
-import DoctorService from '../services/DoctorService';
-import DevService from '../services/DevService';
-import PatientService from '../services/PatientService';
 
 class AuthenticationController {
   static async connectDoctor (req, res) {
     try {
-      // auth header
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Basic ')) {
-        return res.status(401).json({ error: 'Unauthorized: Missing or invalid Authorization header' });
-      }
-
-      // decoding and extracting email and password
-      const base64Credentials = authHeader.replace('Basic ', '');
-      const decodedCredentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
-      const credentials = decodedCredentials.split(':');
-      const email = credentials[0];
-      const password = credentials[1];
-
-      // missing email or password
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Bad Request: Missing email or password' });
-      }
-
-      // get doctor data
-      const doctor = await DoctorService.getDoctorByEmail(email);
-
-      if (!doctor) {
-        // doctor email not in db, not registered
-        return res.status(404).json({ error: 'Doctor not found' });
-      }
-
-      // check password
-      const match = await bcrypt.compare(password, doctor.password);
-      if (!match) {
-        return res.status(401).json({ error: 'Unauthorized: Wrong password' });
-      }
-
-      // create a token
-      const token = uuidv4();
-      const redisKey = `auth_${token}`;
-      const redisvalue = `doctor_${doctor._id.toString()}`;
-      await redisUtils.set(redisKey, redisvalue, (24 * 60 * 60));
-
+      const doctor = await extractUserFromAuthHeader(req.headers, 'Doctor', res);
+      if (!doctor) return;
+      const token = await generateAndSetToken('doctor', doctor, res);
       return res.status(200).json({ token });
     } catch (error) {
-      // Handle unexpected errors
-      console.error('Error during connectDoctor:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
-    }
-  }
-
-  static async disconnectDoctor (req, res) {
-    try {
-      // check token passed req by AuthMiddleware
-      const token = req.token;
-
-      // delete token
-      const deleted = await redisUtils.del(`auth_${token}`);
-      if (!deleted) {
-        return res.status(500).json({ error: 'Internal Server Error: Failed to delete token' });
-      }
-      return res.status(200).json({ message: 'Successfully disconnected' });
-    } catch (error) {
-      // Handle unexpected errors
-      console.error('Error during disconnectDoctor:', error);
-      return res.status(500).json({ error: 'Internal Server Error: Unexpected error' });
     }
   }
 
   static async connectPatient (req, res) {
     try {
-      // auth header
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Basic ')) {
-        return res.status(401).json({ error: 'Unauthorized: Missing or invalid Authorization header' });
-      }
-
-      // decoding and extracting email and password
-      const base64Credentials = authHeader.replace('Basic ', '');
-      const decodedCredentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
-      const credentials = decodedCredentials.split(':');
-      const email = credentials[0];
-      const password = credentials[1];
-
-      // missing email or password
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Bad Request: Missing email or password' });
-      }
-
-      // get patient data
-      const patient = await PatientService.getPatientByEmail(email);
-
-      if (!patient) {
-        // patient email not in db, not registered
-        return res.status(404).json({ error: 'Patient not found' });
-      }
-
-      // check password
-      const match = await bcrypt.compare(password, patient.password);
-      if (!match) {
-        return res.status(401).json({ error: 'Unauthorized: Wrong password' });
-      }
-
-      // create a token
-      const token = uuidv4();
-
-      const redisKey = `auth_${token}`;
-      const redisvalue = `patient_${patient._id.toString()}`;
-      await redisUtils.set(redisKey, redisvalue, (24 * 60 * 60));
-
+      const patient = await extractUserFromAuthHeader(req.headers, 'Patient', res);
+      if (!patient) return;
+      const token = await generateAndSetToken('patient', patient, res);
       return res.status(200).json({ token });
     } catch (error) {
-      // Handle unexpected errors
-      console.error('Error during connectPatient:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 
-  static async disconnectPatient (req, res) {
+  static async disconnect (req, res) {
     try {
-      // check token passed in req by AuthMiddleware
-      const token = req.token;
-
       // delete token
-      const deleted = await redisUtils.del(`auth_${token}`);
+      const deleted = await redisUtils.del(`auth_${req.token}`);
       if (!deleted) {
         return res.status(500).json({ error: 'Internal Server Error: Failed to delete token' });
       }
       return res.status(200).json({ message: 'Successfully disconnected' });
     } catch (error) {
-      // Handle unexpected errors
-      console.error('Error during disconnectPatient:', error);
       return res.status(500).json({ error: 'Internal Server Error: Unexpected error' });
-    }
-  }
-  static async connectDev(req, res) {
-    try {
-      // auth header
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Basic ')) {
-        return res.status(401).json({ error: 'Unauthorized: Missing or invalid Authorization header' });
-      }
-
-      // decoding and extracting email and password
-      const base64Credentials = authHeader.replace('Basic ', '');
-      const decodedCredentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
-      const credentials = decodedCredentials.split(':');
-      const email = credentials[0];
-      const password = credentials[1];
-
-      // missing email or password
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Bad Request: Missing email or password' });
-      }
-
-      // get dev data
-      const dev = await DevService.getDevByEmail(email);
-
-      if (!dev) {
-        // dev email not in db, not registered
-        return res.status(404).json({ error: 'Dev not found' });
-      }
-
-      // check password
-      const match = await bcrypt.compare(password, dev.password);
-      if (!match) {
-        return res.status(401).json({ error: 'Unauthorized: Wrong password' });
-      }
-
-      // create a token
-      const token = uuidv4();
-      const redisKey = `auth_${token}`;
-      const redisvalue = `dev_${dev._id.toString()}`;
-      await redisUtils.set(redisKey, redisvalue, (24 * 60 * 60));
-
-      return res.status(200).json({ token });
-    } catch (error) {
-      // Handle unexpected errors
-      console.error('Error during connectDev:', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 }

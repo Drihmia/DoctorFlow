@@ -336,7 +336,7 @@ router.post('/patients', AuthMiddleware({ role: 'doctor' }), PatientController.a
 
 router.get('/patients/connect', AuthenticationController.connectPatient);
 
-router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnectPatient);
+router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnect);
 
 
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);

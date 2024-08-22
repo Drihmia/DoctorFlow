@@ -478,7 +478,7 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *                   description: Error message indicating an internal server error
  *                   example: "Internal Server Error: Unexpected error"
  */
-router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnectDoctor);
+router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnect);
 
 
 
