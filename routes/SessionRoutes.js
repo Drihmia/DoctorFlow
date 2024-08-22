@@ -141,6 +141,20 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *                 radOrders:
  *                   type: string
  *                   example: "Echocardiogram"
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-22T05:41:35.066Z"
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-22T05:41:35.201Z"
+ *                 age:
+ *                   type: integer
+ *                   example: 34
+ *                 __v:
+ *                   type: integer
+ *                   example: 0
  *       400:
  *         description: Validation error or missing required fields.
  *         content:
