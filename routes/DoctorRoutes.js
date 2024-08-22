@@ -8,7 +8,7 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
 const router = Router();
 
 
-
+// role is to be assigned to dev
 /**
  * @swagger
  * /doctors:
