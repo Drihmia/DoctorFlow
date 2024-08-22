@@ -4,132 +4,320 @@ import PatientController from '../controllers/PatientController';
 import AuthenticationController from '../controllers/AuthenticationController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
-/**
- * @swagger
- * tags:
- *   name: Patients
- *   description: User management and authentication
- */
 
-/**
- * @swagger
- * /patients:
- *   get:
- *     summary: Retrieve a list of all patients
- *     tags: [Patients]
- *     responses:
- *       200:
- *         description: A list of patients
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/models/patientModel.js'
- *       404:
- *         description: No patients found
- *       500:
- *         description: Internal server error
- */
 router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.getAllPatients);
 
 /**
  * @swagger
  * /patients:
  *   post:
- *     summary: Create a new patient
- *     tags: [Patients]
+ *     summary: Add a new patient to a doctor's patients
+ *     description: |
+ *       Adds a new patient to the system. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `doctor`.
+ *       
+ *       **Request Body:**
+ *       - Required fields: `firstName`, `lastName`,  `email`, `password`, `confirmPassword`, `gender`, `dob`, `Contact.phone`, `doctorId`.
+ *       - Optional fields: `bloodGroup`, `height`, `weight`, `Contact`: (`address`, `city`, `state`), `emergencyContact`, `medicalHistory`, `currentMedication`, `familyHistory`, `insurance`.
+ *       
+ *       **Response:**
+ *       - On success: Returns the details of the newly created patient, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
+ *       - On error: Provides details about validation issues, unauthorized access, or server errors.
+ *     tags:
+ *       - Patients
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "doctor-authentication-token"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Patient'
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: "Johnny"
+ *               lastName:
+ *                 type: string
+ *                 example: "Smith"
+ *               gender:
+ *                 type: string
+ *                 example: "M"
+ *               dob:
+ *                 type: string
+ *                 example: "1990-05-15"
+ *               email:
+ *                 type: string
+ *                 example: "johnnysmith@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "secureP@ssw0rd"
+ *               confirmPassword:
+ *                 type: string
+ *                 example: "secureP@ssw0rd"
+ *               doctor:
+ *                 type: string
+ *                 example: "66c5c864a73c8c2f1cbad794"
+ *               bloodGroup:
+ *                 type: string
+ *                 example: "O+"
+ *               height:
+ *                 type: string
+ *                 example: "175"
+ *               weight:
+ *                 type: string
+ *                 example: "70"
+ *               contact:
+ *                 type: object
+ *                 properties:
+ *                   phone:
+ *                     type: string
+ *                     example: "1223367890"
+ *                   address:
+ *                     type: string
+ *                     example: "4321 Elm Avenue"
+ *                   city:
+ *                     type: string
+ *                     example: "Buffalo"
+ *                   state:
+ *                     type: string
+ *                     example: "NY"
+ *                   emergencyContact:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: "Jane Doe"
+ *                       relationship:
+ *                         type: string
+ *                         example: "Sister"
+ *                       phone:
+ *                         type: string
+ *                         example: "0987654321"
+ *               medicalHistory:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["Diabetes", "Hypertension"]
+ *               currentMedication:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: "Insulin"
+ *                     startDate:
+ *                       type: string
+ *                       example: "2024-01-01"
+ *                     duration:
+ *                       type: string
+ *                       example: "6"
+ *                     dosage:
+ *                       type: string
+ *                       example: "10 units"
+ *                     description:
+ *                       type: string
+ *                       example: "For diabetes management"
+ *                     endDate:
+ *                       type: string
+ *                       example: "2024-07-01"
+ *               familyHistory:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     medicalCondition:
+ *                       type: string
+ *                       example: "Heart disease"
+ *                     relationship:
+ *                       type: string
+ *                       example: "Father"
+ *                     description:
+ *                       type: string
+ *                       example: "Had a heart attack at age 60"
+ *               insurance:
+ *                 type: string
+ *                 example: "HealthPlus"
  *     responses:
  *       201:
- *         description: The created patient
+ *         description: Patient created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Patient'
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier of the patient.
+ *                   example: "66c5c864a73c8c2f1cbad794"
+ *                 firstName:
+ *                   type: string
+ *                   example: "Johnny"
+ *                 lastName:
+ *                   type: string
+ *                   example: "Smith"
+ *                 gender:
+ *                   type: string
+ *                   example: "M"
+ *                 dob:
+ *                   type: string
+ *                   example: "1990-05-15"
+ *                 email:
+ *                   type: string
+ *                   example: "johnnysmith@example.com"
+ *                 doctor:
+ *                   type: string
+ *                   example: "60c72b2f9b1e8a5e4c8b4567"
+ *                 age:
+ *                   type: number
+ *                   example: 34
+ *                 bloodGroup:
+ *                   type: string
+ *                   example: "O+"
+ *                 height:
+ *                   type: string
+ *                   example: "175"
+ *                 weight:
+ *                   type: string
+ *                   example: "70"
+ *                 phone:
+ *                   type: string
+ *                   example: "1223367890"
+ *                 contact:
+ *                   type: object
+ *                   properties:
+ *                     address:
+ *                       type: string
+ *                       example: "4321 Elm Avenue"
+ *                     city:
+ *                       type: string
+ *                       example: "Buffalo"
+ *                     state:
+ *                       type: string
+ *                       example: "NY"
+ *                     emergencyContact:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: "Jane Doe"
+ *                         relationship:
+ *                           type: string
+ *                           example: "Sister"
+ *                         phone:
+ *                           type: string
+ *                           example: "0987654321"
+ *                 medicalHistory:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Diabetes", "Hypertension"]
+ *                 currentMedication:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: "Insulin"
+ *                       startDate:
+ *                         type: string
+ *                         example: "2024-01-01"
+ *                       duration:
+ *                         type: string
+ *                         example: "6"
+ *                       dosage:
+ *                         type: string
+ *                         example: "10 units"
+ *                       description:
+ *                         type: string
+ *                         example: "For diabetes management"
+ *                       endDate:
+ *                         type: string
+ *                         example: "2024-07-01"
+ *                 familyHistory:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       medicalCondition:
+ *                         type: string
+ *                         example: "Heart disease"
+ *                       relationship:
+ *                         type: string
+ *                         example: "Father"
+ *                       description:
+ *                         type: string
+ *                         example: "Had a heart attack at age 60"
+ *                 insurance:
+ *                   type: string
+ *                   example: "HealthPlus"
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-22T15:20:10.123Z"
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-22T15:20:10.123Z"
  *       400:
- *         description: Invalid input, object invalid
+ *         description: Bad Request - Missing required fields or validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Doctor not found"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - Insufficient permissions to access this endpoint
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error - Error during processing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal Server Error"
  */
 router.post('/patients', AuthMiddleware({ role: 'doctor' }), PatientController.addPatient);
-
-/**
- * @swagger
- * /patients/connect:
- *   get:
- *     summary: Authenticate a patient and generate a token
- *     tags: [Patients]
- *     security:
- *       - BasicAuth: []
- *     responses:
- *       200:
- *         description: Successfully authenticated patient and generated a token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                   description: Authentication token for the patient
- *       400:
- *         description: |
- *           Bad Request: Missing email or password
- *       401:
- *         description: |
- *           Unauthorized: Missing or invalid Authorization header or wrong password
- *       404:
- *         description: |
- *           Not Found: Patient not found
- *       500:
- *         description: |
- *           Internal Server Error: Unexpected error during authentication
- */
 router.get('/patients/connect', AuthenticationController.connectPatient);
-
-/**
- * @swagger
- * /patients/disconnect:
- *   get:
- *     summary: Disconnect a patient by invalidating their token
- *     tags: [Patients]
- *     parameters:
- *       - in: header
- *         name: x-token
- *         required: true
- *         schema:
- *           type: string
- *         description: |
- *           The token of the patient to be disconnected
- *     responses:
- *       200:
- *         description: |
- *           Successfully disconnected the patient
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Success message
- *       400:
- *         description: |
- *           Bad Request: Missing token
- *       401:
- *         description: |
- *           Unauthorized: Invalid or expired token
- *       500:
- *         description: |
- *           Internal Server Error
- */
 router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnectPatient);
+
+
 
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
 // Using updatePAtient for changing password by patient itself.
@@ -139,6 +327,8 @@ router.delete('/patients/:id', AuthMiddleware({ role: 'doctor', extraLayer: fals
 router.get('/patients/:id/sessions', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSessions);
 router.get('/patients/:id/sessions/:sessionId', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSession);
 router.get('/patients/:id/doctor', AuthMiddleware({ role: 'patient' }), PatientController.getPatientDoctor);
+
+
 
 // Will be imported by SessionRoutes.js
 export default router;
