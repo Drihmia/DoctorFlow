@@ -339,6 +339,94 @@ router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), Authenti
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
 // Using updatePAtient for changing password by patient itself.
 router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.updatePatient); // selective data
+
+/**
+ * @swagger
+ * /patients/{id}:
+ *   delete:
+ *     summary: Deletes a patient record.
+ *     description: |
+ *       Deletes a patient by their ID from the system. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `doctor`.
+ *       
+ *       **Request Parameters:**
+ *       - `id` (required): The unique identifier of the patient to be deleted.
+ *       
+ *       **Response:**
+ *       - On success: Returns a success message indicating the patient was deleted.
+ *       - On error: Provides details about unauthorized access, patient not found, or server errors.
+ *     tags:
+ *       - Patients
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "doctor-authentication-token"
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: The ID of the patient to delete.
+ *           example: "66c6fc10372e2c1d54da3418"
+ *     responses:
+ *       200:
+ *         description: Patient successfully deleted.
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Patient deleted"
+ *       400:
+ *         description: Bad Request - Missing ID or invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "id is required"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor or contact your patient for help."
+ *       404:
+ *         description: Patient not found or doctor not authorized.
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Patient not found"
+ *       500:
+ *         description: Server error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Internal server error"
+ */
 router.delete('/patients/:id', AuthMiddleware({ role: 'doctor', extraLayer: false }), PatientController.deletePatient);
 
 router.get('/patients/:id/sessions', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSessions);

@@ -20,7 +20,7 @@ const router = Router();
  *       - Bearer Token via `x-token` header.
  *       - Requires a role of `dev`.
  * 
- *       **Parameters:**
+ *       **Request Parameters:**
  *       - `page`: Optional. The page number for pagination.
  *       - `limit`: Optional. The number of records per page.
  *       - `x-token`: Required. The authentication token.
@@ -153,9 +153,9 @@ const router = Router();
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "An unexpected error occurred."
+ *                   example: "Internal server error"
  */
-router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllDoctors);
+router.get('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.getAllDoctors);
 
 
 /**
@@ -493,13 +493,6 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
- *         in: path
- *         description: The unique identifier of the doctor to retrieve.
- *         required: true
- *         schema:
- *           type: string
- *           example: "60c72b2f9b1e8a5e4c8b4567"
  *       - name: x-token
  *         in: header
  *         description: Token used for authentication.
@@ -507,6 +500,13 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *         schema:
  *           type: string
  *           example: "doctor-authentication-token"
+ *       - name: id
+ *         in: path
+ *         description: The unique identifier of the doctor to retrieve.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "60c72b2f9b1e8a5e4c8b4567"
  *     responses:
  *       200:
  *         description: Doctor details retrieved successfully
@@ -617,7 +617,7 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "An unexpected error occurred."
+ *                   example: "Internal server error"
  */
 router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctor);
 
@@ -633,6 +633,9 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
  *       
+ *       **Request Parameters:**
+ *       - `id`: The unique identifier of the doctor to delete.
+ *
  *       **Request Body:**
  *       - Required fields: `firstName`, `lastName`, `password` (if updating, must be confirmed and meet strength criteria), `confirmPassword` (must match `password`), `gender` (must be 'M' or 'F'), `specialization`, `bio`, `dob`, `phone`, `address`, `city`, `state`.
  *       - Note: The `email` cannot be updated.
@@ -643,13 +646,6 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *     tags:
  *       - Doctors
  *     parameters:
- *       - name: id
- *         in: path
- *         description: The unique identifier of the doctor to retrieve.
- *         required: true
- *         schema:
- *           type: string
- *           example: "66c5c864a73c8c2f1cbad794"
  *       - name: x-token
  *         in: header
  *         description: Token used for authentication.
@@ -657,6 +653,13 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *         schema:
  *           type: string
  *           example: "doctor-authentication-token"
+ *       - name: id
+ *         in: path
+ *         description: The unique identifier of the doctor to retrieve.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c5c864a73c8c2f1cbad794"
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -818,7 +821,7 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "An unexpected error occurred."
+ *                   example: "Internal server error"
  */
 router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctor);
 
@@ -846,13 +849,6 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
- *         in: path
- *         description: The unique identifier of the doctor to delete.
- *         required: true
- *         schema:
- *           type: string
- *           example: "60c72b2f9b1e8a5e4c8b4567"
  *       - name: x-token
  *         in: header
  *         description: Token used for authentication.
@@ -860,6 +856,13 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *         schema:
  *           type: string
  *           example: "doctor-authentication-token"
+ *       - name: id
+ *         in: path
+ *         description: The unique identifier of the doctor to delete.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "60c72b2f9b1e8a5e4c8b4567"
  *     responses:
  *       200:
  *         description: Doctor deleted successfully
@@ -920,7 +923,7 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "An unexpected error occurred."
+ *                   example: "Internal server error"
  */
 router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctor);
 
@@ -944,14 +947,14 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
  *       
- *       **Path Parameters:**
+ *       **Request Parameters:**
  *       - `id` (string, required): The unique identifier of the doctor.
  *       
  *       **Response:**
  *       - On success: Returns a list of patients associated with the doctor, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about not finding the doctor, invalid ID, or server errors.
  *     tags:
- *       - Doctors
+ *       - Patients
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1161,7 +1164,7 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
  *       
- *       **Parameters:**
+ *       **Request Parameters:**
  *       - `id` (path): The unique identifier of the doctor.
  *       - `patientId` (path): The unique identifier of the patient to retrieve.
  *       
@@ -1169,7 +1172,7 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *       - On success: Returns details of the patient, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Doctors
+ *       - Patients
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1371,6 +1374,309 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *                   example: "Internal Server Error"
  */
 router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorPatient);
+
+/**
+ * @swagger
+ * /doctors/{id}/patients/{patientId}:
+ *   put:
+ *     summary: Update details of a specific patient of a doctor
+ *     description: |
+ *       Allows a doctor to update the details of a specific patient associated with them. Note that a doctor cannot update a patient's password through this endpoint.
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `doctor`.
+ *       
+ *       **Request Parameters:**
+ *       - `id` (path): The unique identifier of the doctor.
+ *       - `patientId` (path): The unique identifier of the patient to update.
+ *       
+ *       **Request Body:**
+ *       - An object containing the fields to update. The following fields can be updated: `firstName`, `lastName`, `email`, `gender`, `dob`, `contact.phone`, 
+ *         `bloodGroup`, `height`, `weight`, `contact`: (`address`, `city`, `state`), `emergencyContact`, `medicalHistory`, `currentMedication`, `familyHistory`, and `insurance`.
+ *       - Note: The `password` field is not allowed to be updated by the doctor.
+ *       
+ *       **Response:**
+ *       - On success: Returns the updated details of the patient, excluding the `confirmPassword` field.
+ *       - On error: Provides details about validation issues, unauthorized access, or server errors.
+ *     tags:
+ *       - Patients
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "doctor-authentication-token"
+ *       - name: id
+ *         in: path
+ *         description: The unique identifier of the doctor.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c5c864a73c8c2f1cbad794"
+ *       - name: patientId
+ *         in: path
+ *         description: The unique identifier of the patient.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c6d13850a701dcd952a5d6"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: "Johnny"
+ *               lastName:
+ *                 type: string
+ *                 example: "Smith"
+ *               gender:
+ *                 type: string
+ *                 example: "M"
+ *               bloodGroup:
+ *                 type: string
+ *                 example: "O+"
+ *               height:
+ *                 type: string
+ *                 example: "175"
+ *               weight:
+ *                 type: string
+ *                 example: "70"
+ *               email:
+ *                 type: string
+ *                 example: "johnnysmith@example.com"
+ *               dob:
+ *                 type: string
+ *                 example: "1990-05-15"
+ *               medicalHistory:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["Diabetes", "Hypertension"]
+ *               currentMedication:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: "Insulin"
+ *                     startDate:
+ *                       type: string
+ *                       example: "2024-01-01"
+ *                     duration:
+ *                       type: string
+ *                       example: "6"
+ *                     dosage:
+ *                       type: string
+ *                       example: "10 units"
+ *                     description:
+ *                       type: string
+ *                       example: "For diabetes management"
+ *                     endDate:
+ *                       type: string
+ *                       example: "2024-07-01T00:00:00.000Z"
+ *               familyHistory:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     medicalCondition:
+ *                       type: string
+ *                       example: "Heart disease"
+ *                     relationship:
+ *                       type: string
+ *                       example: "Father"
+ *                     description:
+ *                       type: string
+ *                       example: "Had a heart attack at age 60"
+ *               insurance:
+ *                 type: string
+ *                 example: "HealthPlus"
+ *     responses:
+ *       200:
+ *         description: Patient details updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 contact:
+ *                   type: object
+ *                   properties:
+ *                     phone:
+ *                       type: string
+ *                       example: "1223367890"
+ *                     address:
+ *                       type: string
+ *                       example: "4321 Elm Avenue"
+ *                     city:
+ *                       type: string
+ *                       example: "Buffalo"
+ *                     state:
+ *                       type: string
+ *                       example: "NY"
+ *                     emergencyContact:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: "Jane Doe"
+ *                         relationship:
+ *                           type: string
+ *                           example: "Sister"
+ *                         phone:
+ *                           type: string
+ *                           example: "0987654321"
+ *                 _id:
+ *                   type: string
+ *                   example: "66c6d13850a701dcd952a5d6"
+ *                 firstName:
+ *                   type: string
+ *                   example: "Johnny"
+ *                 lastName:
+ *                   type: string
+ *                   example: "Smith"
+ *                 gender:
+ *                   type: string
+ *                   example: "M"
+ *                 bloodGroup:
+ *                   type: string
+ *                   example: "O+"
+ *                 height:
+ *                   type: string
+ *                   example: "175"
+ *                 weight:
+ *                   type: string
+ *                   example: "70"
+ *                 email:
+ *                   type: string
+ *                   example: "johnnysmith@example.com"
+ *                 doctor:
+ *                   type: string
+ *                   example: "66c5c864a73c8c2f1cbad794"
+ *                 sessions:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
+ *                 dob:
+ *                   type: string
+ *                   example: "1990-05-15"
+ *                 medicalHistory:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Diabetes", "Hypertension"]
+ *                 currentMedication:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: "Insulin"
+ *                       startDate:
+ *                         type: string
+ *                         example: "2024-01-01"
+ *                       duration:
+ *                         type: string
+ *                         example: "6"
+ *                       dosage:
+ *                         type: string
+ *                         example: "10 units"
+ *                       description:
+ *                         type: string
+ *                         example: "For diabetes management"
+ *                       endDate:
+ *                         type: string
+ *                         example: "2024-07-01T00:00:00.000Z"
+ *                       _id:
+ *                         type: string
+ *                         example: "66c6d13850a701dcd952a5d7"
+ *                 familyHistory:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       medicalCondition:
+ *                         type: string
+ *                         example: "Heart disease"
+ *                       relationship:
+ *                         type: string
+ *                         example: "Father"
+ *                       description:
+ *                         type: string
+ *                         example: "Had a heart attack at age 60"
+ *                       _id:
+ *                         type: string
+ *                         example: "66c6d13850a701dcd952a5d8"
+ *                 insurance:
+ *                   type: string
+ *                   example: "HealthPlus"
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-22T05:48:40.893Z"
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-22T05:48:41.009Z"
+ *                 age:
+ *                   type: integer
+ *                   example: 34
+ *                 __v:
+ *                   type: integer
+ *                   example: 0
+ *       400:
+ *         description: Bad Request - Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Validation Error"
+ *       404:
+ *         description: Doctor or patient not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Patient not found"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       500:
+ *         description: Internal Server Error - Error during processing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
 router.put('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorPatient);
 
 // Will be imported by PatientRoutes.js
