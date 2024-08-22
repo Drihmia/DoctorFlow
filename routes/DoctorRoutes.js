@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import DoctorController from '../controllers/DoctorController';
-import PatientController from '../controllers/PatientController';
 import AuthenticationController from '../controllers/AuthenticationController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
@@ -157,7 +156,6 @@ const router = Router();
  *                   example: "Internal server error"
  */
 router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllDoctors);
-
 
 /**
  * @swagger
@@ -478,8 +476,6 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *                   example: "Internal Server Error: Unexpected error"
  */
 router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnect);
-
-
 
 /**
  * @swagger
@@ -1547,8 +1543,6 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *                   example: "Internal server error"
  */
 router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
-
-
 
 //
 /**
