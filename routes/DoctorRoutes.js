@@ -8,11 +8,12 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
 const router = Router();
 
 
+
 /**
  * @swagger
  * /doctors:
  *   get:
- *     summary: Retrieve a list of all doctors (restricted to 'dev' role)
+ *     summary: Retrieve a list of all doctors  - for dev.
  *     description: |
  *       Retrieves a list of all doctors with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
  *       
@@ -162,7 +163,7 @@ router.get('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.getA
  * @swagger
  * /doctors:
  *   post:
- *     summary: Create a new doctor account
+ *     summary: Create a new doctor account - for doctor (anyone).
  *     description: |
  *       Creates a new doctor account with the provided details.
  *       
@@ -326,7 +327,7 @@ router.post('/doctors', DoctorController.addDoctor);
  * @swagger
  * /doctors/connect:
  *   get:
- *     summary: Connect a doctor and create a session token
+ *     summary: Connect a doctor and create a session token - for doctor.
  *     description: |
  *       Authenticates a doctor using Basic Auth credentials in the format `email:password`, where the credentials are base64 encoded. On successful authentication, a session token is generated and returned.
  *       
@@ -403,7 +404,7 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  * @swagger
  * /doctors/disconnect:
  *   get:
- *     summary: Disconnect a doctor by removing their session token
+ *     summary: Disconnect a doctor by removing their session token - for doctor.
  *     description: |
  *       Logs out a doctor by deleting their session token from Redis, effectively ending their session. This endpoint requires the doctor to be authenticated with a valid session token.
  *       
@@ -472,12 +473,11 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
 router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnectDoctor);
 
 
-
 /**
  * @swagger
  * /doctors/{id}:
  *   get:
- *     summary: Retrieve a doctor's own details
+ *     summary: Retrieve a doctor's own details - for doctor.
  *     description: |
  *       Fetches the details of the authenticated doctor by their ID. This endpoint requires the doctor to be authenticated with a valid session token and must be performed by the doctor who owns the profile.
  *       
@@ -625,7 +625,7 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  * @swagger
  * /doctors/{id}:
  *   put:
- *     summary: Update a doctor's own details
+ *     summary: Update a doctor's own details - for doctor.
  *     description: |
  *       Updates the authenticated doctor's details. This endpoint requires authentication with a valid session token and must be performed by the doctor who owns the profile.
  *       
@@ -829,7 +829,7 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  * @swagger
  * /doctors/{id}:
  *   delete:
- *     summary: Delete a doctor's own profile
+ *     summary: Delete a doctor's own profile - for doctor.
  *     description: |
  *       Deletes the authenticated doctor's profile. A doctor can only delete their own profile using this endpoint. 
  *       This action requires authentication and must be performed by the doctor who owns the profile. 
@@ -927,19 +927,305 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  */
 router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctor);
 
+
 //
-router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSessions);
 router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSession);
+/**
+ * @swagger
+ * /doctors/{id}/sessions/{sessionId}:
+ *   put:
+ *     summary: Updates a session for a doctor - for doctor.
+ *     description: |
+ *       Updates a specific session for a given doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `doctor`.
+ *       
+ *       **Request Body:**
+ *       - Optional fields: `type`, `date`, `time`, `nextAppointment`, `notes`, `privateNotes`, `prescription`, `diagnosis`, `labTests`, `radOrders`.
+ *       
+ *       **Response:**
+ *       - On success: Returns the updated session details.
+ *       - On error: Provides details about validation issues, unauthorized access, or server errors.
+ *     tags:
+ *       - Sessions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: The ID of the doctor whose session is being updated.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c5c864a73c8c2f1cbad794"
+ *       - name: sessionId
+ *         in: path
+ *         description: The ID of the session to be updated.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c6d13b50a701dcd952a5e0"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: ["Consultation", "Follow up", "Routine"]
+ *                 description: The type of session. Defaults to "Consultation".
+ *                 example: "Consultation"
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The date of the session. Defaults to the current date.
+ *                 example: "2024-08-22T10:00:00Z"
+ *               time:
+ *                 type: string
+ *                 description: The time of the session. Defaults to the current time.
+ *                 example: "10:00"
+ *               nextAppointment:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The next appointment date for the patient.
+ *                 example: "2024-09-03T10:00:00Z"
+ *               notes:
+ *                 type: string
+ *                 description: General notes visible to the doctor and patient.
+ *                 example: "Follow-up in one week to assess blood pressure and adjust treatment if necessary."
+ *               privateNotes:
+ *                 type: string
+ *                 description: Private notes visible only to the doctor.
+ *                 example: "Monitor blood pressure closely and assess for potential side effects of Lisinopril. Consider adding additional tests if blood pressure remains uncontrolled or if new symptoms arise."
+ *               prescription:
+ *                 type: string
+ *                 description: Any prescription given during the session.
+ *                 example: "20mg Lisinopril daily, Hydrochlorothiazide 12.5mg daily"
+ *               diagnosis:
+ *                 type: string
+ *                 description: The diagnosis made during the session.
+ *                 example: "Hypertension"
+ *               labTests:
+ *                 type: string
+ *                 description: Any lab tests ordered during the session.
+ *                 example: "Electrolyte panel, Renal function tests"
+ *               radOrders:
+ *                 type: string
+ *                 description: Any radiology orders made during the session.
+ *                 example: "Echocardiogram"
+ *     responses:
+ *       200:
+ *         description: Session updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "66c6d13b50a701dcd952a5e0"
+ *                 doctor:
+ *                   type: string
+ *                   example: "66c5c864a73c8c2f1cbad794"
+ *                 patient:
+ *                   type: string
+ *                   example: "66c6d13850a701dcd952a5d6"
+ *                 type:
+ *                   type: string
+ *                   example: "Consultation"
+ *                 date:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-22T10:00:00Z"
+ *                 time:
+ *                   type: string
+ *                   example: "10:00"
+ *                 nextAppointment:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-09-03T10:00:00Z"
+ *                 notes:
+ *                   type: string
+ *                   example: "Follow-up in one week to assess blood pressure and adjust treatment if necessary."
+ *                 privateNotes:
+ *                   type: string
+ *                   example: "Monitor blood pressure closely and assess for potential side effects of Lisinopril. Consider adding additional tests if blood pressure remains uncontrolled or if new symptoms arise."
+ *                 prescription:
+ *                   type: string
+ *                   example: "20mg Lisinopril daily, Hydrochlorothiazide 12.5mg daily"
+ *                 diagnosis:
+ *                   type: string
+ *                   example: "Hypertension"
+ *                 labTests:
+ *                   type: string
+ *                   example: "Electrolyte panel, Renal function tests"
+ *                 radOrders:
+ *                   type: string
+ *                   example: "Echocardiogram"
+ *       400:
+ *         description: Validation error or missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Bad Request: Missing or invalid fields"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - Insufficient permissions to access this endpoint
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
+ *       404:
+ *         description: Not Found - Doctor or session not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Session not found"
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
 router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorSession);
 
-//
+/**
+ * @swagger
+ * /doctors/{id}/sessions/{sessionId}:
+ *   delete:
+ *     summary: Deletes a session for a doctor and patient - for doctor.
+ *     description: |
+ *       Deletes a specific session for a given doctor and patient. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
+ *       
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `doctor`.
+ * 
+ *       **Request Parameters:**
+ *       - `id` (path): The unique identifier of the doctor.
+ *       - `patientId` (path): The unique identifier of the patient to retrieve.
+ * 
+ *       **Response:**
+ *       - On success: Redirects to `/sessions/{sessionId}` with status code 307.
+ *       - On error: Provides details about unauthorized access, missing resources, or server errors.
+ *     tags:
+ *       - Sessions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "doctor-authentication-token"
+ *       - name: id
+ *         in: path
+ *         description: The ID of the doctor whose session is being deleted.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c5c864a73c8c2f1cbad794"
+ *       - name: sessionId
+ *         in: path
+ *         description: The ID of the session to be deleted.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c6d13b50a701dcd952a5e0"
+ *     responses:
+ *       200:
+ *         description: Session deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Session deleted"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - You are not allowed to delete this session.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "You are not allowed to delete this session"
+ *       404:
+ *         description: Not Found - Doctor or session not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Session not found"
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 
+
+//
 /**
  * @swagger
  * /doctors/{id}/patients/:
  *   get:
- *     summary: Retrieve a list of patients associated with a specific doctor
+ *     summary: Retrieve a list of patients associated with a specific doctor - for doctor.
  *     description: |
  *       Fetches all patients associated with the specified doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
  *       
@@ -1109,16 +1395,6 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *                   __v:
  *                     type: integer
  *                     example: 0
- *       404:
- *         description: Doctor not found or invalid ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Doctor not found"
  *       401:
  *         description: Unauthorized - Invalid or expired token
  *         content:
@@ -1139,6 +1415,16 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *                 error:
  *                   type: string
  *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
+ *       404:
+ *         description: Doctor not found or invalid ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Doctor not found"
  *       500:
  *         description: Internal Server Error - Error during processing
  *         content:
@@ -1156,7 +1442,7 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  * @swagger
  * /doctors/{id}/patients/{patientId}:
  *   get:
- *     summary: Retrieve a specific patient of a doctor
+ *     summary: Retrieve a specific patient of a doctor - for doctor.
  *     description: |
  *       Fetches details of a specific patient associated with a doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
  *       
@@ -1379,7 +1665,7 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  * @swagger
  * /doctors/{id}/patients/{patientId}:
  *   put:
- *     summary: Update details of a specific patient of a doctor
+ *     summary: Update details of a specific patient of a doctor - for doctor.
  *     description: |
  *       Allows a doctor to update the details of a specific patient associated with them. Note that a doctor cannot update a patient's password through this endpoint.
  *       
@@ -1678,6 +1964,7 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *                   example: "Internal Server Error"
  */
 router.put('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorPatient);
+
 
 // Will be imported by PatientRoutes.js
 export default router;

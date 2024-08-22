@@ -5,13 +5,15 @@ import AuthenticationController from '../controllers/AuthenticationController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 
+// role is to be assigned to dev
 router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.getAllPatients);
+
 
 /**
  * @swagger
  * /patients:
  *   post:
- *     summary: Add a new patient to a doctor's patients
+ *     summary: Add a new patient to a doctor's patients - for doctor.
  *     description: |
  *       Adds a new patient to the system. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
  *       
@@ -298,7 +300,7 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Doctor not found"
+ *                   example: "Bad Request: Missing token"
  *       401:
  *         description: Unauthorized - Invalid or expired token
  *         content:
@@ -331,20 +333,20 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *                   example: "Internal Server Error"
  */
 router.post('/patients', AuthMiddleware({ role: 'doctor' }), PatientController.addPatient);
-router.get('/patients/connect', AuthenticationController.connectPatient);
-router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnectPatient);
 
+router.get('/patients/connect', AuthenticationController.connectPatient);
+
+router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnectPatient);
 
 
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
 // Using updatePAtient for changing password by patient itself.
 router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.updatePatient); // selective data
-
 /**
  * @swagger
  * /patients/{id}:
  *   delete:
- *     summary: Deletes a patient record.
+ *     summary: Deletes a patient record - for doctor.
  *     description: |
  *       Deletes a patient by their ID from the system. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
  *       
@@ -432,7 +434,6 @@ router.delete('/patients/:id', AuthMiddleware({ role: 'doctor', extraLayer: fals
 router.get('/patients/:id/sessions', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSessions);
 router.get('/patients/:id/sessions/:sessionId', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSession);
 router.get('/patients/:id/doctor', AuthMiddleware({ role: 'patient' }), PatientController.getPatientDoctor);
-
 
 
 // Will be imported by SessionRoutes.js
