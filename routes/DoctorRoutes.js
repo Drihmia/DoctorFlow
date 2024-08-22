@@ -52,7 +52,7 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
- *           example: "doctor-authentication-token"
+ *           example: "dev-authentication-token"
  *     responses:
  *       200:
  *         description: A list of doctors retrieved successfully.
