@@ -22,9 +22,10 @@ const router = Router();
  *       - Requires a role of `dev`.
  * 
  *       **Request Parameters:**
- *       - `page`: Optional. The page number for pagination.
- *       - `limit`: Optional. The number of records per page.
- *       - `x-token`: Required. The authentication token.
+ *       - `x-token` (header, required): The authentication token.
+
+ *       - `page` (header, optional): The page number for pagination.
+ *       - `limit` (header, optional): Optional. The number of records per page.
  *
  *       **Response:**
  *       - A list of doctor objects, each containing details such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, and more.
@@ -33,6 +34,13 @@ const router = Router();
  *     security:
  *       - bearerAuth: []
  *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
  *       - name: page
  *         in: query
  *         description: The page number to retrieve (for pagination).
@@ -47,13 +55,6 @@ const router = Router();
  *         schema:
  *           type: integer
  *           example: 10
- *       - name: x-token
- *         in: header
- *         description: Token used for authentication.
- *         required: true
- *         schema:
- *           type: string
- *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
  *     responses:
  *       200:
  *         description: A list of doctors retrieved successfully.
@@ -333,7 +334,10 @@ router.post('/doctors', DoctorController.addDoctor);
  *       
  *       **Authentication:**
  *       - Basic Auth is required with credentials in the format `email:password` encoded in Base64.
- *       
+ *  
+ *       **Request Headers:**
+ *       - `Authorization` (header, required): Basic Authentication credentials encoded in Base64. Example: `Basic dXNlcjpzZWNyZXQxMjM=`
+ * 
  *       **Response:**
  *       - On success: Returns the session token for the authenticated doctor.
  *       - On error: Provides details about missing credentials, invalid credentials, or server issues.
@@ -412,6 +416,10 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *       - Token-based authentication is used, where the token should be passed in the `X-Token` header.
  *       - The `X-Token` value must be a valid session token issued during login.
  *       - Requires a role of `doctor`.
+ * 
+ *       **Request Parameters:**
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ * 
  *     tags:
  *       - Doctors
  *     security:
@@ -485,7 +493,11 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *
+ * 
+ *       **Request Parameters:**
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor.
+ * 
  *       **Response:**
  *       - On success: Returns the details of the authenticated doctor, including fields such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, `bio`, `dob`, `phone`, and more.
  *       - On error: Provides details about issues such as invalid token, doctor not found, or server errors.
@@ -635,7 +647,8 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *       - Requires a role of `doctor`.
  *       
  *       **Request Parameters:**
- *       - `id`: The unique identifier of the doctor to delete.
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor to update.
  *
  *       **Request Body:**
  *       - Required fields: `firstName`, `lastName`, `password` (if updating, must be confirmed and meet strength criteria), `confirmPassword` (must match `password`), `gender` (must be 'M' or 'F'), `specialization`, `bio`, `dob`, `phone`, `address`, `city`, `state`.
@@ -840,8 +853,9 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *       - Requires a role of `doctor`.
  *       
  *       **Request Parameters:**
- *       - `id`: The unique identifier of the doctor to delete.
- *       
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor to delete.
+ * 
  *       **Response:**
  *       - On success: Returns a confirmation message indicating that the doctor has been deleted.
  *       - On error: Provides details about missing ID, unauthorized access, or server errors.
@@ -944,7 +958,8 @@ router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorControll
  *       - Requires a role of `doctor`.
  *       
  *       **Request Parameters:**
- *       - `id`: The unique identifier of the doctor to retrieve all their sessions for.
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor to retrieve all their sessions for.
  * 
  *       **Response:**
  *       - On success: Returns an array of session objects for the specified doctor.
@@ -1079,8 +1094,9 @@ router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *       - Requires a role of `doctor`.
  *       
  *       **Request Parameters:**
- *       - `id` (path): The unique identifier of the doctor.
- *       - `sessionId` (path): The unique identifier of the session to update.
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor.
+ *       - `sessionId` (path, required): The unique identifier of the session to update.
  *
  *       **Response:**
  *       - On success: Returns the details of the requested session.
@@ -1230,8 +1246,9 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *       - Requires a role of `doctor`.
  *       
  *       **Request Parameters:**
- *       - `id` (path): The unique identifier of the doctor.
- *       - `sessionId` (path): The unique identifier of the session to update.
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor.
+ *       - `sessionId` (path, required): The unique identifier of the session to update.
  * 
  *       **Request Body:**
  *       - Optional fields: `type`, `date`, `time`, `nextAppointment`, `notes`, `privateNotes`, `prescription`, `diagnosis`, `labTests`, `radOrders`.
@@ -1444,8 +1461,9 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *       - Requires a role of `doctor`.
  * 
  *       **Request Parameters:**
- *       - `id` (path): The unique identifier of the doctor.
- *       - `patientId` (path): The unique identifier of the patient to retrieve.
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor.
+ *       - `sessionId` (path, required): The unique identifier of the patient to retrieve.
  * 
  *       **Response:**
  *       - On success: Redirects to `/sessions/{sessionId}` with status code 307.
@@ -1546,7 +1564,8 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *       - Requires a role of `doctor`.
  *       
  *       **Request Parameters:**
- *       - `id` (string, required): The unique identifier of the doctor.
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor.
  *       
  *       **Response:**
  *       - On success: Returns a list of patients associated with the doctor, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
@@ -1763,8 +1782,9 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *       - Requires a role of `doctor`.
  *       
  *       **Request Parameters:**
- *       - `id` (path): The unique identifier of the doctor.
- *       - `patientId` (path): The unique identifier of the patient to retrieve.
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor.
+ *       - `patientId` (path, required): The unique identifier of the patient to retrieve.
  *       
  *       **Response:**
  *       - On success: Returns details of the patient, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
@@ -1986,8 +2006,9 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *       - Requires a role of `doctor`.
  *       
  *       **Request Parameters:**
- *       - `id` (path): The unique identifier of the doctor.
- *       - `patientId` (path): The unique identifier of the patient to update.
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the doctor.
+ *       - `patientId` (path, required): The unique identifier of the patient to update.
  *       
  *       **Request Body:**
  *       - An object containing the fields to update. The following fields can be updated: `firstName`, `lastName`, `email`, `gender`, `dob`, `contact.phone`, 
