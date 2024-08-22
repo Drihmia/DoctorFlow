@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Patient from '../middlewares/patientMiddleware';
 // import Doctor from '../middlewares/doctorMiddleware';
 import DoctorService from './doctorService';
+import { filtredSessions } from '../utils/tools';
 
 class PatientService {
   getPatients(page = 0, size = 10) {
@@ -86,8 +87,9 @@ class PatientService {
       const filtredSession = populatedSessions
         .filter(session => session._id.toString() === sessionId);
 
-      if (filtredSession.length !== 0) {
-        return filtredSession[0];
+      if (filtredSession.length === 1) {
+        const sessions = await filtredSessions(this, patient, filtredSession);
+        return sessions[0];
       }
     } catch (error) {
       res.status(404).send({ message: 'Session not found' });
@@ -96,8 +98,10 @@ class PatientService {
   }
 
   async getPatientSessions (patient) {
-    const sessions = await patient.populate('sessions');
-    return sessions.sessions;
+    const populatedSessions = await patient.populate('sessions');
+    const sessions = populatedSessions.sessions;
+
+    return filtredSessions(this, patient, sessions);
   }
 
   async getPatientDoctor (patient) {

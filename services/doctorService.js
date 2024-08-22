@@ -108,6 +108,26 @@ class DoctorService {
     updatedUser.confirmPassword = undefined;
     return updatedUser;
   }
+
+  async updateDoctorSessionById(doctor, sessionId, query) {
+    const session = await this.getDoctorSessionById(doctor, sessionId);
+    if (!session) return 1;
+
+    // Doctor should not be able to change the password of the session
+    if (query.password) {
+      delete query.password;
+    }
+
+    if (query.confirmPassword) {
+      delete query.confirmPassword;
+    }
+
+    const updatedUser = await this.updateADoctor(session, query);
+
+    // remove confirmPassword from the response
+    updatedUser.confirmPassword = undefined;
+    return updatedUser;
+  }
 }
 
 export default new DoctorService();
