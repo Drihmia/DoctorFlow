@@ -97,11 +97,19 @@ class PatientController {
 
     try {
       const patient = await PatientService.getPatientById(id);
-      if (patient) {
-        await PatientService.deleteAPatient(id, patient.doctor);
-        return res.status(200).json({ message: 'Patient deleted' });
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found' });
       }
-      return res.status(404).json({ error: 'Patient not found' });
+
+      // to fully delete a patient, we need to delete the patient from the doctor's patient list
+      const patientDocPopulated = await patient.populate('doctor');
+      const doctorDoc = patientDocPopulated.doctor;
+      if (!doctorDoc) {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+
+      await PatientService.deleteAPatient(id, doctorDoc);
+      return res.status(200).json({ message: 'Patient deleted' });
     } catch (error) {
       // If user provides an invalid id, ObjectId will throw an error
       if (error.kind === 'ObjectId') {

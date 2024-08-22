@@ -20,7 +20,6 @@ class PatientService {
   async createPatient(query) {
     if (query.doctorId) {
       try {
-        console.log('query.doctorId:', query.doctorId);
         query.doctor = new mongoose.Types.ObjectId(query.doctorId);
         delete query.doctorId;
       } catch (error) {
@@ -66,17 +65,12 @@ class PatientService {
     return updatedUser;
   }
 
-  async deleteAPatient(id, doctorId) {
+  async deleteAPatient(id, doctor) {
     try {
-      if (id) {
-        const doctor = await DoctorService.getDoctorById(doctorId);
-        if (doctor) {
-          const query = {};
-          query.patients = doctor.patients.filter(patientId => !patientId.equals(id));
-          await DoctorService.updateADoctor(doctor, query);
-        }
-        return Patient.findByIdAndDelete(id);
-      }
+      const query = {};
+      query.patients = doctor.patients.filter(patientId => !patientId.equals(id));
+      await DoctorService.updateADoctor(doctor, query);
+      return Patient.findByIdAndDelete(id);
     } catch (error) {
       console.error('Error deleting patient:', error);
       throw new Error('Failed to delete the patient.');

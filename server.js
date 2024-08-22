@@ -20,6 +20,11 @@ try {
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
 app.use(route);
 
 // Middleware to handle invalid JSON format, in case the user sends an invalid JSON payload
