@@ -4,10 +4,12 @@ import { v4 as uuidv4 } from 'uuid';
 import redisUtils from '../utils/redisUtils';
 import DoctorService from '../services/DoctorService';
 import PatientService from '../services/PatientService';
+import DevService from '../services/DevService';
 
 const _GetUserByEmail = {
   Doctor: DoctorService.getDoctorByEmail,
-  Patient: PatientService.getPatientByEmail
+  Patient: PatientService.getPatientByEmail,
+  Dev: DevService._getDevByEmail
 };
 
 const extractUserFromAuthHeader = async ({ authorization }, userType, res) => {
@@ -29,6 +31,8 @@ const extractUserFromAuthHeader = async ({ authorization }, userType, res) => {
     res.status(400).json({ error: 'Bad Request: Missing email or password' });
     return false;
   }
+  console.log('email', email);
+  console.log('password', password);
 
   // get user  data
   const user = await _GetUserByEmail[userType](email);

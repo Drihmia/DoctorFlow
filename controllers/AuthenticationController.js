@@ -24,6 +24,17 @@ class AuthenticationController {
     }
   }
 
+  static async connectDev (req, res) {
+    try {
+      const dev = await extractUserFromAuthHeader(req.headers, 'Dev', res);
+      if (!dev) return;
+      const token = await generateAndSetToken('dev', dev, res);
+      return res.status(200).json({ token });
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
   static async disconnect (req, res) {
     try {
       // delete token
