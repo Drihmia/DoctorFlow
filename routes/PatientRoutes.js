@@ -158,31 +158,15 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *             schema:
  *               type: object
  *               properties:
- *                 _id:
- *                   type: string
- *                   description: The unique identifier of the patient.
- *                   example: "66c5c864a73c8c2f1cbad794"
  *                 firstName:
  *                   type: string
  *                   example: "Johnny"
  *                 lastName:
  *                   type: string
- *                   example: "Smith"
+ *                   example: "SMITH"
  *                 gender:
  *                   type: string
  *                   example: "M"
- *                 dob:
- *                   type: string
- *                   example: "1990-05-15"
- *                 email:
- *                   type: string
- *                   example: "johnnysmith@example.com"
- *                 doctor:
- *                   type: string
- *                   example: "60c72b2f9b1e8a5e4c8b4567"
- *                 age:
- *                   type: number
- *                   example: 34
  *                 bloodGroup:
  *                   type: string
  *                   example: "O+"
@@ -192,12 +176,26 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *                 weight:
  *                   type: string
  *                   example: "70"
- *                 phone:
+ *                 email:
  *                   type: string
- *                   example: "1223367890"
+ *                   example: "johnnysmith@example.com"
+ *                 password:
+ *                   type: string
+ *                   example: "$2b$10$uac4af8ApINZECNONY7Gh.Ep2eKRQtX6Jq4zm04vGA0OeVjfxBWO2"
+ *                 doctor:
+ *                   type: string
+ *                   example: "66c5c864a73c8c2f1cbad794"
+ *                 sessions:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
  *                 contact:
  *                   type: object
  *                   properties:
+ *                     phone:
+ *                       type: string
+ *                       example: "1223367890"
  *                     address:
  *                       type: string
  *                       example: "4321 Elm Avenue"
@@ -219,6 +217,9 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *                         phone:
  *                           type: string
  *                           example: "0987654321"
+ *                 dob:
+ *                   type: string
+ *                   example: "1990-05-15"
  *                 medicalHistory:
  *                   type: array
  *                   items:
@@ -246,7 +247,10 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *                         example: "For diabetes management"
  *                       endDate:
  *                         type: string
- *                         example: "2024-07-01"
+ *                         example: "2024-07-01T00:00:00.000Z"
+ *                       _id:
+ *                         type: string
+ *                         example: "66c6d13850a701dcd952a5d7"
  *                 familyHistory:
  *                   type: array
  *                   items:
@@ -261,17 +265,30 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *                       description:
  *                         type: string
  *                         example: "Had a heart attack at age 60"
+ *                       _id:
+ *                         type: string
+ *                         example: "66c6d13850a701dcd952a5d8"
  *                 insurance:
  *                   type: string
  *                   example: "HealthPlus"
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier of the patient.
+ *                   example: "66c6cf8fb5fb0ccefe9fb501"
  *                 createdAt:
  *                   type: string
  *                   format: date-time
- *                   example: "2024-08-22T15:20:10.123Z"
+ *                   example: "2024-08-22T05:41:35.066Z"
  *                 updatedAt:
  *                   type: string
  *                   format: date-time
- *                   example: "2024-08-22T15:20:10.123Z"
+ *                   example: "2024-08-22T05:41:35.201Z"
+ *                 age:
+ *                   type: integer
+ *                   example: 34
+ *                 __v:
+ *                   type: integer
+ *                   example: 0
  *       400:
  *         description: Bad Request - Missing required fields or validation errors
  *         content:
