@@ -62,6 +62,15 @@ class SessionService {
   }
 
   async deleteSession (id) {
+    const session = await this.getSessionById(id).populate('doctor patient');
+    if (!session) return false;
+
+    // Removing the session from the doctor and patient
+    session.doctor.sessions = session.doctor.sessions.filter((s) => s._id.toString() !== id);
+    session.patient.sessions = session.patient.sessions.filter((s) => s._id.toString() !== id);
+    await session.doctor.save();
+    await session.patient.save();
+
     return Session.findByIdAndDelete(id);
   }
 }
