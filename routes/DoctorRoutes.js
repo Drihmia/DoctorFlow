@@ -6,6 +6,7 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 const router = Router();
 
+// role: dev
 /**
  * @swagger
  * /doctors:
@@ -146,6 +147,8 @@ const router = Router();
  */
 router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllDoctors);
 
+
+// role: doctor
 /**
  * @swagger
  * /doctors:
@@ -594,7 +597,7 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: Only doctor can access this route. Please login as doctor or contact your patient for help."
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       404:
  *         description: Doctor not found
  *         content:
@@ -799,7 +802,7 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: Only doctor can access this route. Please login as doctor or contact your patient for help."
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       404:
  *         description: Doctor not found
  *         content:
@@ -902,7 +905,7 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: Only doctor can access this route. Please login as doctor or contact your patient for help."
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       404:
  *         description: Doctor not found
  *         content:
@@ -925,6 +928,7 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *                   example: "Internal server error"
  */
 router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctor);
+
 
 /**
  * @swagger
@@ -1429,7 +1433,6 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  */
 router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorSession);
 
-// Doctor GET all patients using GET /patients in the patient's routes
 // We have not sittled on the DELETE method for this route
 /**
  * @swagger
@@ -1530,6 +1533,7 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *                   example: "Internal server error"
  */
 router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
+
 
 /**
  * @swagger
@@ -1747,9 +1751,6 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *                   type: string
  *                   example: "Internal Server Error"
  */
-
-// Doctor: GET all patients using GET /patients in the patient's routes
-// We have not sittled on the DELETE method for this route
 router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorPatients);
 
 /**

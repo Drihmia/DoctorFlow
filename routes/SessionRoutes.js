@@ -3,6 +3,7 @@ import SessionController from '../controllers/SessionController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 
+// role: doctor
 /**
  * @swagger
  * /sessions:
@@ -208,14 +209,152 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  */
 router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.addSession);
 
-
+// role: dev
+/**
+ * @swagger
+ * /sessions:
+ *   get:
+ *     summary: Retrieve a list of all sessions  - for dev.
+ *     description: |
+ *       Retrieves a list of all sessions with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
+ *
+ *       **Authentication:**
+ *       - Bearer Token via `x-token` header.
+ *       - Requires a role of `dev`.
+ *
+ *       **Request Parameters:**
+ *       - `x-token` (header, required): The authentication token.
+ *       - `page` (header, optional): The page number for pagination.
+ *       - `limit` (header, optional): Optional. The number of records per page.
+ *
+ *       **Response:**
+ *       - A list of sessions objects, each containing details such as `_id`, `firstName`, `lastName`, `email`, `doctor`, `medicalHistory`, and more.
+ *     tags:
+ *       - Sessions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "eca7336d-7d3e-4123-9105-4b99f174d4c5"
+ *       - name: page
+ *         in: query
+ *         description: The page number to retrieve (for pagination).
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - name: limit
+ *         in: query
+ *         description: The number of records to retrieve per page (for pagination).
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *     responses:
+ *       200:
+ *         description: Appointment details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "66c715074cade6c9c617bc87"
+ *                   doctor:
+ *                     type: string
+ *                     example: "66c5c864a73c8c2f1cbad794"
+ *                   patient:
+ *                     type: string
+ *                     example: "66c6d13850a701dcd952a5d6"
+ *                   type:
+ *                     type: string
+ *                     example: "Consultation"
+ *                   date:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-08-22T10:00:00.000Z"
+ *                   time:
+ *                     type: string
+ *                     example: "10:00"
+ *                   nextAppointment:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-08-29T10:00:00.000Z"
+ *                   notes:
+ *                     type: string
+ *                     example: "Follow-up in one week to assess blood pressure and adjust treatment if necessary."
+ *                   privateNotes:
+ *                     type: string
+ *                     example: "Monitor blood pressure closely and assess for potential side effects of Lisinopril. Consider adding additional tests if blood pressure remains uncontrolled or if new symptoms arise."
+ *                   prescription:
+ *                     type: string
+ *                     example: "20mg Lisinopril daily"
+ *                   diagnosis:
+ *                     type: string
+ *                     example: "Hypertension"
+ *                   labTests:
+ *                     type: string
+ *                     example: "Electrolyte panel, Renal function tests"
+ *                   radOrders:
+ *                     type: string
+ *                     example: "Echocardiogram"
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-08-22T10:37:59.808Z"
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-08-22T10:37:59.809Z"
+ *                   __v:
+ *                     type: integer
+ *                     example: 0
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - Access restricted to 'dev' role
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Only users with 'dev' role can access this route."
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
 router.get('/sessions', AuthMiddleware({ role: 'dev' }), SessionController.getAllSessions);
+
 router.get('/sessions/:id', AuthMiddleware({ role: 'dev' }), SessionController.getSession);
 // role is to be assigned to dev
 router.put('/sessions/:id', AuthMiddleware({ role: 'doctor' }), SessionController.updateSession);
 // role is to be assigned to dev
 // This route should never be exposed to the client
 router.delete('/sessions/:id', AuthMiddleware({ role: 'doctor' }), SessionController.deleteSession);
-
 
 export default router;
