@@ -550,8 +550,160 @@ router.get('/patients', AuthMiddleware({ role: 'dev' }), PatientController.getAl
  */
 router.post('/patients', AuthMiddleware({ role: 'doctor' }), PatientController.addPatient);
 
+/**
+ * @swagger
+ * /patients/connect:
+ *   get:
+ *     summary: Connect a patient and create a session token - for patient.
+ *     description: |
+ *       Authenticates a patient using Basic Auth credentials in the format `email:password`, where the credentials are base64 encoded. On successful authentication, a session token is generated and returned.
+ *
+ *       **Authentication:**
+ *       - Basic Auth is required with credentials in the format `email:password` encoded in Base64.
+ *
+ *       **Request Headers:**
+ *       - `Authorization` (header, required): Basic Authentication credentials encoded in Base64. Example: `Basic dXNlcjpzZWNyZXQxMjM=`
+ *
+ *       **Response:**
+ *       - On success: Returns the session token for the authenticated patient.
+ *       - On error: Provides details about missing credentials, invalid credentials, or server issues.
+ *     tags:
+ *       - Patients
+ *     security:
+ *       - basicAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successfully authenticated the patient and created a session token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: The session token for the authenticated patient
+ *                   example: "84f86045-a8a6-4ef1-bbbd-b4c9c4796be7"
+ *       '400':
+ *         description: Bad Request - Missing email or password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating missing email or password
+ *                   example: "Bad Request: Missing email or password"
+ *       '401':
+ *         description: Unauthorized - Invalid credentials or wrong password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating missing or invalid Authorization header, or wrong credentials or password
+ *                   example: "Unauthorized: Missing or invalid Authorization header"
+ *       '404':
+ *         description: Not Found - Patient not registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating the patient was not found
+ *                   example: "Patient not found"
+ *       '500':
+ *         description: Internal Server Error - Unexpected error during authentication
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating an internal server error
+ *                   example: "Internal Server Error"
+ */
 router.get('/patients/connect', AuthenticationController.connectPatient);
 
+/**
+ * @swagger
+ * /patients/disconnect:
+ *   get:
+ *     summary: Disconnect a patient by removing their session token - for patient.
+ *     description: |
+ *       Logs out a patient by deleting their session token from Redis, effectively ending their session. This endpoint requires the patient to be authenticated with a valid session token.
+ *
+ *       **Authentication:**
+ *       - Token-based authentication is used, where the token should be passed in the `X-Token` header.
+ *       - The `X-Token` value must be a valid session token issued during login.
+ *       - Requires a role of `patient`.
+ *
+ *       **Request Parameters:**
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *
+ *     tags:
+ *       - Patients
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
+ *     responses:
+ *       '200':
+ *         description: Successfully disconnected the patient
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message indicating that the patient has been successfully disconnected
+ *                   example: "Successfully disconnected"
+ *       '400':
+ *         description: Bad Request - Missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating a missing or invalid token
+ *                   example: "Bad Request: Missing token"
+ *       '401':
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating an invalid or expired token
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       '500':
+ *         description: Internal Server Error - Unexpected error during disconnection
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating an internal server error
+ *                   example: "Internal Server Error: Unexpected error"
+ */
 router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnect);
 
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
