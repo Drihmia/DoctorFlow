@@ -939,8 +939,246 @@ router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), Authenti
  */
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
 
-// Using updatePAtient for changing password by patient itself.
-router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.updatePatient); // selective data
+/**
+ * @swagger
+ * /patients/{id}:
+ *   patch:
+ *     summary: Update a patient's password - for patient.
+ *     description: |
+ *       Updates the password for the authenticated patient. This endpoint requires authentication with a valid session token and must be performed by the patient who owns the profile. The new password must be confirmed by providing the same value in the `confirmPassword` field.
+ *
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `patient`.
+ *
+ *       **Request Parameters:**
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the patient to update.
+ *
+ *       **Request Body:**
+ *       - Required fields: `password`, `confirmPassword`
+ *       - Note: `password` must be confirmed by `confirmPassword` and meet strength criteria.
+ *
+ *       **Response:**
+ *       - On success: Returns the updated details of the patient, including fields such as `_id`, `firstName`, `lastName`, `email`, and other relevant patient information.
+ *       - On error: Provides details about validation issues, unauthorized access, or server errors.
+ *     tags:
+ *       - Patients
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
+ *       - name: id
+ *         in: path
+ *         description: The unique identifier of the patient to update.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c6d13850a701dcd952a5d6"
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: "NewSecurePassword123!"
+ *               confirmPassword:
+ *                 type: string
+ *                 example: "NewSecurePassword123!"
+ *     responses:
+ *       200:
+ *         description: Patient password updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier of the patient.
+ *                   example: "66c6d13850a701dcd952a5d6"
+ *                 firstName:
+ *                   type: string
+ *                   example: "Johnny"
+ *                 lastName:
+ *                   type: string
+ *                   example: "Smith"
+ *                 email:
+ *                   type: string
+ *                   example: "johnnysmith@example.com"
+ *                 contact:
+ *                   type: object
+ *                   properties:
+ *                     emergencyContact:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: "Jane Doe"
+ *                         relationship:
+ *                           type: string
+ *                           example: "Sister"
+ *                         phone:
+ *                           type: string
+ *                           example: "0987654321"
+ *                     phone:
+ *                       type: string
+ *                       example: "1223367890"
+ *                     address:
+ *                       type: string
+ *                       example: "4321 Elm Avenue"
+ *                     city:
+ *                       type: string
+ *                       example: "Buffalo"
+ *                     state:
+ *                       type: string
+ *                       example: "NY"
+ *                 gender:
+ *                   type: string
+ *                   example: "M"
+ *                 bloodGroup:
+ *                   type: string
+ *                   example: "AB+"
+ *                 height:
+ *                   type: string
+ *                   example: "178"
+ *                 weight:
+ *                   type: string
+ *                   example: "73"
+ *                 doctor:
+ *                   type: string
+ *                   example: "66c5c864a73c8c2f1cbad794"
+ *                 sessions:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: [
+ *                     "66bd759627dcebf1b674ec0f",
+ *                     "66bd75df27dcebf1b674ec2d",
+ *                     "66c7147f4cade6c9c617bc7f",
+ *                     "66c715074cade6c9c617bc87",
+ *                     "66c7150a4cade6c9c617bc8f",
+ *                     "66c72a5dacb3da59eb2f98c0"
+ *                   ]
+ *                 dob:
+ *                   type: string
+ *                   example: "1990-05-15"
+ *                 medicalHistory:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: [
+ *                     "Diabetes",
+ *                     "Hypertension"
+ *                   ]
+ *                 currentMedication:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: "Insulin"
+ *                       startDate:
+ *                         type: string
+ *                         format: date
+ *                         example: "2024-01-01"
+ *                       duration:
+ *                         type: string
+ *                         example: "6 months"
+ *                       dosage:
+ *                         type: string
+ *                         example: "10 units"
+ *                       description:
+ *                         type: string
+ *                         example: "For diabetes management"
+ *                       endDate:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-07-01T00:00:00.000Z"
+ *                 familyHistory:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       medicalCondition:
+ *                         type: string
+ *                         example: "Heart disease"
+ *                       relationship:
+ *                         type: string
+ *                         example: "Father"
+ *                       description:
+ *                         type: string
+ *                         example: "Had a heart attack at age 60"
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-08-22T12:09:02.071Z"
+ *                 __v:
+ *                   type: integer
+ *                   example: 0
+ *       400:
+ *         description: Bad Request - Missing password, invalid request, or validation errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Password is required"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - User is not allowed to access this route
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: You are not allowed to access this route."
+ *       404:
+ *         description: Patient not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Patient not found"
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.updatePatient);
+
 /**
  * @swagger
  * /patients/{id}:

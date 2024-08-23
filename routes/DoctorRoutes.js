@@ -6,7 +6,6 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 const router = Router();
 
-// role: dev
 /**
  * @swagger
  * /doctors:
@@ -147,13 +146,11 @@ const router = Router();
  */
 router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllDoctors);
 
-
-// role: doctor
 /**
  * @swagger
  * /doctors:
  *   post:
- *     summary: Create a new doctor account - for doctor (anyone).
+ *     summary: Create a new doctor account - for doctor.
  *     description: |
  *       Creates a new doctor account with the provided details.
  *
@@ -929,7 +926,6 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  */
 router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctor);
 
-
 /**
  * @swagger
  * /doctors/{id}/sessions/:
@@ -1533,7 +1529,6 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *                   example: "Internal server error"
  */
 router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
-
 
 /**
  * @swagger
