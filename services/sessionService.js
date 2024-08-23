@@ -54,13 +54,6 @@ class SessionService {
     return session;
   }
 
-  async updateSession (session, query) {
-    Object.assign(session, query);
-
-    const savedSession = await session.save();
-    return savedSession;
-  }
-
   async deleteSession (id) {
     const session = await this.getSessionById(id).populate('doctor patient');
     if (!session) return false;

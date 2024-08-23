@@ -3,3 +3,4 @@ package-lock.json
 test/
 .DS_Store
 .env
+.draft

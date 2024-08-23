@@ -208,14 +208,9 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  */
 router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.addSession);
 
-
 router.get('/sessions', AuthMiddleware({ role: 'dev' }), SessionController.getAllSessions);
-router.get('/sessions/:id', AuthMiddleware({ role: 'dev' }), SessionController.getSession);
-// role is to be assigned to dev
-router.put('/sessions/:id', AuthMiddleware({ role: 'doctor' }), SessionController.updateSession);
-// role is to be assigned to dev
+
 // This route should never be exposed to the client
 router.delete('/sessions/:id', AuthMiddleware({ role: 'doctor' }), SessionController.deleteSession);
-
 
 export default router;

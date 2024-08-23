@@ -70,7 +70,7 @@ class DoctorService {
     return sessions.sessions;
   }
 
-  async getDoctorPatients (doctor, page = 1, size = 10) {
+  async getDoctorPatients (doctor, page = 0, size = 10) {
     const Doctor = await doctor.populate({
       path: 'patients',
       skip: page * size,
@@ -101,13 +101,11 @@ class DoctorService {
     const patient = await this.getDoctorPatientById(doctor, patientId);
     if (!patient) return 1;
 
-    // Doctor should not be able to change the password of the patient
-    if (query.password) {
-      delete query.password;
-    }
-
-    if (query.confirmPassword) {
-      delete query.confirmPassword;
+    const NotAllowedFields = ['password', 'confirmPassword', 'doctor', 'sessions'];
+    for (const field in query) {
+      if (NotAllowedFields.includes(field)) {
+        delete query[field];
+      }
     }
 
     const updatedUser = await this.updateADoctor(patient, query);
@@ -121,13 +119,11 @@ class DoctorService {
     const session = await this.getDoctorSessionById(doctor, sessionId);
     if (!session) return 1;
 
-    // Doctor should not be able to change the password of the session
-    if (query.password) {
-      delete query.password;
-    }
-
-    if (query.confirmPassword) {
-      delete query.confirmPassword;
+    const NotAllowedFields = ['password', 'confirmPassword', 'doctor', 'patient'];
+    for (const field in query) {
+      if (NotAllowedFields.includes(field)) {
+        delete query[field];
+      }
     }
 
     const updatedUser = await this.updateADoctor(session, query);
