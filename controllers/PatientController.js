@@ -143,10 +143,11 @@ class PatientController {
 
   static async getPatientSessions (req, res) {
     const { id } = req.params;
+    const { page, limit } = req.query;
     try {
       const patient = await PatientService.getPatientById(id);
       if (patient) {
-        const sessions = await PatientService.getPatientSessions(patient);
+        const sessions = await PatientService.getPatientSessions(patient, page, limit);
         return res.status(200).json(sessions);
       }
       return res.status(404).json({ error: 'Patient not found' });

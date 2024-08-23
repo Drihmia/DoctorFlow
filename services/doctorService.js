@@ -61,13 +61,21 @@ class DoctorService {
     }
   }
 
-  async getDoctorSessions (doctor) {
-    const sessions = await doctor.populate('sessions');
+  async getDoctorSessions (doctor, page = 0, size = 10) {
+    const sessions = await doctor.populate({
+      path: 'sessions',
+      skip: page * size,
+      limit: size
+    });
     return sessions.sessions;
   }
 
-  async getDoctorPatients (doctor) {
-    const Doctor = await doctor.populate('patients');
+  async getDoctorPatients (doctor, page = 1, size = 10) {
+    const Doctor = await doctor.populate({
+      path: 'patients',
+      skip: page * size,
+      limit: size
+    });
     return Doctor.patients;
   }
 

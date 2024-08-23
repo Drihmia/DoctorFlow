@@ -97,8 +97,12 @@ class PatientService {
     }
   }
 
-  async getPatientSessions (patient) {
-    const populatedSessions = await patient.populate('sessions');
+  async getPatientSessions (patient, page = 0, size = 10) {
+    const populatedSessions = await patient.populate({
+      path: 'sessions',
+      skip: page * size,
+      limit: size
+    });
     const sessions = populatedSessions.sessions;
 
     return filtredSessions(this, patient, sessions);
