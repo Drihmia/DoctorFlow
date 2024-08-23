@@ -31,8 +31,6 @@ const extractUserFromAuthHeader = async ({ authorization }, userType, res) => {
     res.status(400).json({ error: 'Bad Request: Missing email or password' });
     return false;
   }
-  console.log('email', email);
-  console.log('password', password);
 
   // get user  data
   const user = await _GetUserByEmail[userType](email);
@@ -53,7 +51,7 @@ const extractUserFromAuthHeader = async ({ authorization }, userType, res) => {
   return user;
 };
 
-const generateAndSetToken = async (userType, user, res) => {
+const generateAndSetToken = async (userType, user) => {
   // create a token
   const token = uuidv4();
   const redisKey = `auth_${token}`;

@@ -12,7 +12,6 @@ class DevService {
 
   async _getDevByEmail(Email) {
     const email = Email.toLowerCase();
-    console.log(email);
     return await Dev.findOne({ email });
   }
 }

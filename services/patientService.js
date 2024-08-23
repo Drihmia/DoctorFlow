@@ -73,7 +73,6 @@ class PatientService {
       await DoctorService.updateADoctor(doctor, query);
       return Patient.findByIdAndDelete(id);
     } catch (error) {
-      console.error('Error deleting patient:', error);
       throw new Error('Failed to delete the patient.');
     }
   }
