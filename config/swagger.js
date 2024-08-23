@@ -38,6 +38,10 @@ const swaggerDefinition = {
       name: 'Sessions',
       description: 'Endpoints for managing session-related data. Includes functionality for retrieving, creating, updating, and deleting session records',
     },
+    {
+      name: 'Devs',
+      description: 'Endpoints for handling developer authentication with "connect" for token generation and "disconnect" for token deletion.',
+    },
   ],
 };
 
