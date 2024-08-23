@@ -113,16 +113,6 @@ const router = Router();
  *                   __v:
  *                     type: integer
  *                     example: 0
- *       400:
- *         description: Bad Request - Invalid parameters
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Invalid page or limit parameter"
  *       401:
  *         description: Unauthorized - Invalid or expired token
  *         content:
