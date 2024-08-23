@@ -3,7 +3,6 @@ import SessionController from '../controllers/SessionController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 
-// role: doctor
 /**
  * @swagger
  * /sessions:
@@ -34,7 +33,7 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *         required: true
  *         schema:
  *           type: string
- *           example: "doctor-authentication-token"
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
  *     requestBody:
  *       required: true
  *       content:
@@ -209,13 +208,13 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  */
 router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.addSession);
 
-// role: dev
 /**
  * @swagger
  * /sessions:
  *   get:
- *     summary: Retrieve a list of all sessions  - for dev.
+ *     summary: Retrieve a list of all sessions - for dev.
  *     description: |
+ *       **Note:** This endpoint is intended for development and testing purposes only. It should not be used in production environments with real patient data.
  *       Retrieves a list of all sessions with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
  *
  *       **Authentication:**
@@ -240,7 +239,7 @@ router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.a
  *         required: true
  *         schema:
  *           type: string
- *           example: "eca7336d-7d3e-4123-9105-4b99f174d4c5"
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
  *       - name: page
  *         in: query
  *         description: The page number to retrieve (for pagination).
@@ -350,10 +349,12 @@ router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.a
  */
 router.get('/sessions', AuthMiddleware({ role: 'dev' }), SessionController.getAllSessions);
 
+// remove?
 router.get('/sessions/:id', AuthMiddleware({ role: 'dev' }), SessionController.getSession);
-// role is to be assigned to dev
+
+// remove?
 router.put('/sessions/:id', AuthMiddleware({ role: 'doctor' }), SessionController.updateSession);
-// role is to be assigned to dev
+
 // This route should never be exposed to the client
 router.delete('/sessions/:id', AuthMiddleware({ role: 'doctor' }), SessionController.deleteSession);
 

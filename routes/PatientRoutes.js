@@ -8,8 +8,9 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  * @swagger
  * /patients:
  *   get:
- *     summary: Retrieve a list of all patients  - for dev.
+ *     summary: Retrieve a list of all patients - for dev.
  *     description: |
+ *       **Note:** This endpoint is intended for development and testing purposes only. It should not be used in production environments with real patient data.
  *       Retrieves a list of all patients with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
  *
  *       **Authentication:**
@@ -34,7 +35,7 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *         required: true
  *         schema:
  *           type: string
- *           example: "eca7336d-7d3e-4123-9105-4b99f174d4c5"
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
  *       - name: page
  *         in: query
  *         description: The page number to retrieve (for pagination).
@@ -255,7 +256,7 @@ router.get('/patients', AuthMiddleware({ role: 'dev' }), PatientController.getAl
  *         required: true
  *         schema:
  *           type: string
- *           example: "doctor-authentication-token"
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
  *     requestBody:
  *       required: true
  *       content:
@@ -720,7 +721,7 @@ router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), Authenti
  *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
- *       - `id` (path, required): The unique identifier of the doctor.
+ *       - `id` (path, required): The unique identifier of the patient.
  *
  *       **Response:**
  *       - On success: Returns the details of the authenticated patient, including fields such as `_id`, `firstName`, `lastName`, `email`, `contact`, `medicalHistory`, `familyHistory`, and more.
@@ -1155,7 +1156,7 @@ router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientControll
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: You are not allowed to access this route."
+ *                   example: "Forbidden: Only patient can access this route. Please login as patient."
  *       404:
  *         description: Patient not found
  *         content:
@@ -1208,7 +1209,7 @@ router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientContro
  *         required: true
  *         schema:
  *           type: string
- *           example: "doctor-authentication-token"
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
  *       - in: path
  *         name: id
  *         required: true
@@ -1268,8 +1269,478 @@ router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientContro
  */
 router.delete('/patients/:id', AuthMiddleware({ role: 'doctor', extraLayer: false }), PatientController.deletePatient);
 
+/**
+ * @swagger
+ * /patients/{id}/sessions/:
+ *   get:
+ *     summary: Retrieve a list of sessions associated with a specific patient - for patient.
+ *     description: |
+ *       Fetches all sessions associated with the specified patient. This endpoint requires authentication with a valid session token and must be performed by an authenticated patient.
+ *
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `patient`.
+ *
+ *       **Request Parameters:**
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the patient.
+ *
+ *       **Response:**
+ *       - On success: Returns a list of sessions associated with the patient, including fields such as `_id`, `doctor`, `date`, `type`, and more.
+ *       - On error: Provides details about not finding the session, invalid ID, or server errors.
+ *     tags:
+ *       - Sessions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
+ *       - name: id
+ *         in: path
+ *         description: The unique identifier of the patient.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c5c864a73c8c2f1cbad794"
+ *     responses:
+ *       200:
+ *         description: Sessions retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   date:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The date of the session.
+ *                     example: "2024-08-22T10:00:00.000Z"
+ *                   time:
+ *                     type: string
+ *                     description: The time of the session.
+ *                     example: "10:00"
+ *                   type:
+ *                     type: string
+ *                     description: The type of session, such as consultation or check-up.
+ *                     example: "Consultation"
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The timestamp of when the session was created.
+ *                     example: "2024-08-23T18:36:52.128Z"
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The timestamp of when the session was last updated.
+ *                     example: "2024-08-23T18:36:52.135Z"
+ *                   notes:
+ *                     type: string
+ *                     description: Any notes from the session.
+ *                     example: "Follow-up in one week to assess blood pressure and adjust treatment if necessary."
+ *                   nextAppointment:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The date and time of the next scheduled appointment.
+ *                     example: "2024-08-29T10:00:00.000Z"
+ *                   prescription:
+ *                     type: string
+ *                     description: Medication prescribed during the session.
+ *                     example: "20mg Lisinopril daily"
+ *                   diagnosis:
+ *                     type: string
+ *                     description: The diagnosis made during the session.
+ *                     example: "Hypertension"
+ *                   labTests:
+ *                     type: string
+ *                     description: Any laboratory tests ordered during the session.
+ *                     example: "Electrolyte panel, Renal function tests"
+ *                   radOrders:
+ *                     type: string
+ *                     description: Any radiology orders made during the session.
+ *                     example: "Echocardiogram"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - Insufficient permissions to access this endpoint
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Only patient can access this route. Please login as patient."
+ *       404:
+ *         description: Patient not found or invalid ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Patient not found"
+ *       500:
+ *         description: Internal Server Error - Error during processing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
 router.get('/patients/:id/sessions', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSessions);
+
+/**
+ * @swagger
+ * /patients/{id}/sessions/{sessionId}:
+ *   get:
+ *     summary: Retrieve a specific session of a patient - for patient.
+ *     description: |
+ *       Fetches details of a specific session associated with a patient. This endpoint requires authentication with a valid session token and must be performed by an authenticated patient.
+ *
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `patient`.
+ *
+ *       **Request Parameters:**
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the patient.
+ *       - `sessionId` (path, required): The unique identifier of the session to retrieve.
+ *
+ *       **Response:**
+ *       - On success: Returns details of the session, including fields such as `_id`, `doctor`, `date`, `type`, and more.
+ *       - On error: Provides details about validation issues, unauthorized access, or server errors.
+ *     tags:
+ *       - Sessions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
+ *       - name: id
+ *         in: path
+ *         description: The unique identifier of the patient.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c5c864a73c8c2f1cbad794"
+ *       - name: sessionId
+ *         in: path
+ *         description: The unique identifier of the session.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c6d13850a701dcd952a5d6"
+ *     responses:
+ *       200:
+ *         description: Session retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier of the session.
+ *                   example: "66c8d6c488b1dba4bf83ea04"
+ *                 doctor:
+ *                   type: object
+ *                   description: The details of the doctor who conducted the session.
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       description: The unique identifier of the doctor.
+ *                       example: "66c8ccbf66990a1156a5a8fe"
+ *                     email:
+ *                       type: string
+ *                       description: The doctor's email.
+ *                       example: "drjohnsmith@example.com"
+ *                     firstName:
+ *                       type: string
+ *                       description: The doctor's first name.
+ *                       example: "John"
+ *                     lastName:
+ *                       type: string
+ *                       description: The doctor's last name.
+ *                       example: "Smith"
+ *                     phone:
+ *                       type: string
+ *                       description: The doctor's contact phone number.
+ *                       example: "9876543210"
+ *                     specialization:
+ *                       type: string
+ *                       description: The doctor's specialization.
+ *                       example: "Cardiology"
+ *                     contact:
+ *                       type: object
+ *                       description: Any additional contact information for the doctor.
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       description: The timestamp when the doctor was created.
+ *                       example: "2024-08-23T17:54:07.725Z"
+ *                     gender:
+ *                       type: string
+ *                       description: The doctor's gender.
+ *                       example: "M"
+ *                     bio:
+ *                       type: string
+ *                       description: The doctor's biography or background.
+ *                       example: "Experienced cardiologist with over 15 years of practice."
+ *                 date:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The date of the session.
+ *                   example: "2024-08-22T10:00:00.000Z"
+ *                 time:
+ *                   type: string
+ *                   description: The time of the session.
+ *                   example: "10:00"
+ *                 type:
+ *                   type: string
+ *                   description: The type of session (e.g., consultation, follow-up).
+ *                   example: "Consultation"
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the session was created.
+ *                   example: "2024-08-23T18:36:52.128Z"
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the session was last updated.
+ *                   example: "2024-08-23T18:36:52.135Z"
+ *                 notes:
+ *                   type: string
+ *                   description: Session notes.
+ *                   example: "Follow-up in one week to assess blood pressure and adjust treatment if necessary."
+ *                 nextAppointment:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The date and time of the next appointment.
+ *                   example: "2024-08-29T10:00:00.000Z"
+ *                 prescription:
+ *                   type: string
+ *                   description: The prescription given during the session.
+ *                   example: "20mg Lisinopril daily"
+ *                 diagnosis:
+ *                   type: string
+ *                   description: The diagnosis provided during the session.
+ *                   example: "Hypertension"
+ *                 labTests:
+ *                   type: string
+ *                   description: Any lab tests ordered during the session.
+ *                   example: "Electrolyte panel, Renal function tests"
+ *                 radOrders:
+ *                   type: string
+ *                   description: Any radiology orders given during the session.
+ *                   example: "Echocardiogram"
+ *       404:
+ *         description: Patient or session not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Session not found"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - Insufficient permissions to access this endpoint
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Only patient can access this route. Please login as patient."
+ *       500:
+ *         description: Internal Server Error - Error during processing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
 router.get('/patients/:id/sessions/:sessionId', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSession);
+
+/**
+ * @swagger
+ * /patients/{id}/doctor/:
+ *   get:
+ *     summary: Retrieve a data about the patient's doctor - for patient.
+ *     description: |
+ *       Fetches details of a the doctor associated with a patient. This endpoint requires authentication with a valid session token and must be performed by an authenticated patient.
+ *
+ *       **Authentication:**
+ *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Requires a role of `patient`.
+ *
+ *       **Request Parameters:**
+ *       - `x-token` (header, required): The authentication token used for authorization.
+ *       - `id` (path, required): The unique identifier of the patient.
+ *
+ *       **Response:**
+ *       - On success: Returns data about the patient's doctor, including fields such as `_id`, `firsName`, `LastName`, `email`, `phone`, and more.
+ *       - On error: Provides details about validation issues, unauthorized access, or server errors.
+ *     tags:
+ *       - Doctors
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: x-token
+ *         in: header
+ *         description: Token used for authentication.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
+ *       - name: id
+ *         in: path
+ *         description: The unique identifier of the patient.
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66c5c864a73c8c2f1cbad794"
+ *     responses:
+ *       200:
+ *         description: Doctor details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The unique identifier of the doctor.
+ *                   example: "66c5c864a73c8c2f1cbad794"
+ *                 email:
+ *                   type: string
+ *                   description: The doctor's email address.
+ *                   example: "johndoe@example.com"
+ *                 firstName:
+ *                   type: string
+ *                   description: The doctor's first name.
+ *                   example: "Jenna"
+ *                 lastName:
+ *                   type: string
+ *                   description: The doctor's last name.
+ *                   example: "Dean"
+ *                 phone:
+ *                   type: string
+ *                   description: The doctor's phone number.
+ *                   example: "1234567899"
+ *                 specialization:
+ *                   type: string
+ *                   description: The doctor's area of specialization.
+ *                   example: "Dermatology"
+ *                 contact:
+ *                   type: object
+ *                   description: The doctor's contact details.
+ *                   properties:
+ *                     address:
+ *                       type: string
+ *                       description: The doctor's address.
+ *                       example: "1234 sunset blvd"
+ *                     city:
+ *                       type: string
+ *                       description: The city where the doctor is located.
+ *                       example: "Los Angeles"
+ *                     state:
+ *                       type: string
+ *                       description: The state where the doctor is located.
+ *                       example: "CA"
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the doctor's profile was created.
+ *                   example: "2024-08-21T10:58:44.532Z"
+ *                 gender:
+ *                   type: string
+ *                   description: The doctor's gender.
+ *                   example: "F"
+ *                 bio:
+ *                   type: string
+ *                   description: A brief biography of the doctor.
+ *                   example: "Experienced dermatologist with over 15 years of practice."
+ *       404:
+ *         description: Patient or doctor not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Patient not found"
+ *       401:
+ *         description: Unauthorized - Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Unauthorized: Invalid or expired token"
+ *       403:
+ *         description: Forbidden - Insufficient permissions to access this endpoint
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: Only patient can access this route. Please login as patient."
+ *       500:
+ *         description: Internal Server Error - Error during processing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
 router.get('/patients/:id/doctor', AuthMiddleware({ role: 'patient' }), PatientController.getPatientDoctor);
 
 // Will be imported by SessionRoutes.js

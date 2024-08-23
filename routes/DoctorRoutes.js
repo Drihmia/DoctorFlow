@@ -10,8 +10,9 @@ const router = Router();
  * @swagger
  * /doctors:
  *   get:
- *     summary: Retrieve a list of all doctors  - for dev.
+ *     summary: Retrieve a list of all doctors - for dev.
  *     description: |
+ *       **Note:** This endpoint is intended for development and testing purposes only. It should not be used in production environments with real patient data.
  *       Retrieves a list of all doctors with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
  *
  *       **Authentication:**
@@ -1429,7 +1430,7 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  */
 router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorSession);
 
-// We have not sittled on the DELETE method for this route
+// We have not settled on the DELETE method for this route
 /**
  * @swagger
  * /doctors/{id}/sessions/{sessionId}:
@@ -1958,7 +1959,7 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: You are not allowed to access this route."
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       500:
  *         description: Internal Server Error - Error during processing
  *         content:
