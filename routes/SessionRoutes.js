@@ -2,7 +2,6 @@ import router from './PatientRoutes';
 import SessionController from '../controllers/SessionController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
-
 /**
  * @swagger
  * /sessions:
@@ -10,15 +9,15 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *     summary: Adds a new session for a doctor and patient - for doctor.
  *     description: |
  *       Creates a new session for the given doctor and patient. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Body:**
  *       - Required fields: `doctorId`, `patientId`.
  *       - Optional fields: `type`, `date`, `time`, `nextAppointment`, `notes`, `privateNotes`, `prescription`, `diagnosis`, `labTests`, `radOrders`.
- *       
+ *
  *       **Response:**
  *       - On success: Returns the details of the newly created session, including fields such as `_id`, `doctor`, `patient`, `type`, `date`, `time`, and more.
  *       - On error: Provides details about validation issues, unauthorized access, or server errors.
@@ -348,12 +347,6 @@ router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.a
  *                   example: "Internal server error"
  */
 router.get('/sessions', AuthMiddleware({ role: 'dev' }), SessionController.getAllSessions);
-
-// remove?
-router.get('/sessions/:id', AuthMiddleware({ role: 'dev' }), SessionController.getSession);
-
-// remove?
-router.put('/sessions/:id', AuthMiddleware({ role: 'doctor' }), SessionController.updateSession);
 
 // This route should never be exposed to the client
 router.delete('/sessions/:id', AuthMiddleware({ role: 'doctor' }), SessionController.deleteSession);
