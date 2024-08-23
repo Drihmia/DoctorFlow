@@ -123,7 +123,7 @@ router.get('/patients', AuthMiddleware({ role: 'dev' }), PatientController.getAl
  *                       example: "2024-01-01"
  *                     duration:
  *                       type: string
- *                       example: "6"
+ *                       example: "6 months"
  *                     dosage:
  *                       type: string
  *                       example: "10 units"
@@ -238,7 +238,7 @@ router.get('/patients', AuthMiddleware({ role: 'dev' }), PatientController.getAl
  *                         example: "2024-01-01"
  *                       duration:
  *                         type: string
- *                         example: "6"
+ *                         example: "6 months"
  *                       dosage:
  *                         type: string
  *                         example: "10 units"

@@ -1669,7 +1669,7 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *                           example: "2024-01-01"
  *                         duration:
  *                           type: string
- *                           example: "6"
+ *                           example: "6 months"
  *                         dosage:
  *                           type: string
  *                           example: "10 units"
@@ -1896,7 +1896,7 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *                         example: "2024-01-01"
  *                       duration:
  *                         type: string
- *                         example: "6"
+ *                         example: "6 months"
  *                       dosage:
  *                         type: string
  *                         example: "10 units"
@@ -2086,7 +2086,7 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *                       example: "2024-01-01"
  *                     duration:
  *                       type: string
- *                       example: "6"
+ *                       example: "6 months"
  *                     dosage:
  *                       type: string
  *                       example: "10 units"
@@ -2201,7 +2201,7 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *                         example: "2024-01-01"
  *                       duration:
  *                         type: string
- *                         example: "6"
+ *                         example: "6 months"
  *                       dosage:
  *                         type: string
  *                         example: "10 units"
