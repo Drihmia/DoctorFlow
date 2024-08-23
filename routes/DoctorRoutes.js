@@ -6,7 +6,6 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 const router = Router();
 
-// role is to be assigned to dev
 /**
  * @swagger
  * /doctors:
@@ -38,7 +37,7 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
- *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
+ *           example: "eca7336d-7d3e-4123-9105-4b99f174d4c5"
  *       - name: page
  *         in: query
  *         description: The page number to retrieve (for pagination).
@@ -227,7 +226,7 @@ router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllD
  *                 description: "Date of birth of the doctor."
  *               phone:
  *                 type: string
- *                 example: "+1234567890"
+ *                 example: "1234567890"
  *                 description: "The doctor's phone number."
  *               address:
  *                 type: string
@@ -1071,7 +1070,6 @@ router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorControll
  *                   type: string
  *                   example: "Internal server error"
  */
-
 router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSessions);
 
 /**
@@ -1440,7 +1438,6 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *                   example: "Internal server error"
  */
 router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorSession);
-router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 
 // Doctor GET all patients using GET /patients in the patient's routes
 // We have not sittled on the DELETE method for this route
@@ -1544,7 +1541,6 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  */
 router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 
-//
 /**
  * @swagger
  * /doctors/{id}/patients/:
