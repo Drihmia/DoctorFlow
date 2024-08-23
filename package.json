@@ -12,7 +12,7 @@
     "start": "nodemon --exec babel-node --presets @babel/preset-env ./server.js",
     "test": "./node_modules/.bin/mocha --require @babel/register --exit"
   },
-  "author": "DRIHMIA Redouane and Oumnia ABOHESKEL",
+  "author": "DRIHMIA Redouane and Omnia ABOUHAIKAL",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",

@@ -6,13 +6,13 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 const router = Router();
 
-// role is to be assigned to dev
 /**
  * @swagger
  * /doctors:
  *   get:
- *     summary: Retrieve a list of all doctors  - for dev.
+ *     summary: Retrieve a list of all doctors - for dev.
  *     description: |
+ *       **Note:** This endpoint is intended for development and testing purposes only. It should not be used in production environments with real patient data.
  *       Retrieves a list of all doctors with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
  *
  *       **Authentication:**
@@ -21,9 +21,8 @@ const router = Router();
  *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token.
-
  *       - `page` (header, optional): The page number for pagination.
- *       - `limit` (header, optional): Optional. The number of records per page.
+ *       - `limit` (header, optional): The number of records per page.
  *
  *       **Response:**
  *       - A list of doctor objects, each containing details such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, and more.
@@ -38,7 +37,7 @@ const router = Router();
  *         required: true
  *         schema:
  *           type: string
- *           example: "b14c9f0e-2a15-40f6-8187-f4c5ad4638c5"
+ *           example: "eca7336d-7d3e-4123-9105-4b99f174d4c5"
  *       - name: page
  *         in: query
  *         description: The page number to retrieve (for pagination).
@@ -114,16 +113,6 @@ const router = Router();
  *                   __v:
  *                     type: integer
  *                     example: 0
- *       400:
- *         description: Bad Request - Invalid parameters
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Invalid page or limit parameter"
  *       401:
  *         description: Unauthorized - Invalid or expired token
  *         content:
@@ -161,7 +150,7 @@ router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllD
  * @swagger
  * /doctors:
  *   post:
- *     summary: Create a new doctor account - for doctor (anyone).
+ *     summary: Create a new doctor account - for doctor.
  *     description: |
  *       Creates a new doctor account with the provided details.
  *
@@ -227,7 +216,7 @@ router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllD
  *                 description: "Date of birth of the doctor."
  *               phone:
  *                 type: string
- *                 example: "+1234567890"
+ *                 example: "1234567890"
  *                 description: "The doctor's phone number."
  *               address:
  *                 type: string
@@ -605,7 +594,7 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: Only doctor can access this route. Please login as doctor or contact your patient for help."
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       404:
  *         description: Doctor not found
  *         content:
@@ -810,7 +799,7 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: Only doctor can access this route. Please login as doctor or contact your patient for help."
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       404:
  *         description: Doctor not found
  *         content:
@@ -913,7 +902,7 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: Only doctor can access this route. Please login as doctor or contact your patient for help."
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       404:
  *         description: Doctor not found
  *         content:
@@ -952,6 +941,8 @@ router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorControll
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor to retrieve all their sessions for.
+ *       - `page` (header, optional): The page number for pagination.
+ *       - `limit` (header, optional): The number of records per page.
  *
  *       **Response:**
  *       - On success: Returns an array of session objects for the specified doctor.
@@ -1071,7 +1062,6 @@ router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorControll
  *                   type: string
  *                   example: "Internal server error"
  */
-
 router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSessions);
 
 /**
@@ -1440,10 +1430,8 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *                   example: "Internal server error"
  */
 router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorSession);
-router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 
-// Doctor GET all patients using GET /patients in the patient's routes
-// We have not sittled on the DELETE method for this route
+// We have not settled on the DELETE method for this route
 /**
  * @swagger
  * /doctors/{id}/sessions/{sessionId}:
@@ -1544,7 +1532,6 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  */
 router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 
-//
 /**
  * @swagger
  * /doctors/{id}/patients/:
@@ -1560,7 +1547,9 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
- *
+ *       - `page` (header, optional): The page number for pagination.
+ *       - `limit` (header, optional): The number of records per page.
+ * 
  *       **Response:**
  *       - On success: Returns a list of patients associated with the doctor, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about not finding the doctor, invalid ID, or server errors.
@@ -1673,7 +1662,7 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *                           example: "2024-01-01"
  *                         duration:
  *                           type: string
- *                           example: "6"
+ *                           example: "6 months"
  *                         dosage:
  *                           type: string
  *                           example: "10 units"
@@ -1761,9 +1750,6 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *                   type: string
  *                   example: "Internal Server Error"
  */
-
-// Doctor: GET all patients using GET /patients in the patient's routes
-// We have not sittled on the DELETE method for this route
 router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorPatients);
 
 /**
@@ -1900,7 +1886,7 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *                         example: "2024-01-01"
  *                       duration:
  *                         type: string
- *                         example: "6"
+ *                         example: "6 months"
  *                       dosage:
  *                         type: string
  *                         example: "10 units"
@@ -1976,7 +1962,7 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: You are not allowed to access this route."
+ *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
  *       500:
  *         description: Internal Server Error - Error during processing
  *         content:
@@ -2090,7 +2076,7 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *                       example: "2024-01-01"
  *                     duration:
  *                       type: string
- *                       example: "6"
+ *                       example: "6 months"
  *                     dosage:
  *                       type: string
  *                       example: "10 units"
@@ -2205,7 +2191,7 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *                         example: "2024-01-01"
  *                       duration:
  *                         type: string
- *                         example: "6"
+ *                         example: "6 months"
  *                       dosage:
  *                         type: string
  *                         example: "10 units"

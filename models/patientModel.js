@@ -182,10 +182,6 @@ const patientSchema = new mongoose.Schema({
         duration: {
           type: String,
           trim: true,
-          validate: {
-            validator: validator.isNumeric,
-            message: 'Duration must be a number'
-          }
         },
         dosage: {
           type: String,
