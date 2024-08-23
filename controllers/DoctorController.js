@@ -131,10 +131,11 @@ class DoctorController {
 
   static async getDoctorSessions(req, res) {
     const { id } = req.params;
+    const { page, limit } = req.query;
     try {
       const doctor = await DoctorService.getDoctorById(id);
       if (doctor) {
-        const sessions = await DoctorService.getDoctorSessions(doctor);
+        const sessions = await DoctorService.getDoctorSessions(doctor, page, limit);
         return res.status(200).json(sessions);
       }
       return res.status(404).json({ error: 'Doctor not found' });
@@ -173,10 +174,11 @@ class DoctorController {
 
   static async getDoctorPatients(req, res) {
     const { id } = req.params;
+    const { page, limit } = req.query;
     try {
       const doctor = await DoctorService.getDoctorById(id);
       if (doctor) {
-        const patients = await DoctorService.getDoctorPatients(doctor);
+        const patients = await DoctorService.getDoctorPatients(doctor, page, limit);
         return res.status(200).json(patients);
       }
       return res.status(404).json({ error: 'Doctor not found' });
