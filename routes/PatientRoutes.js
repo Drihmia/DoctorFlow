@@ -4,10 +4,8 @@ import PatientController from '../controllers/PatientController';
 import AuthenticationController from '../controllers/AuthenticationController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
-
 // role is to be assigned to dev
-router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.getAllPatients);
-
+router.get('/patients', AuthMiddleware({ role: 'dev' }), PatientController.getAllPatients);
 
 /**
  * @swagger
@@ -16,15 +14,15 @@ router.get('/patients', AuthMiddleware({ role: 'patient' }), PatientController.g
  *     summary: Add a new patient to a doctor's patients - for doctor.
  *     description: |
  *       Adds a new patient to the system. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Body:**
  *       - Required fields: `firstName`, `lastName`,  `email`, `password`, `confirmPassword`, `gender`, `dob`, `Contact.phone`, `doctorId`.
  *       - Optional fields: `bloodGroup`, `height`, `weight`, `Contact`: (`address`, `city`, `state`), `emergencyContact`, `medicalHistory`, `currentMedication`, `familyHistory`, `insurance`.
- *       
+ *
  *       **Response:**
  *       - On success: Returns the details of the newly created patient, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about validation issues, unauthorized access, or server errors.
@@ -336,8 +334,7 @@ router.post('/patients', AuthMiddleware({ role: 'doctor' }), PatientController.a
 
 router.get('/patients/connect', AuthenticationController.connectPatient);
 
-router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnectPatient);
-
+router.get('/patients/disconnect', AuthMiddleware({ role: 'patient' }), AuthenticationController.disconnect);
 
 router.get('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientController.getPatient);
 // Using updatePAtient for changing password by patient itself.
@@ -349,14 +346,14 @@ router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientContro
  *     summary: Deletes a patient record - for doctor.
  *     description: |
  *       Deletes a patient by their ID from the system. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `id` (required): The unique identifier of the patient to be deleted.
- *       
+ *
  *       **Response:**
  *       - On success: Returns a success message indicating the patient was deleted.
  *       - On error: Provides details about unauthorized access, patient not found, or server errors.
@@ -434,7 +431,6 @@ router.delete('/patients/:id', AuthMiddleware({ role: 'doctor', extraLayer: fals
 router.get('/patients/:id/sessions', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSessions);
 router.get('/patients/:id/sessions/:sessionId', AuthMiddleware({ role: 'patient' }), PatientController.getPatientSession);
 router.get('/patients/:id/doctor', AuthMiddleware({ role: 'patient' }), PatientController.getPatientDoctor);
-
 
 // Will be imported by SessionRoutes.js
 export default router;

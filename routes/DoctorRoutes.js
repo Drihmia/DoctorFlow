@@ -1,12 +1,10 @@
 import { Router } from 'express';
 
 import DoctorController from '../controllers/DoctorController';
-import PatientController from '../controllers/PatientController';
 import AuthenticationController from '../controllers/AuthenticationController';
 import AuthMiddleware from '../middlewares/AuthMiddleware';
 
 const router = Router();
-
 
 // role is to be assigned to dev
 /**
@@ -16,11 +14,11 @@ const router = Router();
  *     summary: Retrieve a list of all doctors  - for dev.
  *     description: |
  *       Retrieves a list of all doctors with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
- *       
+ *
  *       **Authentication:**
  *       - Bearer Token via `x-token` header.
  *       - Requires a role of `dev`.
- * 
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token.
 
@@ -157,8 +155,7 @@ const router = Router();
  *                   type: string
  *                   example: "Internal server error"
  */
-router.get('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.getAllDoctors);
-
+router.get('/doctors', AuthMiddleware({ role: 'dev' }), DoctorController.getAllDoctors);
 
 /**
  * @swagger
@@ -167,14 +164,14 @@ router.get('/doctors', AuthMiddleware({ role: 'doctor' }), DoctorController.getA
  *     summary: Create a new doctor account - for doctor (anyone).
  *     description: |
  *       Creates a new doctor account with the provided details.
- *       
+ *
  *       **Authentication:**
  *       - No authentication required.
- *       
+ *
  *       **Request Body:**
  *       - Required fields: `firstName`, `lastName`, `email`, `password` (must be at least 8 characters long, including 1 uppercase letter, 1 lowercase letter, 1 number, and 1 symbol), `confirmPassword` (must match `password`), `gender`, `dob`.
  *       - Optional fields: `specialization`, `bio`, `phone`, `address`, `city`, `state`.
- *       
+ *
  *       **Response:**
  *       - On success: Returns the unique identifier and details of the newly created doctor.
  *       - On error: Provides details about validation issues or server errors.
@@ -331,13 +328,13 @@ router.post('/doctors', DoctorController.addDoctor);
  *     summary: Connect a doctor and create a session token - for doctor.
  *     description: |
  *       Authenticates a doctor using Basic Auth credentials in the format `email:password`, where the credentials are base64 encoded. On successful authentication, a session token is generated and returned.
- *       
+ *
  *       **Authentication:**
  *       - Basic Auth is required with credentials in the format `email:password` encoded in Base64.
- *  
+ *
  *       **Request Headers:**
  *       - `Authorization` (header, required): Basic Authentication credentials encoded in Base64. Example: `Basic dXNlcjpzZWNyZXQxMjM=`
- * 
+ *
  *       **Response:**
  *       - On success: Returns the session token for the authenticated doctor.
  *       - On error: Provides details about missing credentials, invalid credentials, or server issues.
@@ -411,15 +408,15 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *     summary: Disconnect a doctor by removing their session token - for doctor.
  *     description: |
  *       Logs out a doctor by deleting their session token from Redis, effectively ending their session. This endpoint requires the doctor to be authenticated with a valid session token.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is used, where the token should be passed in the `X-Token` header.
  *       - The `X-Token` value must be a valid session token issued during login.
  *       - Requires a role of `doctor`.
- * 
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
- * 
+ *
  *     tags:
  *       - Doctors
  *     security:
@@ -478,9 +475,7 @@ router.get('/doctors/connect', AuthenticationController.connectDoctor);
  *                   description: Error message indicating an internal server error
  *                   example: "Internal Server Error: Unexpected error"
  */
-router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnectDoctor);
-
-
+router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), AuthenticationController.disconnect);
 
 /**
  * @swagger
@@ -489,15 +484,15 @@ router.get('/doctors/disconnect', AuthMiddleware({ role: 'doctor' }), Authentica
  *     summary: Retrieve a doctor's own details - for doctor.
  *     description: |
  *       Fetches the details of the authenticated doctor by their ID. This endpoint requires the doctor to be authenticated with a valid session token and must be performed by the doctor who owns the profile.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- * 
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
- * 
+ *
  *       **Response:**
  *       - On success: Returns the details of the authenticated doctor, including fields such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, `bio`, `dob`, `phone`, and more.
  *       - On error: Provides details about issues such as invalid token, doctor not found, or server errors.
@@ -641,11 +636,11 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *     summary: Update a doctor's own details - for doctor.
  *     description: |
  *       Updates the authenticated doctor's details. This endpoint requires authentication with a valid session token and must be performed by the doctor who owns the profile.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor to update.
@@ -653,7 +648,7 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *       **Request Body:**
  *       - Required fields: `firstName`, `lastName`, `password` (if updating, must be confirmed and meet strength criteria), `confirmPassword` (must match `password`), `gender` (must be 'M' or 'F'), `specialization`, `bio`, `dob`, `phone`, `address`, `city`, `state`.
  *       - Note: The `email` cannot be updated.
- *       
+ *
  *       **Response:**
  *       - On success: Returns the updated details of the doctor, including fields such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, `bio`, `dob`, `phone`, and more.
  *       - On error: Provides details about validation issues, unauthorized access, or server errors.
@@ -845,17 +840,17 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *   delete:
  *     summary: Delete a doctor's own profile - for doctor.
  *     description: |
- *       Deletes the authenticated doctor's profile. A doctor can only delete their own profile using this endpoint. 
- *       This action requires authentication and must be performed by the doctor who owns the profile. 
- *       
+ *       Deletes the authenticated doctor's profile. A doctor can only delete their own profile using this endpoint.
+ *       This action requires authentication and must be performed by the doctor who owns the profile.
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor to delete.
- * 
+ *
  *       **Response:**
  *       - On success: Returns a confirmation message indicating that the doctor has been deleted.
  *       - On error: Provides details about missing ID, unauthorized access, or server errors.
@@ -942,9 +937,6 @@ router.put('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  */
 router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctor);
 
-
-
-//
 /**
  * @swagger
  * /doctors/{id}/sessions/:
@@ -952,15 +944,15 @@ router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorControll
  *     summary: Retrieves all sessions for a specific doctor - for doctor.
  *     description: |
  *       Retrieves a list of all sessions for the specified doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor to retrieve all their sessions for.
- * 
+ *
  *       **Response:**
  *       - On success: Returns an array of session objects for the specified doctor.
  *       - On error: Provides details about validation issues, unauthorized access, or server errors.
@@ -1079,6 +1071,7 @@ router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorControll
  *                   type: string
  *                   example: "Internal server error"
  */
+
 router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorSessions);
 
 /**
@@ -1088,11 +1081,11 @@ router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *     summary: Retrieves a specific session for a doctor - for doctor.
  *     description: |
  *       Retrieves details of a specific session for a given doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
@@ -1240,19 +1233,19 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *     summary: Updates a session for a doctor and patient - for doctor.
  *     description: |
  *       Updates a specific session for a given doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
  *       - `sessionId` (path, required): The unique identifier of the session to update.
- * 
+ *
  *       **Request Body:**
  *       - Optional fields: `type`, `date`, `time`, `nextAppointment`, `notes`, `privateNotes`, `prescription`, `diagnosis`, `labTests`, `radOrders`.
- *       
+ *
  *       **Response:**
  *       - On success: Returns the updated session details.
  *       - On error: Provides details about validation issues, unauthorized access, or server errors.
@@ -1447,7 +1440,10 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *                   example: "Internal server error"
  */
 router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorSession);
+router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 
+// Doctor GET all patients using GET /patients in the patient's routes
+// We have not sittled on the DELETE method for this route
 /**
  * @swagger
  * /doctors/{id}/sessions/{sessionId}:
@@ -1455,16 +1451,16 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *     summary: Deletes a session for a doctor and patient - for doctor.
  *     description: |
  *       Deletes a specific session for a given doctor and patient. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- * 
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
  *       - `sessionId` (path, required): The unique identifier of the patient to retrieve.
- * 
+ *
  *       **Response:**
  *       - On success: Redirects to `/sessions/{sessionId}` with status code 307.
  *       - On error: Provides details about unauthorized access, missing resources, or server errors.
@@ -1548,8 +1544,6 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  */
 router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }), DoctorController.deleteDoctorSession);
 
-
-
 //
 /**
  * @swagger
@@ -1558,15 +1552,15 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *     summary: Retrieve a list of patients associated with a specific doctor - for doctor.
  *     description: |
  *       Fetches all patients associated with the specified doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
- *       
+ *
  *       **Response:**
  *       - On success: Returns a list of patients associated with the doctor, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about not finding the doctor, invalid ID, or server errors.
@@ -1767,6 +1761,9 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *                   type: string
  *                   example: "Internal Server Error"
  */
+
+// Doctor: GET all patients using GET /patients in the patient's routes
+// We have not sittled on the DELETE method for this route
 router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorController.getDoctorPatients);
 
 /**
@@ -1776,16 +1773,16 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *     summary: Retrieve a specific patient of a doctor - for doctor.
  *     description: |
  *       Fetches details of a specific patient associated with a doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
  *       - `patientId` (path, required): The unique identifier of the patient to retrieve.
- *       
+ *
  *       **Response:**
  *       - On success: Returns details of the patient, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about validation issues, unauthorized access, or server errors.
@@ -2000,21 +1997,21 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *     summary: Update details of a specific patient of a doctor - for doctor.
  *     description: |
  *       Allows a doctor to update the details of a specific patient associated with them. Note that a doctor cannot update a patient's password through this endpoint.
- *       
+ *
  *       **Authentication:**
  *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
- *       
+ *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
  *       - `patientId` (path, required): The unique identifier of the patient to update.
- *       
+ *
  *       **Request Body:**
- *       - An object containing the fields to update. The following fields can be updated: `firstName`, `lastName`, `email`, `gender`, `dob`, `contact.phone`, 
+ *       - An object containing the fields to update. The following fields can be updated: `firstName`, `lastName`, `email`, `gender`, `dob`, `contact.phone`,
  *         `bloodGroup`, `height`, `weight`, `contact`: (`address`, `city`, `state`), `emergencyContact`, `medicalHistory`, `currentMedication`, `familyHistory`, and `insurance`.
  *       - Note: The `password` field is not allowed to be updated by the doctor.
- *       
+ *
  *       **Response:**
  *       - On success: Returns the updated details of the patient, excluding the `confirmPassword` field.
  *       - On error: Provides details about validation issues, unauthorized access, or server errors.
@@ -2297,7 +2294,6 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *                   example: "Internal Server Error"
  */
 router.put('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }), DoctorController.updateDoctorPatient);
-
 
 // Will be imported by PatientRoutes.js
 export default router;

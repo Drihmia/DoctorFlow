@@ -14,8 +14,8 @@ const swaggerDefinition = {
     }
   ],
   externalDocs: {                // <<< this will add the link to your swagger page
-    description: "swagger.json", // <<< link title
-    url: "/swagger.json"         // <<< and the file added below in app.get(...)
+    description: 'swagger.json', // <<< link title
+    url: '/swagger.json'         // <<< and the file added below in app.get(...)
   },
   components: {
     securitySchemes: {
@@ -49,4 +49,3 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 
 module.exports = swaggerSpec;
-
