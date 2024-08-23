@@ -21,9 +21,8 @@ const router = Router();
  *
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token.
-
  *       - `page` (header, optional): The page number for pagination.
- *       - `limit` (header, optional): Optional. The number of records per page.
+ *       - `limit` (header, optional): The number of records per page.
  *
  *       **Response:**
  *       - A list of doctor objects, each containing details such as `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, and more.
@@ -942,6 +941,8 @@ router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorControll
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor to retrieve all their sessions for.
+ *       - `page` (header, optional): The page number for pagination.
+ *       - `limit` (header, optional): The number of records per page.
  *
  *       **Response:**
  *       - On success: Returns an array of session objects for the specified doctor.
@@ -1546,7 +1547,9 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *       **Request Parameters:**
  *       - `x-token` (header, required): The authentication token used for authorization.
  *       - `id` (path, required): The unique identifier of the doctor.
- *
+ *       - `page` (header, optional): The page number for pagination.
+ *       - `limit` (header, optional): The number of records per page.
+ * 
  *       **Response:**
  *       - On success: Returns a list of patients associated with the doctor, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about not finding the doctor, invalid ID, or server errors.
