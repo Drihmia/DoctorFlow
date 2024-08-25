@@ -1,8 +1,8 @@
 {
-  "name": "files_manager",
+  "name": "DoctorFlow",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint --fix ",
     "check-lint": "./node_modules/.bin/eslint --ignore-pattern node_modules/ --fix '*/**/*.js'",
