@@ -95,8 +95,8 @@ class DoctorService {
     }
   }
 
-  async doctorUpdatePatientById(doctor, patientId, query) {
-    const patient = await this.getDoctorPatientById(doctor, patientId);
+  static async doctorUpdatePatientById(doctor, patientId, query) {
+    const patient = await DoctorService.getDoctorPatientById(doctor, patientId);
     if (!patient) return 1;
 
     const NotAllowedFields = ['password', 'confirmPassword', 'doctor', 'sessions'];
@@ -109,15 +109,15 @@ class DoctorService {
       }
     }
 
-    const updatedUser = await this.updateADoctor(patient, queryUpdate);
+    const updatedUser = await DoctorService.updateADoctor(patient, queryUpdate);
 
     // remove confirmPassword from the response
     updatedUser.confirmPassword = undefined;
     return updatedUser;
   }
 
-  async updateDoctorSessionById(doctor, sessionId, query) {
-    const session = await this.getDoctorSessionById(doctor, sessionId);
+  static async updateDoctorSessionById(doctor, sessionId, query) {
+    const session = await DoctorService.getDoctorSessionById(doctor, sessionId);
     if (!session) return 1;
 
     const NotAllowedFields = ['password', 'confirmPassword', 'doctor', 'patient'];
@@ -128,7 +128,7 @@ class DoctorService {
       }
     }
 
-    const updatedUser = await this.updateADoctor(session, queryUpdate);
+    const updatedUser = await DoctorService.updateADoctor(session, queryUpdate);
 
     // remove confirmPassword from the response
     updatedUser.confirmPassword = undefined;
@@ -136,4 +136,4 @@ class DoctorService {
   }
 }
 
-export default new DoctorService();
+export default DoctorService;

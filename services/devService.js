@@ -18,5 +18,4 @@ class DevService {
   }
 }
 
-const devService = new DevService();
-export default devService;
+export default DevService;

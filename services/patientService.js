@@ -130,4 +130,4 @@ class PatientService {
   }
 }
 
-export default new PatientService();
+export default PatientService;

@@ -60,13 +60,17 @@ class SessionService {
     if (!session) return false;
 
     // Removing the session from the doctor and patient
-    session.doctor.sessions = session.doctor.sessions.filter((s) => s._id.toString() !== id);
-    session.patient.sessions = session.patient.sessions.filter((s) => s._id.toString() !== id);
-    await session.doctor.save();
-    await session.patient.save();
+    if (session.doctor) {
+      session.doctor.sessions = session.doctor.sessions.filter((s) => s._id.toString() !== id);
+      await session.doctor.save();
+    }
+    if (session.patient) {
+      session.patient.sessions = session.patient.sessions.filter((s) => s._id.toString() !== id);
+      await session.patient.save();
+    }
 
     return Session.findByIdAndDelete(id);
   }
 }
 
-export default new SessionService();
+export default SessionService;

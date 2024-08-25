@@ -36,5 +36,4 @@ class RedisUtils {
   }
 }
 
-const redisUtils = new RedisUtils();
 export default RedisUtils;
