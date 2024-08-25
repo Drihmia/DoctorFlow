@@ -1,6 +1,4 @@
-const filtredSessions = async function (th, patient, sessions) {
-  const sharedSessions = [];
-
+const filtredSessions = async (th, patient, sessions) => {
   // Session's fields that can be shared with the patient
   const authFieldsToShare = [
     '_id', 'doctor', 'patient', 'date', 'time', 'type', 'createdAt',
@@ -8,7 +6,8 @@ const filtredSessions = async function (th, patient, sessions) {
     'labTests', 'radOrders',
   ];
 
-  for (const session of sessions) {
+  // Function to process each session
+  const processSession = async (session) => {
     const sharedSession = {};
     for (const key of authFieldsToShare) {
       if (session[key]) {
@@ -19,10 +18,15 @@ const filtredSessions = async function (th, patient, sessions) {
     sharedSession.doctor = await th.getPatientDoctor(patient);
     sharedSession.patient = undefined;
 
-    sharedSessions.push(sharedSession);
-  }
+    return sharedSession;
+  };
+
+  // Process all sessions concurrently
+  const sharedSessions = await Promise.all(sessions.map(processSession));
 
   return sharedSessions;
 };
 
-export { filtredSessions };
+const empty = () => {};
+
+export { filtredSessions, empty };

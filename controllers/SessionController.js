@@ -70,6 +70,7 @@ class SessionController {
 
       return res.status(404).json({ error: 'Session not found' });
     } catch (error) {
+      console.log(error);
       // If user provides an invalid id, ObjectId will throw an error
       if (error.kind === 'ObjectId') {
         return res.status(404).json({ error: 'Session not found' });

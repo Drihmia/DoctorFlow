@@ -15,7 +15,7 @@ const checkPwd = (query, res) => {
 };
 
 // I'm using in the Patient's schema validation
-const checkArrayObjects = function (v) {
+const checkArrayObjects = function checkArrayObjects(v) {
   // Checking it's an array
   if (!Array.isArray(v)) return false;
 
@@ -29,8 +29,8 @@ const checkArrayObjects = function (v) {
   return true;
 };
 
-const strongPassword = function (validator) {
-  return function (value) {
+const strongPassword = function strongPassword(validator) {
+  return function isStrong(value) {
     return validator.isStrongPassword(value, {
       minLength: 8,
       minLowercase: 1,
@@ -43,7 +43,7 @@ const strongPassword = function (validator) {
 
 // This function insures that require validator will trigger only
 // when password is modified or new user is created
-const confirmPasswordShouldBeRequired = function (validator) {
+const confirmPasswordShouldBeRequired = function confirmPasswordShouldBeRequired() {
   return this.isModified('password') || this.isNew;
 };
 

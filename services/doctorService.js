@@ -1,49 +1,51 @@
-import mongoose from 'mongoose';
 import Doctor from '../middlewares/doctorMiddleware';
 
 class DoctorService {
-  getDoctors(page = 0, size = 10) {
+  static getDoctors(page = 0, size = 10) {
     return Doctor.find().skip(page * size).limit(size);
   }
 
-  async getDoctorById(id) {
+  static async getDoctorById(id) {
     return Doctor.findById(id);
   }
 
-  async getDoctorByEmail(Email) {
+  static async getDoctorByEmail(Email) {
     const email = Email.toLowerCase();
     return Doctor.findOne({ email });
   }
 
-  async createDoctor(query) {
-    return await Doctor.create(query);
+  static async createDoctor(query) {
+    const createdDoc = await Doctor.create(query);
+    return createdDoc;
   }
 
-  async updateADoctor(doctor, query) {
+  static async updateADoctor(doctor, query) {
     // Make sure the email is unique, by checking if the email in the query
     // We override the email in the query with the email in the database
     // If not, the unique property in Doctor's schema will raise an error 'duplicate key'
-    if (query.email) {
-      query.email = doctor.email;
+    // Age will be calculated from the date of birth
+    const notAllowedFields = ['email', 'age'];
+    const queryUpdate = {};
+    for (const field in query) {
+      if (field) {
+        if (!notAllowedFields.includes(field)) {
+          queryUpdate[field] = query[field];
+        }
+      }
     }
 
-    // make sure the age is automatically calculated from the date of birth
-    if (query.age) {
-      delete query.age;
-    }
-
-    Object.assign(doctor, query);
+    Object.assign(doctor, queryUpdate);
 
     // Methods such as findByIdAndUpdate will not trigger the pre-save middleware
     const updatedUser = await doctor.save();
     return updatedUser;
   }
 
-  async deleteADoctor(id) {
+  static async deleteADoctor(id) {
     return Doctor.findByIdAndDelete(id);
   }
 
-  async getDoctorSessionById(doctor, sessionId, res) {
+  static async getDoctorSessionById(doctor, sessionId, res) {
     try {
       const populatedDoctorWithSessions = await doctor.populate('sessions');
 
@@ -52,16 +54,14 @@ class DoctorService {
       const filtredSession = populatedSessions
         .filter((session) => session._id.toString() === sessionId);
 
-      if (filtredSession.length !== 0) {
-        return filtredSession[0];
-      }
+      return filtredSession.length ? filtredSession[0] : 0;
     } catch (error) {
       res.status(404).send({ message: 'Session not found' });
       return 1;
     }
   }
 
-  async getDoctorSessions(doctor, page = 0, size = 10) {
+  static async getDoctorSessions(doctor, page = 0, size = 10) {
     const sessions = await doctor.populate({
       path: 'sessions',
       skip: page * size,
@@ -70,7 +70,7 @@ class DoctorService {
     return sessions.sessions;
   }
 
-  async getDoctorPatients(doctor, page = 0, size = 10) {
+  static async getDoctorPatients(doctor, page = 0, size = 10) {
     const Doctor = await doctor.populate({
       path: 'patients',
       skip: page * size,
@@ -79,7 +79,7 @@ class DoctorService {
     return Doctor.patients;
   }
 
-  async getDoctorPatientById(doctor, patientId, res) {
+  static async getDoctorPatientById(doctor, patientId, res) {
     try {
       const populatedDoctorWithPatients = await doctor.populate('patients');
 
@@ -88,9 +88,7 @@ class DoctorService {
       const filtredPatient = populatedPatients
         .filter((patient) => patient._id.toString() === patientId);
 
-      if (filtredPatient.length !== 0) {
-        return filtredPatient[0];
-      }
+      return filtredPatient.length ? filtredPatient[0] : 0;
     } catch (error) {
       res.status(404).send({ message: 'Patient not found' });
       return 1;
@@ -102,13 +100,16 @@ class DoctorService {
     if (!patient) return 1;
 
     const NotAllowedFields = ['password', 'confirmPassword', 'doctor', 'sessions'];
+    const queryUpdate = {};
     for (const field in query) {
-      if (NotAllowedFields.includes(field)) {
-        delete query[field];
+      if (field) {
+        if (!NotAllowedFields.includes(field)) {
+          queryUpdate[field] = query[field];
+        }
       }
     }
 
-    const updatedUser = await this.updateADoctor(patient, query);
+    const updatedUser = await this.updateADoctor(patient, queryUpdate);
 
     // remove confirmPassword from the response
     updatedUser.confirmPassword = undefined;
@@ -120,13 +121,14 @@ class DoctorService {
     if (!session) return 1;
 
     const NotAllowedFields = ['password', 'confirmPassword', 'doctor', 'patient'];
+    const queryUpdate = { ...query };
     for (const field in query) {
       if (NotAllowedFields.includes(field)) {
-        delete query[field];
+        delete queryUpdate[field];
       }
     }
 
-    const updatedUser = await this.updateADoctor(session, query);
+    const updatedUser = await this.updateADoctor(session, queryUpdate);
 
     // remove confirmPassword from the response
     updatedUser.confirmPassword = undefined;
