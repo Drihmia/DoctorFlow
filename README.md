@@ -30,6 +30,10 @@ DoctorFlow is a clinic management system API built with Express.js and Node.js. 
 - **Session History**: Access their session history.
 - **Doctor Information**: View basic information about their doctor.
 
+### Special User: Dev
+
+- The "Dev" user cannot be created via the API. A special script `createDev.js` is used to create this user locally. This script requires two environment variables: `EMAIL` and `PASSWORD`.
+
 ## Target Audience
 
 The API is intended for other developers who want to integrate DoctorFlow into their websites or applications.
@@ -60,6 +64,23 @@ To get started with DoctorFlow, first clone the repository to your local machine
 ```bash
 git clone https://github.com/Drihmia/DoctorFlow.git
 ```
+### System Setup
+1. Update System and Install Dependencies:
+```bash
+    sudo apt update
+    sudo apt install redis-server redis-tools
+    sudo apt install mongodb
+```
+2. Start Necessary Services:
+    - Start Redis Server:
+```bash
+    sudo service redis-server start
+```
+   - Start MongoDB (if you are working on a local machine):
+```bash
+    sudo service mongod start
+```
+
 
 ### Installation
 
@@ -69,6 +90,8 @@ Once you have cloned the repository, navigate to the project directory and insta
 cd DoctorFlow
 npm install
 ```
+
+
 
 ### Configuration
 
@@ -80,7 +103,15 @@ EMAIL=your-dev-email@example.com
 PASSWORD=your-dev-password
 ```
 
-- **`MONGO_URI`**: Replace `your-mongodb-uri` with the URI of your MongoDB instance.
+Note: You can use .env file to store environment variables or you can set them directly in the terminal using export command.
+
+```bash
+export MONGO_URI=your-mongodb-uri
+export EMAIL=your-dev-email
+export PASSWORD=your-dev-password
+```
+
+- **`MONGO_URL`**: Replace your-mongodb-uri with the URI of your MongoDB instance. If you're using *MongoDB Atlas*, ensure your IP address is added to the database's access white list. Refer to Atlas documentation for more details.
 - **`EMAIL`** and **`PASSWORD`**: Use these for creating a dev account to access dev endpoints.
 
 ### Usage
@@ -105,12 +136,37 @@ PASSWORD=your-dev-password
      ```
    - This script uses the `EMAIL` and `PASSWORD` you set in your `.env` file to create the dev account..
 
+Note: Dev account can only access 3 endpoints: `/doctors`, `/patients`, and `/sessions`.
+
 4. **Access the API Documentation**:
-   - **Deployed Documentation**: Visit the deployed API documentation at [Your Deployed API Docs](https://).
-   - **Local Documentation**: Access the Swagger UI locally at [http://localhost:3000/api-docs](http://localhost:3000/api-docs) to explore and interact with the API endpoints.
+   - **Deployed Documentation**: Visit the deployed API documentation at [/api-docs](https://drihmia.tech).
+   - **Local Documentation**: Access the Swagger UI locally at [/api-docs](http://localhost:3000/api-docs) to explore and interact with the API endpoints.
 
 ## Testing
 
-## Contributing
+The API can be tested using Postman. The collection and environment files are available in the `postman` directory. Click the button below to run the collection in Postman:
+
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/35187959-d1928064-6cee-41a8-9a97-ea4fa783494d?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D35187959-d1928064-6cee-41a8-9a97-ea4fa783494d%26entityType%3Dcollection%26workspaceId%3D8de31a35-037f-493e-bb07-2890eda04b51)
+
+Note: Basic environment variables are set in the Postman collection. Update the environment variables with your own values if necessary.
+
+### Environment Variables
+
+- **BaseUrlDF**: The base URL of the DoctorFlow API, e.g., `https://drihmia.tech`
+- **DevEmail**: The email address you've chosen to create the dev account using the script.
+- **DevPassword**: The password you've chosen to create the dev account using the script.
+
+## Author and Contribution
+
+- **Authors**:
+  - **DRIHMIA Redouane**: [drihmia.redouane@gmail.com](mailto:drihmia.redouane@gmail.com)
+  - **Omnia ABOUHAIKAL**: [omniaabohaekal@gmail.com](mailto:omniaabohaekal@gmail.com)
+
+- **GitHub Accounts**:
+  - [Drihmia](https://github.com/Drihmia)
+  - [oniaz](https://github.com/oniaz)
 
 ## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
