@@ -1,20 +1,21 @@
-import mongoose from 'mongoose';
 import Dev from '../models/devModel';
 
 class DevService {
-  async _createDev(dev) {
-    return await Dev.create(dev);
+  static async _createDev(dev) {
+    const createdDev = await Dev.create(dev);
+    return createdDev;
   }
 
-  async _getDevById(id) {
-    return await Dev.findById(id);
+  static async _getDevById(id) {
+    const dev = await Dev.findById(id);
+    return dev;
   }
 
-  async _getDevByEmail(Email) {
+  static async _getDevByEmail(Email) {
     const email = Email.toLowerCase();
-    return await Dev.findOne({ email });
+    const dev = await Dev.findOne({ email });
+    return dev;
   }
 }
 
-const devService = new DevService();
-export default devService;
+export default DevService;

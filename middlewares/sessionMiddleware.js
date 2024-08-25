@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import sessionSchema from '../models/sessionModel';
 
-sessionSchema.pre('save', function(next) {
+sessionSchema.pre('save', function preSave(next) {
   if (this.isModified()) {
     this.updatedAt = Date.now();
   }
@@ -16,21 +16,22 @@ sessionSchema.pre('save', function(next) {
   for (const key in this.toObject()) {
     if (this[key] instanceof Date) {
       // Checking if the Date object is valid
-      if (isNaN(this[key].getTime())) {
+      if (Number.isNaN(this[key].getTime())) {
         return next(new Error(`Invalid date for field: ${key}`));
       }
     }
   }
 
-  next();
+  return next();
 });
 
-sessionSchema.pre('validate', function(next) {
+sessionSchema.pre('validate', function preValidate(next) {
   if (this.isModified('type')) {
     this.type = this.type.charAt(0).toUpperCase() + this.type.slice(1);
   }
-  next();
+  return next();
 });
+
 const Session = mongoose.model('Session', sessionSchema);
 
 export default Session;

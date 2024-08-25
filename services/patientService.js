@@ -5,20 +5,21 @@ import DoctorService from './doctorService';
 import { filtredSessions } from '../utils/tools';
 
 class PatientService {
-  getPatients(page = 0, size = 10) {
+  static getPatients(page = 0, size = 10) {
     return Patient.find().skip(page * size).limit(size);
   }
 
-  async getPatientById(id) {
+  static async getPatientById(id) {
     return Patient.findById(id);
   }
 
-  async getPatientByEmail(Email) {
+  static async getPatientByEmail(Email) {
     const email = Email.toLowerCase();
     return Patient.findOne({ email });
   }
 
-  async createPatient(query) {
+  static async createPatient(quer) {
+    const query = quer;
     if (query.doctorId) {
       try {
         query.doctor = new mongoose.Types.ObjectId(query.doctorId);
@@ -48,7 +49,8 @@ class PatientService {
     return patient;
   }
 
-  async updateAPatient(patient, query) {
+  static async updateAPatient(patient, quer) {
+    const query = quer;
     // Make sure the email is unique, by checking if the email in the query
     // We override the email in the query with the email in the database
     // If not, the unique property in Patient's schema will raise an error 'duplicate key'
@@ -66,10 +68,10 @@ class PatientService {
     return updatedUser;
   }
 
-  async deleteAPatient(id, doctor) {
+  static async deleteAPatient(id, doctor) {
     try {
       const query = {};
-      query.patients = doctor.patients.filter(patientId => !patientId.equals(id));
+      query.patients = doctor.patients.filter((patientId) => !patientId.equals(id));
       await DoctorService.updateADoctor(doctor, query);
       return Patient.findByIdAndDelete(id);
     } catch (error) {
@@ -77,44 +79,45 @@ class PatientService {
     }
   }
 
-  async getPatientSessionById (patient, sessionId, res) {
+  static async getPatientSessionById(patient, sessionId, res) {
     try {
       const populatedPatientWithSessions = await patient.populate('sessions');
 
       const populatedSessions = populatedPatientWithSessions.sessions;
 
       const filtredSession = populatedSessions
-        .filter(session => session._id.toString() === sessionId);
+        .filter((session) => session._id.toString() === sessionId);
 
       if (filtredSession.length === 1) {
         const sessions = await filtredSessions(this, patient, filtredSession);
         return sessions[0];
       }
+      return 0;
     } catch (error) {
       res.status(404).send({ message: 'Session not found' });
       return 1;
     }
   }
 
-  async getPatientSessions (patient, page = 0, size = 10) {
+  static async getPatientSessions(patient, page = 0, size = 10) {
     const populatedSessions = await patient.populate({
       path: 'sessions',
       skip: page * size,
-      limit: size
+      limit: size,
     });
-    const sessions = populatedSessions.sessions;
+    const { sessions } = populatedSessions;
 
     return filtredSessions(this, patient, sessions);
   }
 
-  async getPatientDoctor (patient) {
+  static async getPatientDoctor(patient) {
     const patients = await patient.populate('doctor');
-    const doctor = patients.doctor;
+    const { doctor } = patients;
 
     const sharedDoctor = {};
     const authFieldsToShare = [
       '_id', 'email', 'firstName', 'lastName', 'phone', 'specialization',
-      'contact', 'createdAt', 'gender', 'bio'
+      'contact', 'createdAt', 'gender', 'bio',
     ];
 
     for (const key of authFieldsToShare) {
@@ -127,4 +130,4 @@ class PatientService {
   }
 }
 
-export default new PatientService();
+export default PatientService;

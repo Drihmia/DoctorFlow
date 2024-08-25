@@ -1,15 +1,15 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-import redisUtils from '../utils/redisUtils';
-import DoctorService from '../services/DoctorService';
-import PatientService from '../services/PatientService';
-import DevService from '../services/DevService';
+import redisUtils from './redisUtils';
+import DoctorService from '../services/doctorService';
+import PatientService from '../services/patientService';
+import DevService from '../services/devService';
 
 const _GetUserByEmail = {
   Doctor: DoctorService.getDoctorByEmail,
   Patient: PatientService.getPatientByEmail,
-  Dev: DevService._getDevByEmail
+  Dev: DevService._getDevByEmail,
 };
 
 const extractUserFromAuthHeader = async ({ authorization }, userType, res) => {

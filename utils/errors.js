@@ -20,4 +20,5 @@ const prettifyError = (error) => {
   return error;
 };
 
-export { prettifyError };
+const empty = () => {};
+export { prettifyError, empty };

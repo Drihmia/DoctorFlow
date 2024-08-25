@@ -1,7 +1,7 @@
 import redisClient from '../config/redis';
 
 class RedisUtils {
-  async set(key, value, duration) {
+  static async set(key, value, duration) {
     return new Promise((resolve, reject) => {
       if (duration) {
         redisClient.set(key, value, 'EX', duration, (err, reply) => {
@@ -17,7 +17,7 @@ class RedisUtils {
     });
   }
 
-  async get(key) {
+  static async get(key) {
     return new Promise((resolve, reject) => {
       redisClient.get(key, (err, reply) => {
         if (err) reject(err);
@@ -26,7 +26,7 @@ class RedisUtils {
     });
   }
 
-  async del(key) {
+  static async del(key) {
     return new Promise((resolve, reject) => {
       redisClient.del(key, (err, reply) => {
         if (err) reject(err);
@@ -36,5 +36,4 @@ class RedisUtils {
   }
 }
 
-const redisUtils = new RedisUtils();
-export default redisUtils;
+export default RedisUtils;
