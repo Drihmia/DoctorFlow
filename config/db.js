@@ -5,7 +5,6 @@ const mongoUrl = process.env.MONGO_URI;
 if (!mongoUrl) {
   throw new Error('MONGO_URL must be set');
 }
-console.log('mongoUrl', mongoUrl);
 const DBConnection = async () => {
   try {
     await mongoose.connect(mongoUrl, {
