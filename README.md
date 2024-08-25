@@ -6,7 +6,7 @@ DoctorFlow is an API designed to streamline the patient management process. It d
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Technologies Used](#technologies-used)
+- [Technologies Used](#tech-stack-used)
 - [Installation, Setup, and Usage](#installation-setup-and-usage)
 - [Testing](#testing)
 - [Contributing](#contributing)
