@@ -9,6 +9,7 @@ class AuthenticationController {
       const token = await generateAndSetToken('doctor', doctor, res);
       res.status(200).json({ token });
     } catch (error) {
+      console.log('Error:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
@@ -49,4 +50,4 @@ class AuthenticationController {
   }
 }
 
-module.exports = AuthenticationController;
+export default AuthenticationController;

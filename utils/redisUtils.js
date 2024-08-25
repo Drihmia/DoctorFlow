@@ -2,37 +2,33 @@ import redisClient from '../config/redis';
 
 class RedisUtils {
   static async set(key, value, duration) {
-    return new Promise((resolve, reject) => {
-      if (duration) {
-        redisClient.set(key, value, 'EX', duration, (err, reply) => {
-          if (err) reject(err);
-          resolve(reply);
-        });
-      } else {
-        redisClient.set(key, value, (err, reply) => {
-          if (err) reject(err);
-          resolve(reply);
-        });
-      }
-    });
+    try {
+      const settedValue = await redisClient.set(key, value, 'EX', duration);
+      return settedValue;
+    } catch (err) {
+      console.error('Error setting Redis key:', err);
+      throw err;
+    }
   }
 
   static async get(key) {
-    return new Promise((resolve, reject) => {
-      redisClient.get(key, (err, reply) => {
-        if (err) reject(err);
-        resolve(reply);
-      });
-    });
+    try {
+      const reply = await redisClient.get(key);
+      return reply;
+    } catch (err) {
+      console.error('Error getting Redis key:', err);
+      throw err;
+    }
   }
 
   static async del(key) {
-    return new Promise((resolve, reject) => {
-      redisClient.del(key, (err, reply) => {
-        if (err) reject(err);
-        resolve(reply);
-      });
-    });
+    try {
+      const reply = await redisClient.del(key);
+      return reply;
+    } catch (err) {
+      console.error('Error deleting Redis key:', err);
+      throw err;
+    }
   }
 }
 
