@@ -106,7 +106,7 @@ PASSWORD=your-dev-password
    - This script uses the `EMAIL` and `PASSWORD` you set in your `.env` file to create the dev account..
 
 4. **Access the API Documentation**:
-   - **Deployed Documentation**: Visit the deployed API documentation at [Your Deployed API Docs](https://).
+   - **Deployed Documentation**: Visit the [deployed API documentation](https://drihmia.tech/api-docs/).
    - **Local Documentation**: Access the Swagger UI locally at [http://localhost:3000/api-docs](http://localhost:3000/api-docs) to explore and interact with the API endpoints.
 
 ## Testing
