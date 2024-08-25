@@ -28,7 +28,7 @@ import AuthMiddleware from '../middlewares/authMiddleware';
  *       - On error: |
  *          Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Sessions
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -245,7 +245,7 @@ router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.a
  *       - A list of sessions objects, each containing details such as:
  *        `_id`, `firstName`, `lastName`, `email`, `doctor`, `medicalHistory`, and more.
  *     tags:
- *       - Sessions
+ *       - Devs
  *     security:
  *       - bearerAuth: []
  *     parameters:

@@ -29,7 +29,7 @@ import AuthMiddleware from '../middlewares/authMiddleware';
  *       - A list of patients objects, each containing details such as:
  *        `_id`, `firstName`, `lastName`, `email`, `doctor`, `medicalHistory`, and more.
  *     tags:
- *       - Patients
+ *       - Devs
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -257,7 +257,7 @@ router.get('/patients', AuthMiddleware({ role: 'dev' }), PatientController.getAl
  *       - On error: |
  *        Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Patients
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1238,7 +1238,7 @@ router.patch('/patients/:id', AuthMiddleware({ role: 'patient' }), PatientContro
  *       - On error: |
  *        Provides details about unauthorized access, patient not found, or server errors.
  *     tags:
- *       - Patients
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1335,7 +1335,7 @@ router.delete('/patients/:id', AuthMiddleware({ role: 'doctor', extraLayer: fals
  *        including fields such as `_id`, `doctor`, `date`, `type`, and more.
  *       - On error: Provides details about not finding the session, invalid ID, or server errors.
  *     tags:
- *       - Sessions
+ *       - Patients
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1483,7 +1483,7 @@ router.get('/patients/:id/sessions', AuthMiddleware({ role: 'patient' }), Patien
  *       - On error: |
  *        Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Sessions
+ *       - Patients
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1682,7 +1682,7 @@ router.get('/patients/:id/sessions/:sessionId', AuthMiddleware({ role: 'patient'
  *       - On error: |
  *        Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Doctors
+ *       - Patients
  *     security:
  *       - bearerAuth: []
  *     parameters:

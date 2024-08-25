@@ -31,7 +31,7 @@ const router = Router();
  *       - A list of doctor objects, each containing details such as
  *        `_id`, `firstName`, `lastName`, `email`, `gender`, `specialization`, and more.
  *     tags:
- *       - Doctors
+ *       - Devs
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -997,7 +997,7 @@ router.delete('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorControll
  *       - On error: |
  *        Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Sessions
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1141,7 +1141,7 @@ router.get('/doctors/:id/sessions/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *       - On error: |
  *        Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Sessions
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1306,7 +1306,7 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *       - On error: |
  *        Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Sessions
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1530,7 +1530,7 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *       - On error: |
  *        Provides details about unauthorized access, missing resources, or server errors.
  *     tags:
- *       - Sessions
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1636,7 +1636,7 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *        `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about not finding the doctor, invalid ID, or server errors.
  *     tags:
- *       - Patients
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1861,7 +1861,7 @@ router.get('/doctors/:id/patients/', AuthMiddleware({ role: 'doctor' }), DoctorC
  *       - On error: |
  *        Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Patients
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -2099,7 +2099,7 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *       - On error: |
  *        Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
- *       - Patients
+ *       - Doctors
  *     security:
  *       - bearerAuth: []
  *     parameters:
