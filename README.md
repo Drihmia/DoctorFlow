@@ -36,14 +36,12 @@ The API is intended for other developers who want to integrate DoctorFlow into t
 
 ## Tech Stack Used
 
-- **Backend Framework**: Express.js and Node.js
-- **Database**: MongoDB with Mongoose for data management
-- **Authentication**: UUID4 tokens for user authentication, managed with Redis
-- **Documentation**: JSDoc with auto-generated Swagger for API documentation
-- **Testing**: Postman for API test creation and execution
-- **Redis**: Used for managing authentication tokens
-- **Swagger**: Provides auto-generated API documentation through JSDoc
-- **Postman**: Used for API testing
+- **Backend Framework**: Express.js and Node.js for server-side logic and routing.
+- **Database**: MongoDB with Mongoose for data management and schema modeling.
+- **Authentication**: UUID4 tokens for user authentication, managed with Redis for efficient session handling.
+- **Documentation**: JSDoc and Swagger for generating and interacting with API documentation.
+- **Testing**: Postman for API testing and validation.
+- **Redis**: Used for managing authentication tokens and improving session management.
 
 ## Installation, Setup, and Usage
 
