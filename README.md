@@ -142,7 +142,21 @@ Note: Dev account can only access 3 endpoints: `/doctors`, `/patients`, and `/se
    - **Deployed Documentation**: Visit the deployed API documentation at [/api-docs](https://drihmia.tech/api-docs/).
    - **Local Documentation**: Access the Swagger UI locally at [/api-docs](http://localhost:3000/api-docs) to explore and interact with the API endpoints.
 
+### Automating the Installation
+
+We’ve provided an automation script to simplify the installation process. This script handles the majority of the setup steps automatically.
+
+If something doesn’t work during the installation, the script will display messages in different colors to help you troubleshoot and resolve any issues manually. You can then finish any remaining tasks on your own.
+
+To run the script, execute the following command:
+
+```bash
+bash automate_setup_process.bash
+```
+
 ## Testing
+
+**Note**: We wanted to make sure our project is well-structured and runs smoothly, so we adopted a **Test-Driven Development (TDD)** approach. By writing tests first, we set ourselves up to improve the code confidently. As the project grew, our tests grew with it, helping us refine both the code and the tests, making sure everything works together seamlessly.
 
 The API can be tested using Postman. The collection and environment files are available in the `postman` directory. Click the button below to run the collection in Postman:
 
