@@ -5,7 +5,7 @@ const filtredSessions = async function (th, patient, sessions) {
   const authFieldsToShare = [
     '_id', 'doctor', 'patient', 'date', 'time', 'type', 'createdAt',
     'updatedAt', 'notes', 'nextAppointment', 'prescription', 'diagnosis',
-    'labTests', 'radOrders'
+    'labTests', 'radOrders',
   ];
 
   for (const session of sessions) {

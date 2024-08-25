@@ -36,7 +36,7 @@ const strongPassword = function (validator) {
       minLowercase: 1,
       minUppercase: 1,
       minNumbers: 1,
-      minSymbols: 1
+      minSymbols: 1,
     });
   };
 };
@@ -47,4 +47,6 @@ const confirmPasswordShouldBeRequired = function (validator) {
   return this.isModified('password') || this.isNew;
 };
 
-export { checkPwd, checkArrayObjects, strongPassword, confirmPasswordShouldBeRequired };
+export {
+  checkPwd, checkArrayObjects, strongPassword, confirmPasswordShouldBeRequired,
+};

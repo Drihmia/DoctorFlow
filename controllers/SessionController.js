@@ -1,8 +1,8 @@
-import SessionService from '../services/SessionService';
+import SessionService from '../services/sessionService';
 import { prettifyError } from '../utils/errors';
 
 class SessionController {
-  static async getAllSessions (req, res) {
+  static async getAllSessions(req, res) {
     const { page, limit } = req.query;
 
     try {
@@ -13,7 +13,7 @@ class SessionController {
     }
   }
 
-  static async addSession (req, res) {
+  static async addSession(req, res) {
     const { doctorId, patientId } = req.body;
 
     if (!doctorId) {
@@ -38,15 +38,14 @@ class SessionController {
       const prettifiedError = prettifyError(error);
       if (prettifiedError instanceof Error) {
         return res.status(500).json({ error: prettifiedError });
-      } else {
-        // If the error related to mongoose validation, prettifyError will return an object
-        return res.status(400).json({ error: prettifiedError });
       }
+      // If the error related to mongoose validation, prettifyError will return an object
+      return res.status(400).json({ error: prettifiedError });
     }
   }
 
   // Not active
-  static async getSession (req, res) {
+  static async getSession(req, res) {
     const { id } = req.params;
 
     try {
@@ -60,7 +59,7 @@ class SessionController {
     }
   }
 
-  static async deleteSession (req, res) {
+  static async deleteSession(req, res) {
     const { id } = req.params;
 
     try {

@@ -40,10 +40,9 @@ class PatientController {
       const prettifiedError = prettifyError(error);
       if (prettifiedError instanceof Error) {
         return res.status(500).json({ error: prettifiedError });
-      } else {
-        // If the error related to mongoose validation, prettifyError will return an object
-        return res.status(400).json({ error: prettifiedError });
       }
+      // If the error related to mongoose validation, prettifyError will return an object
+      return res.status(400).json({ error: prettifiedError });
     }
   }
 
@@ -73,7 +72,8 @@ class PatientController {
     try {
       const patient = await PatientService.getPatientById(id);
       if (patient) {
-        const updatedpatient = await PatientService.updateAPatient(patient, { password, confirmPassword });
+        const updatedpatient = await PatientService.updateAPatient(patient,
+          { password, confirmPassword });
         return res.status(200).json(updatedpatient);
       }
       return res.status(404).json({ error: 'Patient not found' });
@@ -85,10 +85,9 @@ class PatientController {
       const prettifiedError = prettifyError(error);
       if (prettifiedError instanceof Error) {
         return res.status(500).json({ error: prettifiedError });
-      } else {
-        // If the error related to mongoose validation, prettifyError will return an object
-        return res.status(400).json({ error: prettifiedError });
       }
+      // If the error related to mongoose validation, prettifyError will return an object
+      return res.status(400).json({ error: prettifiedError });
     }
   }
 
@@ -119,7 +118,7 @@ class PatientController {
     }
   }
 
-  static async getPatientSession (req, res) {
+  static async getPatientSession(req, res) {
     const { id, sessionId } = req.params;
     try {
       const patient = await PatientService.getPatientById(id);
@@ -127,21 +126,24 @@ class PatientController {
         const session = await PatientService.getPatientSessionById(patient, sessionId, res);
         if (session) {
           if (session === 1) return;
-          return res.status(200).json(session);
+          res.status(200).json(session);
+          return;
         }
-        return res.status(404).json({ error: 'Session not found' });
+        res.status(404).json({ error: 'Session not found' });
+        return;
       }
-      return res.status(404).json({ error: 'Patient not found' });
+      res.status(404).json({ error: 'Patient not found' });
     } catch (error) {
       // If user provides an invalid id, ObjectId will throw an error
       if (error.kind === 'ObjectId') {
-        return res.status(404).json({ error: 'Patient not found' });
+        res.status(404).json({ error: 'Patient not found' });
+        return;
       }
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   }
 
-  static async getPatientSessions (req, res) {
+  static async getPatientSessions(req, res) {
     const { id } = req.params;
     const { page, limit } = req.query;
     try {
@@ -160,7 +162,7 @@ class PatientController {
     }
   }
 
-  static async getPatientDoctor (req, res) {
+  static async getPatientDoctor(req, res) {
     const { id } = req.params;
     try {
       const patient = await PatientService.getPatientById(id);

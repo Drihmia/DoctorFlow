@@ -6,11 +6,11 @@ const doctorSchema = new mongoose.Schema({
   // Required fields
   firstName: {
     type: String,
-    required: [true, 'First name is required']
+    required: [true, 'First name is required'],
   },
   lastName: {
     type: String,
-    required: [true, 'Last name is required']
+    required: [true, 'Last name is required'],
   },
   email: {
     type: String,
@@ -20,65 +20,65 @@ const doctorSchema = new mongoose.Schema({
     ummutable: true,
     validate: {
       validator: validator.isEmail,
-      message: 'Email is not valid'
+      message: 'Email is not valid',
     },
-    required: [true, 'Email is required']
+    required: [true, 'Email is required'],
   },
   password: {
     type: String,
     validate: {
       validator: strongPassword(validator),
-      message: 'Password is weak'
+      message: 'Password is weak',
     },
-    required: [true, 'Password is required']
+    required: [true, 'Password is required'],
   },
   confirmPassword: {
     type: String,
     validate: {
-      validator: function (value) {
+      validator(value) {
         if (!this.password) return true;
         return this.password === value;
       },
-      message: 'Passwords do not match'
+      message: 'Passwords do not match',
     },
-    required: [confirmPasswordShouldBeRequired, 'Confirm password is required']
+    required: [confirmPasswordShouldBeRequired, 'Confirm password is required'],
   },
   gender: {
     type: String,
     enum: {
       values: ['M', 'F'],
-      message: '{VALUE} is not a valid, must be M or F'
+      message: '{VALUE} is not a valid, must be M or F',
     },
-    required: [true, 'Gender is required']
+    required: [true, 'Gender is required'],
   },
   specialization: {
     type: String,
-    default: 'Generalist'
+    default: 'Generalist',
   },
   // Optional fields
   patients: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Patient'
-    }
+      ref: 'Patient',
+    },
   ],
   sessions: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Session'
-    }
+      ref: 'Session',
+    },
   ],
   bio: {
-    type: String
+    type: String,
   },
   createdAt: {
     type: Date,
     default: Date.now,
-    immutable: true
+    immutable: true,
   },
   updatedAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   // Optional fields
   phone: {
@@ -86,34 +86,34 @@ const doctorSchema = new mongoose.Schema({
     trim: true,
     validate: {
       validator: validator.isMobilePhone,
-      message: 'Contact phone is not valid'
-    }
+      message: 'Contact phone is not valid',
+    },
   },
   contact: {
     address: {
       type: String,
       trim: true,
-      lowercase: true
+      lowercase: true,
     },
     city: {
       type: String,
       trim: true,
-      lowercase: true
+      lowercase: true,
     },
     state: {
       type: String,
       trim: true,
-      lowercase: true
-    }
+      lowercase: true,
+    },
   },
   dob: {
     type: String,
     validate: {
       validator: validator.isDate,
-      message: 'Date of birth is not valid'
+      message: 'Date of birth is not valid',
     },
-    required: [true, 'Date of birth is required']
-  }
+    required: [true, 'Date of birth is required'],
+  },
 });
 
 // enhance uniqueness of email field at schema level

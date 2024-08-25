@@ -1286,7 +1286,7 @@ router.delete('/patients/:id', AuthMiddleware({ role: 'doctor', extraLayer: fals
  *       - `id` (path, required): The unique identifier of the patient.
  *       - `page` (header, optional): The page number for pagination.
  *       - `limit` (header, optional): The number of records per page.
- * 
+ *
  *       **Response:**
  *       - On success: Returns a list of sessions associated with the patient, including fields such as `_id`, `doctor`, `date`, `type`, and more.
  *       - On error: Provides details about not finding the session, invalid ID, or server errors.

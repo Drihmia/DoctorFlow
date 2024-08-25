@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import patientSchema from '../models/patientModel';
 
 // Middleware to update the 'updatedAt' field before saving the document
-patientSchema.pre('save', async function (next) {
+patientSchema.pre('save', async function preSave(next) {
   // Hash the password before saving the document
   if (this.isModified('password')) {
     try {
@@ -23,10 +23,10 @@ patientSchema.pre('save', async function (next) {
   if (this.confirmPassword) {
     this.confirmPassword = undefined;
   }
-  next();
+  return next();
 });
 
-patientSchema.pre('validate', function (next) {
+patientSchema.pre('validate', function preValidate(next) {
   // calculate the age of the patient based on the date of birth
   if (this.isModified() || this.isNew) {
     const { dob } = this;
@@ -42,23 +42,25 @@ patientSchema.pre('validate', function (next) {
 
   // Trim and convert all string fields to lowercase before saving
   for (const key in this.toObject()) {
-    const value = this[key];
-    if (typeof value === 'string' && !['password', 'confirmPassword', 'gender'].includes(key)) {
-      this[key] = value.trim();
-    }
+    if (key) {
+      const value = this[key];
+      if (typeof value === 'string' && !['password', 'confirmPassword', 'gender'].includes(key)) {
+        this[key] = value.trim();
+      }
 
-    if (value instanceof Date) {
-      // Checking if the Date object is valid
-      if (isNaN(value.getTime())) {
-        return next(new Error(`Invalid date for field: ${key}`));
+      if (value instanceof Date) {
+        // Checking if the Date object is valid
+        if (Number.isNaN(value.getTime())) {
+          return next(new Error(`Invalid date for field: ${key}`));
+        }
       }
     }
   }
-  next();
+  return next();
 });
 
 const Patient = mongoose.model('Patient', patientSchema);
 
-Patient.init().catch(err => console.error('Index creation failed:', err));
+Patient.init().catch((err) => console.error('Index creation failed:', err));
 
 export default Patient;

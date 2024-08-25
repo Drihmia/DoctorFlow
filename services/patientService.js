@@ -69,7 +69,7 @@ class PatientService {
   async deleteAPatient(id, doctor) {
     try {
       const query = {};
-      query.patients = doctor.patients.filter(patientId => !patientId.equals(id));
+      query.patients = doctor.patients.filter((patientId) => !patientId.equals(id));
       await DoctorService.updateADoctor(doctor, query);
       return Patient.findByIdAndDelete(id);
     } catch (error) {
@@ -77,14 +77,14 @@ class PatientService {
     }
   }
 
-  async getPatientSessionById (patient, sessionId, res) {
+  async getPatientSessionById(patient, sessionId, res) {
     try {
       const populatedPatientWithSessions = await patient.populate('sessions');
 
       const populatedSessions = populatedPatientWithSessions.sessions;
 
       const filtredSession = populatedSessions
-        .filter(session => session._id.toString() === sessionId);
+        .filter((session) => session._id.toString() === sessionId);
 
       if (filtredSession.length === 1) {
         const sessions = await filtredSessions(this, patient, filtredSession);
@@ -96,25 +96,25 @@ class PatientService {
     }
   }
 
-  async getPatientSessions (patient, page = 0, size = 10) {
+  async getPatientSessions(patient, page = 0, size = 10) {
     const populatedSessions = await patient.populate({
       path: 'sessions',
       skip: page * size,
-      limit: size
+      limit: size,
     });
-    const sessions = populatedSessions.sessions;
+    const { sessions } = populatedSessions;
 
     return filtredSessions(this, patient, sessions);
   }
 
-  async getPatientDoctor (patient) {
+  async getPatientDoctor(patient) {
     const patients = await patient.populate('doctor');
-    const doctor = patients.doctor;
+    const { doctor } = patients;
 
     const sharedDoctor = {};
     const authFieldsToShare = [
       '_id', 'email', 'firstName', 'lastName', 'phone', 'specialization',
-      'contact', 'createdAt', 'gender', 'bio'
+      'contact', 'createdAt', 'gender', 'bio',
     ];
 
     for (const key of authFieldsToShare) {

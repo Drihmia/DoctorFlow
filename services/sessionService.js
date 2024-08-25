@@ -3,15 +3,15 @@ import DoctorService from './doctorService';
 import PatientService from './patientService';
 
 class SessionService {
-  getSessions (page = 0, limit = 10) {
+  getSessions(page = 0, limit = 10) {
     return Session.find().skip(limit * page).limit(limit);
   }
 
-  getSessionById (id) {
+  getSessionById(id) {
     return Session.findById(id);
   }
 
-  async createSession (query) {
+  async createSession(query) {
     const { doctorId, patientId } = query;
 
     let doctor;
@@ -54,7 +54,7 @@ class SessionService {
     return session;
   }
 
-  async deleteSession (id) {
+  async deleteSession(id) {
     const session = await this.getSessionById(id).populate('doctor patient');
     if (!session) return false;
 

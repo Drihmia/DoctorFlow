@@ -6,20 +6,20 @@ class DoctorService {
     return Doctor.find().skip(page * size).limit(size);
   }
 
-  async getDoctorById (id) {
+  async getDoctorById(id) {
     return Doctor.findById(id);
   }
 
-  async getDoctorByEmail (Email) {
+  async getDoctorByEmail(Email) {
     const email = Email.toLowerCase();
     return Doctor.findOne({ email });
   }
 
-  async createDoctor (query) {
+  async createDoctor(query) {
     return await Doctor.create(query);
   }
 
-  async updateADoctor (doctor, query) {
+  async updateADoctor(doctor, query) {
     // Make sure the email is unique, by checking if the email in the query
     // We override the email in the query with the email in the database
     // If not, the unique property in Doctor's schema will raise an error 'duplicate key'
@@ -39,18 +39,18 @@ class DoctorService {
     return updatedUser;
   }
 
-  async deleteADoctor (id) {
+  async deleteADoctor(id) {
     return Doctor.findByIdAndDelete(id);
   }
 
-  async getDoctorSessionById (doctor, sessionId, res) {
+  async getDoctorSessionById(doctor, sessionId, res) {
     try {
       const populatedDoctorWithSessions = await doctor.populate('sessions');
 
       const populatedSessions = populatedDoctorWithSessions.sessions;
 
       const filtredSession = populatedSessions
-        .filter(session => session._id.toString() === sessionId);
+        .filter((session) => session._id.toString() === sessionId);
 
       if (filtredSession.length !== 0) {
         return filtredSession[0];
@@ -61,32 +61,32 @@ class DoctorService {
     }
   }
 
-  async getDoctorSessions (doctor, page = 0, size = 10) {
+  async getDoctorSessions(doctor, page = 0, size = 10) {
     const sessions = await doctor.populate({
       path: 'sessions',
       skip: page * size,
-      limit: size
+      limit: size,
     });
     return sessions.sessions;
   }
 
-  async getDoctorPatients (doctor, page = 0, size = 10) {
+  async getDoctorPatients(doctor, page = 0, size = 10) {
     const Doctor = await doctor.populate({
       path: 'patients',
       skip: page * size,
-      limit: size
+      limit: size,
     });
     return Doctor.patients;
   }
 
-  async getDoctorPatientById (doctor, patientId, res) {
+  async getDoctorPatientById(doctor, patientId, res) {
     try {
       const populatedDoctorWithPatients = await doctor.populate('patients');
 
       const populatedPatients = populatedDoctorWithPatients.patients;
 
       const filtredPatient = populatedPatients
-        .filter(patient => patient._id.toString() === patientId);
+        .filter((patient) => patient._id.toString() === patientId);
 
       if (filtredPatient.length !== 0) {
         return filtredPatient[0];

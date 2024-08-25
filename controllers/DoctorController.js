@@ -1,4 +1,4 @@
-import DoctorService from '../services/DoctorService';
+import DoctorService from '../services/doctorService';
 import { prettifyError } from '../utils/errors';
 
 class DoctorController {
@@ -34,10 +34,9 @@ class DoctorController {
       const prettifiedError = prettifyError(error);
       if (prettifiedError instanceof Error) {
         return res.status(500).json({ error: prettifiedError });
-      } else {
-        // If the error related to mongoose validation, prettifyError will return an object
-        return res.status(400).json({ error: prettifiedError });
       }
+      // If the error related to mongoose validation, prettifyError will return an object
+      return res.status(400).json({ error: prettifiedError });
     }
   }
 
@@ -79,10 +78,9 @@ class DoctorController {
       const prettifiedError = prettifyError(error);
       if (prettifiedError instanceof Error) {
         return res.status(500).json({ error: prettifiedError });
-      } else {
-        // If the error related to mongoose validation, prettifyError will return an object
-        return res.status(400).json({ error: prettifiedError });
       }
+      // If the error related to mongoose validation, prettifyError will return an object
+      return res.status(400).json({ error: prettifiedError });
     }
   }
 
@@ -115,17 +113,20 @@ class DoctorController {
         const session = await DoctorService.getDoctorSessionById(doctor, sessionId, res);
         if (session) {
           if (session === 1) return;
-          return res.status(200).json(session);
+          res.status(200).json(session);
+          return;
         }
-        return res.status(404).json({ error: 'Session not found' });
+        res.status(404).json({ error: 'Session not found' });
+        return;
       }
-      return res.status(404).json({ error: 'Doctor not found' });
+      res.status(404).json({ error: 'Doctor not found' });
     } catch (error) {
       // If user provides an invalid id, ObjectId will throw an error
       if (error.kind === 'ObjectId') {
-        return res.status(404).json({ error: 'Doctor not found' });
+        res.status(404).json({ error: 'Doctor not found' });
+        return;
       }
-      return res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   }
 
@@ -225,10 +226,9 @@ class DoctorController {
           const prettifiedError = prettifyError(error);
           if (prettifiedError instanceof Error) {
             return res.status(500).json({ error: prettifiedError });
-          } else {
-            // If the error related to mongoose validation, prettifyError will return an object
-            return res.status(400).json({ error: prettifiedError });
           }
+          // If the error related to mongoose validation, prettifyError will return an object
+          return res.status(400).json({ error: prettifiedError });
         }
       }
       return res.status(404).json({ error: 'Doctor not found' });
@@ -254,10 +254,9 @@ class DoctorController {
           const prettifiedError = prettifyError(error);
           if (prettifiedError instanceof Error) {
             return res.status(500).json({ error: prettifiedError });
-          } else {
-            // If the error related to mongoose validation, prettifyError will return an object
-            return res.status(400).json({ error: prettifiedError });
           }
+          // If the error related to mongoose validation, prettifyError will return an object
+          return res.status(400).json({ error: prettifiedError });
         }
       }
       return res.status(404).json({ error: 'Doctor not found' });
