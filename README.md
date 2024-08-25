@@ -146,7 +146,7 @@ Note: Dev account can only access 3 endpoints: `/doctors`, `/patients`, and `/se
 
 We’ve provided an automation script to simplify the installation process. This script handles the majority of the setup steps automatically.
 
-If something doesn’t work during the installation, the script will display messages in different colors to help you troubleshoot and resolve any issues manually. You can then finish any remaining tasks on your own.
+If something doesn’t work during the installation, the script will display messages in different colors to help you troubleshoot and resolve any issues manually.
 
 To run the script, execute the following command:
 
