@@ -1,6 +1,6 @@
 import router from './SessionRoutes';
 import AuthenticationController from '../controllers/AuthenticationController';
-import AuthMiddleware from '../middlewares/AuthMiddleware';
+import AuthMiddleware from '../middlewares/authMiddleware';
 
 /**
  * @swagger
@@ -8,17 +8,21 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *   get:
  *     summary: Connect a dev and create a session token - for dev.
  *     description: |
- *       Authenticates a dev using Basic Auth credentials in the format `email:password`, where the credentials are base64 encoded. On successful authentication, a session token is generated and returned.
+ *       Authenticates a dev using Basic Auth credentials in the format `email:password`,
+ *        where the credentials are base64 encoded. On successful authentication,
+ *        a session token is generated and returned.
  *
  *       **Authentication:**
  *       - Basic Auth is required with credentials in the format `email:password` encoded in Base64.
  *
  *       **Request Headers:**
- *       - `Authorization` (header, required): Basic Authentication credentials encoded in Base64. Example: `Basic dXNlcjpzZWNyZXQxMjM=`
+ *       - `Authorization` (header, required): Basic Authentication credentials encoded in Base64.
+ *        Example: `Basic dXNlcjpzZWNyZXQxMjM=`
  *
  *       **Response:**
  *       - On success: Returns the session token for the authenticated dev.
- *       - On error: Provides details about missing credentials, invalid credentials, or server issues.
+ *       - On error: |
+ *        Provides details about missing credentials, invalid credentials, or server issues.
  *     tags:
  *       - Devs
  *     security:
@@ -55,7 +59,8 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *               properties:
  *                 error:
  *                   type: string
- *                   description: Error message indicating missing or invalid Authorization header, or wrong credentials or password
+ *                   description: Error message indicating missing or invalid Authorization header,
+ *                    or wrong credentials or password
  *                   example: "Unauthorized: Missing or invalid Authorization header"
  *       '404':
  *         description: Not Found - Dev not registered
@@ -88,10 +93,13 @@ router.get('/connect', AuthenticationController.connectDev);
  *   get:
  *     summary: Disconnect a dev by removing their session token - for dev.
  *     description: |
- *       Logs out a dev by deleting their session token from Redis, effectively ending their session. This endpoint requires the dev to be authenticated with a valid session token.
+ *       Logs out a dev by deleting their session token from Redis,
+ *        effectively ending their session. This endpoint requires the dev to be
+ *        authenticated with a valid session token.
  *
  *       **Authentication:**
- *       - Token-based authentication is used, where the token should be passed in the `X-Token` header.
+ *       - Token-based authentication is used,
+ *        where the token should be passed in the `X-Token` header.
  *       - The `X-Token` value must be a valid session token issued during login.
  *       - Requires a role of `dev`.
  *
@@ -120,7 +128,8 @@ router.get('/connect', AuthenticationController.connectDev);
  *               properties:
  *                 message:
  *                   type: string
- *                   description: Success message indicating that the dev has been successfully disconnected
+ *                   description: |
+ *                    Success message indicating that the dev has been successfully disconnected
  *                   example: "Successfully disconnected"
  *       '400':
  *         description: Bad Request - Missing token

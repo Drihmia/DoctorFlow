@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import DoctorController from '../controllers/DoctorController';
 import AuthenticationController from '../controllers/AuthenticationController';
-import AuthMiddleware from '../middlewares/AuthMiddleware';
+import AuthMiddleware from '../middlewares/authMiddleware';
 
 const router = Router();
 
@@ -655,7 +655,7 @@ router.get('/doctors/:id', AuthMiddleware({ role: 'doctor' }), DoctorController.
  *   put:
  *     summary: Update a doctor's own details - for doctor.
  *     description: |
- *       Updates the authenticated doctor's details. This endpoint requires authentication with  
+ *       Updates the authenticated doctor's details. This endpoint requires authentication with
  *        valid session token and must be performed by the doctor who owns the profile.
  *
  *       **Authentication:**
@@ -1283,7 +1283,9 @@ router.get('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *   put:
  *     summary: Updates a session for a doctor and patient - for doctor.
  *     description: |
- *       Updates a specific session for a given doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
+ *       Updates a specific session for a given doctor.
+ *        This endpoint requires authentication with a valid session token and must
+ *        be performed by an authenticated doctor.
  *
  *       **Authentication:**
  *       - Token-based authentication is required,
@@ -1509,7 +1511,9 @@ router.put('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor' }
  *   delete:
  *     summary: Deletes a session for a doctor and patient - for doctor.
  *     description: |
- *       Deletes a specific session for a given doctor and patient. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
+ *       Deletes a specific session for a given doctor and patient.
+ *        This endpoint requires authentication with a valid session token and must
+ *        be performed by an authenticated doctor.
  *
  *       **Authentication:**
  *       - Token-based authentication is required,
@@ -1611,7 +1615,9 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *   get:
  *     summary: Retrieve a list of patients associated with a specific doctor - for doctor.
  *     description: |
- *       Fetches all patients associated with the specified doctor. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
+ *       Fetches all patients associated with the specified doctor.
+ *        This endpoint requires authentication with a valid session token and must
+ *        be performed by an authenticated doctor.
  *
  *       **Authentication:**
  *       - Token-based authentication is required,
@@ -1625,7 +1631,9 @@ router.delete('/doctors/:id/sessions/:sessionId', AuthMiddleware({ role: 'doctor
  *       - `limit` (header, optional): The number of records per page.
  *
  *       **Response:**
- *       - On success: Returns a list of patients associated with the doctor, including fields such as `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
+ *       - On success: Returns a list of patients associated with the doctor,
+ *        including fields such as:
+ *        `_id`, `firstName`, `lastName`, `gender`, `dob`, `email`, and more.
  *       - On error: Provides details about not finding the doctor, invalid ID, or server errors.
  *     tags:
  *       - Patients
@@ -2063,7 +2071,8 @@ router.get('/doctors/:id/patients/:patientId', AuthMiddleware({ role: 'doctor' }
  *   put:
  *     summary: Update details of a specific patient of a doctor - for doctor.
  *     description: |
- *       Allows a doctor to update the details of a specific patient associated with them. Note that a doctor cannot update a patient's password through this endpoint.
+ *       Allows a doctor to update the details of a specific patient associated with them.
+ *        Note that a doctor cannot update a patient's password through this endpoint.
  *
  *       **Authentication:**
  *       - Token-based authentication is required,

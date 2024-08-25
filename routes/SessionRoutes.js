@@ -1,6 +1,6 @@
 import router from './PatientRoutes';
 import SessionController from '../controllers/SessionController';
-import AuthMiddleware from '../middlewares/AuthMiddleware';
+import AuthMiddleware from '../middlewares/authMiddleware';
 
 /**
  * @swagger
@@ -8,19 +8,25 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *   post:
  *     summary: Adds a new session for a doctor and patient - for doctor.
  *     description: |
- *       Creates a new session for the given doctor and patient. This endpoint requires authentication with a valid session token and must be performed by an authenticated doctor.
+ *       Creates a new session for the given doctor and patient.
+ *        This endpoint requires authentication with a valid session token and must
+ *        be performed by an authenticated doctor.
  *
  *       **Authentication:**
- *       - Token-based authentication is required, where the `X-Token` header must contain a valid session token.
+ *       - Token-based authentication is required,
+ *        where the `X-Token` header must contain a valid session token.
  *       - Requires a role of `doctor`.
  *
  *       **Request Body:**
  *       - Required fields: `doctorId`, `patientId`.
- *       - Optional fields: `type`, `date`, `time`, `nextAppointment`, `notes`, `privateNotes`, `prescription`, `diagnosis`, `labTests`, `radOrders`.
+ *       - Optional fields: `type`, `date`, `time`, `nextAppointment`, `notes`, `privateNotes`,
+ *        `prescription`, `diagnosis`, `labTests`, `radOrders`.
  *
  *       **Response:**
- *       - On success: Returns the details of the newly created session, including fields such as `_id`, `doctor`, `patient`, `type`, `date`, `time`, and more.
- *       - On error: Provides details about validation issues, unauthorized access, or server errors.
+ *       - On success: Returns the details of the newly created session, including fields such as
+ *        `_id`, `doctor`, `patient`, `type`, `date`, `time`, and more.
+ *       - On error: |
+ *          Provides details about validation issues, unauthorized access, or server errors.
  *     tags:
  *       - Sessions
  *     security:
@@ -70,11 +76,14 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *               notes:
  *                 type: string
  *                 description: General notes visible to the doctor and patient.
- *                 example: "Follow-up in one week to assess blood pressure and adjust treatment if necessary."
+ *                 example: "Follow-up in one week to assess blood pressure and
+ *                  adjust treatment if necessary."
  *               privateNotes:
  *                 type: string
  *                 description: Private notes visible only to the doctor.
- *                 example: "Monitor blood pressure closely and assess for potential side effects of Lisinopril. Consider adding additional tests if blood pressure remains uncontrolled or if new symptoms arise."
+ *                 example: "Monitor blood pressure closely and assess for potential side effects
+ *                  of Lisinopril. Consider adding additional tests if blood pressure
+ *                  remains uncontrolled or if new symptoms arise."
  *               prescription:
  *                 type: string
  *                 description: Any prescription given during the session.
@@ -124,10 +133,13 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *                   example: "2024-08-29T10:00:00Z"
  *                 notes:
  *                   type: string
- *                   example: "Follow-up in one week to assess blood pressure and adjust treatment if necessary."
+ *                   example: "Follow-up in one week to assess blood pressure and
+ *                    adjust treatment if necessary."
  *                 privateNotes:
  *                   type: string
- *                   example: "Monitor blood pressure closely and assess for potential side effects of Lisinopril. Consider adding additional tests if blood pressure remains uncontrolled or if new symptoms arise."
+ *                   example: "Monitor blood pressure closely and assess for potential side effects
+ *                    of Lisinopril. Consider adding additional tests if blood pressure remains
+ *                    uncontrolled or if new symptoms arise."
  *                 prescription:
  *                   type: string
  *                   example: "20mg Lisinopril daily"
@@ -193,7 +205,8 @@ import AuthMiddleware from '../middlewares/AuthMiddleware';
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Forbidden: Only doctor can access this route. Please login as doctor."
+ *                   example: "Forbidden: Only doctor can access this route.
+ *                    Please login as doctor."
  *       500:
  *         description: Internal server error.
  *         content:
@@ -213,8 +226,11 @@ router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.a
  *   get:
  *     summary: Retrieve a list of all sessions - for dev.
  *     description: |
- *       **Note:** This endpoint is intended for development and testing purposes only. It should not be used in production environments with real patient data.
- *       Retrieves a list of all sessions with optional pagination. This endpoint is restricted to users with the 'dev' role and requires authentication using a valid token in the `x-token` header.
+ *       **Note:** This endpoint is intended for development and testing purposes only.
+ *        It should not be used in production environments with real patient data.
+ *       Retrieves a list of all sessions with optional pagination.
+ *        This endpoint is restricted to users with the 'dev' role and
+ *        requires authentication using a valid token in the `x-token` header.
  *
  *       **Authentication:**
  *       - Bearer Token via `x-token` header.
@@ -226,7 +242,8 @@ router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.a
  *       - `limit` (header, optional): Optional. The number of records per page.
  *
  *       **Response:**
- *       - A list of sessions objects, each containing details such as `_id`, `firstName`, `lastName`, `email`, `doctor`, `medicalHistory`, and more.
+ *       - A list of sessions objects, each containing details such as:
+ *        `_id`, `firstName`, `lastName`, `email`, `doctor`, `medicalHistory`, and more.
  *     tags:
  *       - Sessions
  *     security:
@@ -288,10 +305,14 @@ router.post('/sessions', AuthMiddleware({ role: 'doctor' }), SessionController.a
  *                     example: "2024-08-29T10:00:00.000Z"
  *                   notes:
  *                     type: string
- *                     example: "Follow-up in one week to assess blood pressure and adjust treatment if necessary."
+ *                     example: "Follow-up in one week to assess blood pressure and
+ *                      adjust treatment if necessary."
  *                   privateNotes:
  *                     type: string
- *                     example: "Monitor blood pressure closely and assess for potential side effects of Lisinopril. Consider adding additional tests if blood pressure remains uncontrolled or if new symptoms arise."
+ *                     example: |
+ *                      "Monitor blood pressure closely and assess for potential side effects
+ *                      of Lisinopril. Consider adding additional tests if blood pressure remains
+ *                      uncontrolled or if new symptoms arise."
  *                   prescription:
  *                     type: string
  *                     example: "20mg Lisinopril daily"
