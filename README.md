@@ -9,7 +9,7 @@ DoctorFlow is an API designed to streamline the patient management process. It d
 - [Tech Stack Used](#tech-stack-used)
 - [Installation, Setup, and Usage](#installation-setup-and-usage)
 - [Testing](#testing)
-- [Contributing](#contributing)
+- [Contributors](#contributors)
 - [License](#license)
 
 ## Introduction
@@ -156,7 +156,7 @@ Note: Basic environment variables are set in the Postman collection. Update the 
 - **DevEmail**: The email address you've chosen to create the dev account using the script.
 - **DevPassword**: The password you've chosen to create the dev account using the script.
 
-## Author and Contribution
+## Contributors
 
 - **Authors**:
   - **DRIHMIA Redouane**: [drihmia.redouane@gmail.com](mailto:drihmia.redouane@gmail.com)
