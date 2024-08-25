@@ -139,7 +139,7 @@ export PASSWORD=your-dev-password
 Note: Dev account can only access 3 endpoints: `/doctors`, `/patients`, and `/sessions`.
 
 4. **Access the API Documentation**:
-   - **Deployed Documentation**: Visit the deployed API documentation at [/api-docs](https://drihmia.tech).
+   - **Deployed Documentation**: Visit the deployed API documentation at [/api-docs](https://drihmia.tech/api-docs/).
    - **Local Documentation**: Access the Swagger UI locally at [/api-docs](http://localhost:3000/api-docs) to explore and interact with the API endpoints.
 
 ## Testing
