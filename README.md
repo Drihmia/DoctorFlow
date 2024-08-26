@@ -126,7 +126,7 @@ export PASSWORD=your-dev-password
 2. **Start the Express Application**:
    - Start the Node.js application:
      ```bash
-     npm run start
+     npm start
      ```
 
 3. **Create a Dev Account**:
@@ -182,5 +182,5 @@ Note: Basic environment variables are set in the Postman collection. Update the 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License - see the [LICENSE](LICENSE) file for details.
 
