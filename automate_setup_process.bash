@@ -100,7 +100,7 @@ echo -e "${BLUE}Starting Redis server...${NC}"
 redis-server &
 
 echo -e "${BLUE}Starting Express application...${NC}"
-npm run start &
+npm start &
 
 echo -e "${BLUE}Creating a dev account...${NC}"
 npm run dev createDev.js
